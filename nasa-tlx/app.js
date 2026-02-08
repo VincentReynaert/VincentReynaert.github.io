@@ -350,6 +350,49 @@
     const json = JSON.stringify(r, null, 2);
     $('#jsonPreview').textContent = json;
 
+// 1) Configure ici l’URL du webhook Power Automate
+const ONEDRIVE_FLOW_URL = "COLLE_ICI_L_URL_DU_FLOW";
+
+// Optionnel: petit secret simple (pas parfait côté sécurité, mais filtre basique)
+const FLOW_TOKEN = "change-me";
+
+async function sendToOneDrive(resultObj) {
+  const res = await fetch(ONEDRIVE_FLOW_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Token": FLOW_TOKEN
+    },
+    body: JSON.stringify(resultObj)
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`HTTP ${res.status} ${text}`);
+  }
+  return res.json().catch(() => ({}));
+}
+
+// Dans renderResults(), après avoir défini `const json = ...` :
+$('#btnSendOneDrive').onclick = async () => {
+  const btn = $('#btnSendOneDrive');
+  const old = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Envoi…";
+
+  try {
+    await sendToOneDrive(r); // r = state.results :contentReference[oaicite:6]{index=6}
+    btn.textContent = "Envoyé ✅";
+    setTimeout(() => (btn.textContent = old), 1200);
+  } catch (e) {
+    btn.textContent = old;
+    alert("Échec de l’envoi vers OneDrive : " + (e?.message || e));
+  } finally {
+    btn.disabled = false;
+  }
+};
+
+
     // prepare download handlers
     $('#btnDownloadJson').onclick = () => {
       const safePid = (r.participant_id || 'anon').replace(/[^a-zA-Z0-9_-]+/g, '_');
