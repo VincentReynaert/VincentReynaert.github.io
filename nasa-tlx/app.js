@@ -351,7 +351,7 @@
     $('#jsonPreview').textContent = json;
 
 // 1) Configure ici l’URL du webhook Power Automate
-const ONEDRIVE_FLOW_URL = "COLLE_ICI_L_URL_DU_FLOW";
+const ONEDRIVE_FLOW_URL = "https://default566dadffe3a9465fb05eed73b33f0a.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/d159e03221bd44baa7bd3fc0fc6e8fe1/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=7Oy3b4ViRZZisk8YLR8mXiuvaHwMbhnqnJCbSAA-i-I";
 
 // Optionnel: petit secret simple (pas parfait côté sécurité, mais filtre basique)
 const FLOW_TOKEN = "change-me";
