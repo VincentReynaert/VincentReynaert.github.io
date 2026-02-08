@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NASA‑TLX (complet) — Questionnaire</title>
+  <meta name="description" content="NASA-TLX complet (6 notes + comparaisons par paires), prêt pour GitHub Pages." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="container">
+    <header class="header">
+      <div>
+        <h1>NASA‑TLX (complet)</h1>
+        <p class="subtitle">6 notes (0–100) + 15 comparaisons par paires</p>
+      </div>
+      <div class="pill" id="buildTag" aria-label="Version"></div>
+    </header>
+
+    <noscript>
+      <div class="card warning">
+        <h2>JavaScript requis</h2>
+        <p>Ce questionnaire a besoin de JavaScript pour fonctionner.</p>
+      </div>
+    </noscript>
+
+    <!-- STEP: Welcome / consent -->
+    <section class="card" id="stepWelcome" hidden>
+      <h2>Avant de commencer</h2>
+      <p>
+        Ce questionnaire évalue la <strong>charge de travail perçue</strong> pendant une tâche.
+        Il n’y a pas de bonne ou de mauvaise réponse.
+      </p>
+
+      <div class="grid2">
+        <div>
+          <label class="label" for="participantId">Code participant (optionnel, recommandé)</label>
+          <input id="participantId" class="input" type="text" inputmode="latin" autocomplete="off"
+                 placeholder="Ex. P042" maxlength="64" />
+          <p class="hint">Astuce : utilisez un identifiant anonyme (pas de nom/prénom).</p>
+        </div>
+
+        <div>
+          <label class="label" for="taskId">Identifiant de la tâche (optionnel)</label>
+          <input id="taskId" class="input" type="text" inputmode="latin" autocomplete="off"
+                 placeholder="Ex. VR_ConditionA" maxlength="64" />
+          <p class="hint">Vous pouvez aussi pré-remplir via l’URL : <code>?task=VR_ConditionA</code></p>
+        </div>
+      </div>
+
+      <div class="consent">
+        <label class="checkbox">
+          <input type="checkbox" id="consentBox" />
+          <span>J’ai compris et je souhaite répondre au questionnaire.</span>
+        </label>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" id="btnStart" disabled>Commencer</button>
+      </div>
+    </section>
+
+    <!-- STEP: Ratings -->
+    <section class="card" id="stepRatings" hidden>
+      <div class="row between">
+        <h2>1/2 — Notes (0–100)</h2>
+        <div class="progress" aria-label="Progression">
+          <div class="progressBar" id="progressRatings"></div>
+        </div>
+      </div>
+
+      <p class="hint">
+        Pour chaque dimension, déplacez le curseur entre <strong>0</strong> et <strong>100</strong>.
+        <br />
+        <strong>Important :</strong> pour “Performance”, <em>100</em> correspond à une performance perçue très mauvaise (échec).
+      </p>
+
+      <div id="ratingsList" class="stack" aria-live="polite"></div>
+
+      <div class="actions">
+        <button class="btn" id="btnBackToWelcome">Retour</button>
+        <button class="btn primary" id="btnToPairs" disabled>Continuer</button>
+      </div>
+    </section>
+
+    <!-- STEP: Pairwise -->
+    <section class="card" id="stepPairs" hidden>
+      <div class="row between">
+        <h2>2/2 — Comparaisons par paires</h2>
+        <div class="progress" aria-label="Progression">
+          <div class="progressBar" id="progressPairs"></div>
+        </div>
+      </div>
+
+      <p class="hint">
+        Pour chaque paire, cliquez sur l’élément qui a le plus contribué à votre charge de travail.
+      </p>
+
+      <div class="pairBox" id="pairBox" aria-live="polite"></div>
+
+      <div class="actions">
+        <button class="btn" id="btnBackToRatings">Retour</button>
+        <button class="btn subtle" id="btnResetPairs">Réinitialiser ces comparaisons</button>
+      </div>
+    </section>
+
+    <!-- STEP: Results -->
+    <section class="card" id="stepResults" hidden>
+      <h2>Résultats</h2>
+
+      <div class="metrics">
+        <div class="metric">
+          <div class="metricLabel">Score NASA‑TLX pondéré</div>
+          <div class="metricValue" id="scoreWeighted">—</div>
+          <div class="metricHint">Σ(note × poids) ÷ 15</div>
+        </div>
+        <div class="metric">
+          <div class="metricLabel">Score RAW (moyenne)</div>
+          <div class="metricValue" id="scoreRaw">—</div>
+          <div class="metricHint">Moyenne des 6 notes</div>
+        </div>
+      </div>
+
+      <h3>Détails</h3>
+      <div class="tableWrap">
+        <table class="table" id="detailsTable">
+          <thead>
+            <tr>
+              <th>Dimension</th>
+              <th>Note (0–100)</th>
+              <th>Poids (0–5)</th>
+              <th>Contribution</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="downloadBox">
+        <h3>Exporter les réponses</h3>
+        <p class="hint">
+          GitHub Pages héberge un site statique : les réponses <strong>ne sont pas envoyées</strong> à un serveur.
+          Utilisez un export (JSON/CSV) pour récupérer les données.
+        </p>
+        <div class="actions">
+          <button class="btn primary" id="btnDownloadJson">Télécharger (JSON)</button>
+          <button class="btn" id="btnDownloadCsv">Télécharger (CSV)</button>
+          <button class="btn" id="btnCopyJson">Copier JSON</button>
+        </div>
+        <details class="details">
+          <summary>Voir le JSON</summary>
+          <pre id="jsonPreview" class="code"></pre>
+        </details>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="btnRestart">Nouveau participant</button>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>
+        Implémentation web autonome pour GitHub Pages.
+        <span class="muted">Aucune donnée n’est envoyée automatiquement.</span>
+      </p>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
