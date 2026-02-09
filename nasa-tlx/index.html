@@ -33,12 +33,13 @@
       </p>
 
       <div class="grid2">
-        <div>
-          <label class="label" for="participantId">Code participant (optionnel, recommandé)</label>
-          <input id="participantId" class="input" type="text" inputmode="latin" autocomplete="off"
-                 placeholder="Ex. P042" maxlength="64" />
-          <p class="hint">Astuce : utilisez un identifiant anonyme (pas de nom/prénom).</p>
-        </div>
+          <div>
+              <label class="label" for="participantId">Code participant (obligatoire)</label>
+              <input id="participantId" class="input" type="text" inputmode="latin" autocomplete="off"
+                     placeholder="Ex. ABCdef12" maxlength="9" />
+              <p class="hint" id="participantIdMsg">Champ obligatoire</p>
+              <p class="hint">Format : 3 premières lettres du NOM de famille en MAJ + 3 premières lettres du prénom en min + un nombre de votre choix à retenir.</p>
+          </div>
 
         <div>
           <label class="label" for="taskId">Identifiant de la tâche (optionnel)</label>
@@ -155,7 +156,7 @@
       </div>
 
       <div class="actions">
-        <button class="btn" id="btnRestart">Nouveau participant</button>
+        <button class="btn" id="btnRestart" disabled>Nouveau participant/Recommencer</button>
       </div>
     </section>
 

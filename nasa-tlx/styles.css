@@ -453,6 +453,30 @@ code {
     font-size: 12px;
     line-height: 1.35;
 }
+/* ✅ Feedback validation Participant ID */
+.input.invalid {
+    border-color: #ff6b6b;
+    box-shadow: 0 0 0 2px rgba(255,107,107,.25);
+}
+
+.input.valid {
+    border-color: #3ddc97;
+    box-shadow: 0 0 0 2px rgba(61,220,151,.25);
+}
+
+/* Message sous le champ */
+#participantIdMsg {
+    margin-top: 6px;
+    font-size: 13px;
+}
+
+.input.invalid + #participantIdMsg {
+    color: #ff6b6b;
+}
+
+.input.valid + #participantIdMsg {
+    color: #3ddc97;
+}
 
 /* ✅ NEW: Thème clair automatique si l’OS/appareil est en mode clair */
 @media (prefers-color-scheme: light) {

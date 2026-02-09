@@ -4,148 +4,182 @@
 */
 
 (() => {
-  'use strict';
+    'use strict';
 
-  const SETTINGS = {
-    buildTag: 'v1.0 (GitHub Pages)',
-    // Si vous voulez garder une trace locale (sur l’ordi qui fait passer l’étude),
-    // mettez true. Attention : sur un ordinateur partagé, cela peut poser des questions de confidentialité.
-    saveToLocalStorage: false,
-    localStorageKey: 'nasa_tlx_submissions_v1'
-  };
+    const SETTINGS = {
+        buildTag: 'v1.0 (GitHub Pages)',
+        // Si vous voulez garder une trace locale (sur l’ordi qui fait passer l’étude),
+        // mettez true. Attention : sur un ordinateur partagé, cela peut poser des questions de confidentialité.
+        saveToLocalStorage: false,
+        localStorageKey: 'nasa_tlx_submissions_v1'
+    };
+    // ✅ RÈGLE ID PARTICIPANT (modifie ici si tu veux changer la regex)
+    const PARTICIPANT_ID_REGEX = /^[A-Z]{3}[a-z]{3}\d+$/;
+    // Ex : ABCdef12, XYZabc1, etc.
 
-  const DIMENSIONS = [
-    {
-      key: 'MD',
-      title: 'Demande mentale',
-      desc: 'Réflexion, concentration, prise de décision.',
-      left: 'Faible',
-      right: 'Très élevée'
-    },
-    {
-      key: 'PD',
-      title: 'Demande physique',
-      desc: 'Effort corporel : mouvement, maintien, manipulation.',
-      left: 'Faible',
-      right: 'Très élevée'
-    },
-    {
-      key: 'TD',
-      title: 'Pression temporelle',
-      desc: 'Rythme imposé, sentiment d’être pressé par le temps.',
-      left: 'Faible',
-      right: 'Très élevée'
-    },
-    {
-      key: 'OP',
-      title: 'Performance',
-      desc: 'Dans quelle mesure vous avez réussi la tâche (100 = très mauvaise performance).',
-      left: 'Très bonne',
-      right: 'Échec'
-    },
-    {
-      key: 'EF',
-      title: 'Effort',
-      desc: 'Quantité d’effort (mental et/ou physique) pour atteindre l’objectif.',
-      left: 'Faible',
-      right: 'Très élevé'
-    },
-    {
-      key: 'FR',
-      title: 'Frustration',
-      desc: 'Irritation, stress, découragement (inverse : calme/satisfait).',
-      left: 'Faible',
-      right: 'Très élevée'
+
+    const DIMENSIONS = [
+        {
+            key: 'MD',
+            title: 'Demande mentale',
+            desc: 'Réflexion, concentration, prise de décision.',
+            left: 'Faible',
+            right: 'Très élevée'
+        },
+        {
+            key: 'PD',
+            title: 'Demande physique',
+            desc: 'Effort corporel : mouvement, maintien, manipulation.',
+            left: 'Faible',
+            right: 'Très élevée'
+        },
+        {
+            key: 'TD',
+            title: 'Pression temporelle',
+            desc: 'Rythme imposé, sentiment d’être pressé par le temps.',
+            left: 'Faible',
+            right: 'Très élevée'
+        },
+        {
+            key: 'OP',
+            title: 'Performance',
+            desc: 'Dans quelle mesure vous avez réussi la tâche (100 = très mauvaise performance).',
+            left: 'Très bonne',
+            right: 'Échec'
+        },
+        {
+            key: 'EF',
+            title: 'Effort',
+            desc: 'Quantité d’effort (mental et/ou physique) pour atteindre l’objectif.',
+            left: 'Faible',
+            right: 'Très élevé'
+        },
+        {
+            key: 'FR',
+            title: 'Frustration',
+            desc: 'Irritation, stress, découragement (inverse : calme/satisfait).',
+            left: 'Faible',
+            right: 'Très élevée'
+        }
+    ];
+
+    // ---------- Helpers ----------
+    const $ = (sel) => document.querySelector(sel);
+    const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+
+    function escapeCsv(s) {
+        const str = String(s ?? '');
+        if (/[",\n]/.test(str)) return '"' + str.replaceAll('"', '""') + '"';
+        return str;
     }
-  ];
 
-  // ---------- Helpers ----------
-  const $ = (sel) => document.querySelector(sel);
-  const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
-
-  function escapeCsv(s) {
-    const str = String(s ?? '');
-    if (/[",\n]/.test(str)) return '"' + str.replaceAll('"', '""') + '"';
-    return str;
-  }
-
-  function downloadBlob(filename, content, mime) {
-    const blob = new Blob([content], { type: mime });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }
-
-  function shuffle(arr) {
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
+    function downloadBlob(filename, content, mime) {
+        const blob = new Blob([content], { type: mime });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
     }
-    return a;
-  }
 
-  function makeSessionId() {
-    if (crypto && typeof crypto.randomUUID === 'function') return crypto.randomUUID();
-    // fallback
-    return 'sess_' + Math.random().toString(16).slice(2) + '_' + Date.now().toString(16);
-  }
-
-  function getUrlParam(name) {
-    const u = new URL(window.location.href);
-    const v = u.searchParams.get(name);
-    return v ? v.trim() : '';
-  }
-
-  function showStep(stepId) {
-    const steps = ['#stepWelcome', '#stepRatings', '#stepPairs', '#stepResults'];
-    for (const s of steps) $(s).hidden = (s !== stepId);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  // ---------- State ----------
-  const state = {
-    sessionId: makeSessionId(),
-    startedAt: new Date().toISOString(),
-    participantId: '',
-    taskId: '',
-    consent: false,
-
-    ratings: Object.fromEntries(DIMENSIONS.map(d => [d.key, 50])),
-    touched: Object.fromEntries(DIMENSIONS.map(d => [d.key, false])),
-
-    pairs: [],              // [{a:'MD', b:'PD'}...]
-    pairChoices: [],        // ['MD'|...]
-    pairIndex: 0,
-
-    results: null
-  };
-
-  function makePairs() {
-    const keys = DIMENSIONS.map(d => d.key);
-    const pairs = [];
-    for (let i = 0; i < keys.length; i++) {
-      for (let j = i + 1; j < keys.length; j++) {
-        pairs.push({ a: keys[i], b: keys[j] });
-      }
+    function shuffle(arr) {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
     }
-    return pairs; // 15
-  }
 
-  // ---------- Build UI ----------
-  function buildRatingsUI() {
-    const list = $('#ratingsList');
-    list.innerHTML = '';
+    function makeSessionId() {
+        if (crypto && typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+        // fallback
+        return 'sess_' + Math.random().toString(16).slice(2) + '_' + Date.now().toString(16);
+    }
 
-    for (const d of DIMENSIONS) {
-      const card = document.createElement('div');
-      card.className = 'ratingCard';
-      card.innerHTML = `
+    function getUrlParam(name) {
+        const u = new URL(window.location.href);
+        const v = u.searchParams.get(name);
+        return v ? v.trim() : '';
+    }
+
+
+    // ---------- OneDrive Sender ----------
+    // 1) Configure ici l’URL du webhook Power Automate
+    const ONEDRIVE_FLOW_URL = "https://default566dadffe3a9465fb05eed73b33f0a.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/d159e03221bd44baa7bd3fc0fc6e8fe1/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=7Oy3b4ViRZZisk8YLR8mXiuvaHwMbhnqnJCbSAA-i-I";
+
+    // Optionnel: petit secret simple (pas parfait côté sécurité, mais filtre basique)
+    //const FLOW_TOKEN = "change-me";
+    function safeFileToken(s, fallback) {
+        const v = (s || fallback || '').toString().trim();
+        return v.replace(/[^a-zA-Z0-9_-]+/g, '_');
+    }
+
+    async function sendToOneDrive(resultObj) {
+        const res = await fetch(ONEDRIVE_FLOW_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "text/plain;charset=UTF-8"
+                //"Content-Type": "application/json",
+                //"X-Token": FLOW_TOKEN
+            },
+            body: JSON.stringify(resultObj)
+        });
+
+        if (!res.ok) {
+            const text = await res.text().catch(() => "");
+            throw new Error(`HTTP ${res.status} ${text}`);
+        }
+        return res.json().catch(() => ({}));
+    }
+
+    function showStep(stepId) {
+        const steps = ['#stepWelcome', '#stepRatings', '#stepPairs', '#stepResults'];
+        for (const s of steps) $(s).hidden = (s !== stepId);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ---------- State ----------
+    const state = {
+        sessionId: makeSessionId(),
+        startedAt: new Date().toISOString(),
+        participantId: '',
+        taskId: '',
+        consent: false,
+
+        ratings: Object.fromEntries(DIMENSIONS.map(d => [d.key, 50])),
+        touched: Object.fromEntries(DIMENSIONS.map(d => [d.key, false])),
+
+        pairs: [],              // [{a:'MD', b:'PD'}...]
+        pairChoices: [],        // ['MD'|...]
+        pairIndex: 0,
+
+        results: null
+    };
+
+    function makePairs() {
+        const keys = DIMENSIONS.map(d => d.key);
+        const pairs = [];
+        for (let i = 0; i < keys.length; i++) {
+            for (let j = i + 1; j < keys.length; j++) {
+                pairs.push({ a: keys[i], b: keys[j] });
+            }
+        }
+        return pairs; // 15
+    }
+
+    // ---------- Build UI ----------
+    function buildRatingsUI() {
+        const list = $('#ratingsList');
+        list.innerHTML = '';
+
+        for (const d of DIMENSIONS) {
+            const card = document.createElement('div');
+            card.className = 'ratingCard';
+            card.innerHTML = `
         <div class="ratingTop">
           <div>
             <p class="ratingTitle">${d.title}</p>
@@ -169,73 +203,73 @@
           </div>
         </div>
       `;
-      list.appendChild(card);
+            list.appendChild(card);
 
-      const range = $(`#range_${d.key}`);
-      const value = $(`#value_${d.key}`);
-      const badge = $(`#badge_${d.key}`);
+            const range = $(`#range_${d.key}`);
+            const value = $(`#value_${d.key}`);
+            const badge = $(`#badge_${d.key}`);
 
-      const setTouchedUI = () => {
-        state.touched[d.key] = true;
-        badge.textContent = 'Répondu';
-        badge.style.color = '#eef2ff';
-        badge.style.borderColor = 'rgba(61,220,151,.45)';
-      };
+            const setTouchedUI = () => {
+                state.touched[d.key] = true;
+                badge.textContent = 'Répondu';
+                badge.style.color = '#eef2ff';
+                badge.style.borderColor = 'rgba(61,220,151,.45)';
+            };
 
-      range.addEventListener('input', (e) => {
-        const v = clamp(parseInt(e.target.value, 10) || 0, 0, 100);
-        state.ratings[d.key] = v;
-        value.textContent = String(v);
-        if (!state.touched[d.key]) setTouchedUI();
-        updateRatingsProgress();
-      });
+            range.addEventListener('input', (e) => {
+                const v = clamp(parseInt(e.target.value, 10) || 0, 0, 100);
+                state.ratings[d.key] = v;
+                value.textContent = String(v);
+                if (!state.touched[d.key]) setTouchedUI();
+                updateRatingsProgress();
+            });
 
-      // Restore touched state if coming back
-      if (state.touched[d.key]) setTouchedUI();
-    }
-  }
-
-  function updateRatingsProgress() {
-    const total = DIMENSIONS.length;
-    const done = DIMENSIONS.filter(d => state.touched[d.key]).length;
-    const pct = (done / total) * 100;
-    $('#progressRatings').style.width = pct.toFixed(0) + '%';
-    $('#btnToPairs').disabled = done !== total;
-  }
-
-  function buildPairsAndStart() {
-    state.pairs = shuffle(makePairs());
-    state.pairChoices = Array(state.pairs.length).fill(null);
-    state.pairIndex = 0;
-    updatePairsUI();
-  }
-
-  function dimByKey(key) {
-    return DIMENSIONS.find(d => d.key === key);
-  }
-
-  function updatePairsUI() {
-    const total = state.pairs.length;
-    const idx = state.pairIndex;
-
-    const pct = (idx / total) * 100;
-    $('#progressPairs').style.width = pct.toFixed(0) + '%';
-
-    const box = $('#pairBox');
-
-    if (idx >= total) {
-      // done
-      computeResults();
-      renderResults();
-      showStep('#stepResults');
-      return;
+            // Restore touched state if coming back
+            if (state.touched[d.key]) setTouchedUI();
+        }
     }
 
-    const pair = state.pairs[idx];
-    const a = dimByKey(pair.a);
-    const b = dimByKey(pair.b);
+    function updateRatingsProgress() {
+        const total = DIMENSIONS.length;
+        const done = DIMENSIONS.filter(d => state.touched[d.key]).length;
+        const pct = (done / total) * 100;
+        $('#progressRatings').style.width = pct.toFixed(0) + '%';
+        $('#btnToPairs').disabled = done !== total;
+    }
 
-    box.innerHTML = `
+    function buildPairsAndStart() {
+        state.pairs = shuffle(makePairs());
+        state.pairChoices = Array(state.pairs.length).fill(null);
+        state.pairIndex = 0;
+        updatePairsUI();
+    }
+
+    function dimByKey(key) {
+        return DIMENSIONS.find(d => d.key === key);
+    }
+
+    function updatePairsUI() {
+        const total = state.pairs.length;
+        const idx = state.pairIndex;
+
+        const pct = (idx / total) * 100;
+        $('#progressPairs').style.width = pct.toFixed(0) + '%';
+
+        const box = $('#pairBox');
+
+        if (idx >= total) {
+            // done
+            computeResults();
+            renderResults();
+            showStep('#stepResults');
+            return;
+        }
+
+        const pair = state.pairs[idx];
+        const a = dimByKey(pair.a);
+        const b = dimByKey(pair.b);
+
+        box.innerHTML = `
       <div class="pairMeta">
         <div>Paire <strong>${idx + 1}</strong> / ${total}</div>
         <div>Choisissez ce qui a le plus contribué</div>
@@ -256,283 +290,328 @@
       </div>
     `;
 
-    $('#chooseA').addEventListener('click', () => choosePair(pair.a));
-    $('#chooseB').addEventListener('click', () => choosePair(pair.b));
-  }
-
-  function choosePair(chosenKey) {
-    state.pairChoices[state.pairIndex] = chosenKey;
-    state.pairIndex += 1;
-    updatePairsUI();
-  }
-
-  function resetPairs() {
-    state.pairChoices = Array(state.pairs.length).fill(null);
-    state.pairIndex = 0;
-    updatePairsUI();
-  }
-
-  // ---------- Scoring ----------
-  function computeWeights() {
-    const weights = Object.fromEntries(DIMENSIONS.map(d => [d.key, 0]));
-    for (const c of state.pairChoices) {
-      if (c && weights[c] !== undefined) weights[c] += 1;
+        $('#chooseA').addEventListener('click', () => choosePair(pair.a));
+        $('#chooseB').addEventListener('click', () => choosePair(pair.b));
     }
-    return weights; // sum = 15 when complete
-  }
 
-  function computeResults() {
-    const weights = computeWeights();
-    const ratings = { ...state.ratings };
-
-    const weightedSum = DIMENSIONS.reduce((acc, d) => acc + (ratings[d.key] * weights[d.key]), 0);
-    const weightedScore = weightedSum / 15;
-
-    const rawSum = DIMENSIONS.reduce((acc, d) => acc + ratings[d.key], 0);
-    const rawScore = rawSum / DIMENSIONS.length;
-
-    const result = {
-      instrument: 'NASA-TLX (complet)',
-      version: SETTINGS.buildTag,
-      session_id: state.sessionId,
-      timestamp_utc: new Date().toISOString(),
-      started_at_utc: state.startedAt,
-      participant_id: state.participantId || null,
-      task_id: state.taskId || null,
-      ratings_0_100: ratings,
-      weights_0_5: weights,
-      comparisons: state.pairs.map((p, i) => ({
-        a: p.a,
-        b: p.b,
-        chosen: state.pairChoices[i]
-      })),
-      score_weighted: Number(weightedScore.toFixed(2)),
-      score_raw: Number(rawScore.toFixed(2))
-    };
-
-    state.results = result;
-
-    if (SETTINGS.saveToLocalStorage) {
-      try {
-        const prev = JSON.parse(localStorage.getItem(SETTINGS.localStorageKey) || '[]');
-        prev.push(result);
-        localStorage.setItem(SETTINGS.localStorageKey, JSON.stringify(prev));
-      } catch (e) {
-        // ignore
-      }
+    function choosePair(chosenKey) {
+        state.pairChoices[state.pairIndex] = chosenKey;
+        state.pairIndex += 1;
+        updatePairsUI();
     }
-  }
 
-  function renderResults() {
-    const r = state.results;
-    if (!r) return;
+    function resetPairs() {
+        state.pairChoices = Array(state.pairs.length).fill(null);
+        state.pairIndex = 0;
+        updatePairsUI();
+    }
 
-    $('#scoreWeighted').textContent = String(r.score_weighted);
-    $('#scoreRaw').textContent = String(r.score_raw);
+    // ---------- Scoring ----------
+    function computeWeights() {
+        const weights = Object.fromEntries(DIMENSIONS.map(d => [d.key, 0]));
+        for (const c of state.pairChoices) {
+            if (c && weights[c] !== undefined) weights[c] += 1;
+        }
+        return weights; // sum = 15 when complete
+    }
 
-    const tbody = $('#detailsTable tbody');
-    tbody.innerHTML = '';
+    function computeResults() {
+        const weights = computeWeights();
+        const ratings = { ...state.ratings };
 
-    for (const d of DIMENSIONS) {
-      const tr = document.createElement('tr');
-      const rating = r.ratings_0_100[d.key];
-      const weight = r.weights_0_5[d.key];
-      const contrib = (rating * weight / 15);
-      tr.innerHTML = `
+        const weightedSum = DIMENSIONS.reduce((acc, d) => acc + (ratings[d.key] * weights[d.key]), 0);
+        const weightedScore = weightedSum / 15;
+
+        const rawSum = DIMENSIONS.reduce((acc, d) => acc + ratings[d.key], 0);
+        const rawScore = rawSum / DIMENSIONS.length;
+
+        const result = {
+            instrument: 'NASA-TLX (complet)',
+            version: SETTINGS.buildTag,
+            session_id: state.sessionId,
+            timestamp_utc: new Date().toISOString(),
+            started_at_utc: state.startedAt,
+            participant_id: state.participantId || null,
+            task_id: state.taskId || null,
+            ratings_0_100: ratings,
+            weights_0_5: weights,
+            comparisons: state.pairs.map((p, i) => ({
+                a: p.a,
+                b: p.b,
+                chosen: state.pairChoices[i]
+            })),
+            score_weighted: Number(weightedScore.toFixed(2)),
+            score_raw: Number(rawScore.toFixed(2))
+        };
+
+        state.results = result;
+
+        if (SETTINGS.saveToLocalStorage) {
+            try {
+                const prev = JSON.parse(localStorage.getItem(SETTINGS.localStorageKey) || '[]');
+                prev.push(result);
+                localStorage.setItem(SETTINGS.localStorageKey, JSON.stringify(prev));
+            } catch (e) {
+                // ignore
+            }
+        }
+    }
+
+    function renderResults() {
+        const r = state.results;
+        if (!r) return;
+
+        $('#scoreWeighted').textContent = String(r.score_weighted);
+        $('#scoreRaw').textContent = String(r.score_raw);
+
+        const tbody = $('#detailsTable tbody');
+        tbody.innerHTML = '';
+
+        for (const d of DIMENSIONS) {
+            const tr = document.createElement('tr');
+            const rating = r.ratings_0_100[d.key];
+            const weight = r.weights_0_5[d.key];
+            const contrib = (rating * weight / 15);
+            tr.innerHTML = `
         <td><strong>${d.title}</strong></td>
         <td>${rating}</td>
         <td>${weight}</td>
         <td>${contrib.toFixed(2)}</td>
       `;
-      tbody.appendChild(tr);
+            tbody.appendChild(tr);
+        }
+
+        const json = JSON.stringify(r, null, 2);
+        $('#jsonPreview').textContent = json;
+
+        state.sentToOneDrive = false;
+        $('#btnRestart').disabled = true;
+        // Dans renderResults(), après avoir défini `const json = ...` :
+        $('#btnSendOneDrive').onclick = async () => {
+            const btn = $('#btnSendOneDrive');
+            const old = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = "Envoi…";
+
+            try {
+                await sendToOneDrive(r); // r = state.results :contentReference[oaicite:6]{index=6}
+                state.sentToOneDrive = true;
+                $('#btnRestart').disabled = false;
+                btn.textContent = "Envoyé ✅";
+                setTimeout(() => (btn.textContent = old), 1200);
+            } catch (e) {
+                btn.textContent = old;
+                btn.disabled = false;
+                alert("Échec de l’envoi vers OneDrive : " + (e?.message || e));
+            } finally {
+                btn.disabled = false;
+            }
+        };
+
+
+        // prepare download handlers
+        $('#btnDownloadJson').onclick = () => {
+            const safePid = (r.participant_id || 'anon').replace(/[^a-zA-Z0-9_-]+/g, '_');
+            const safeTask = (r.task_id || 'task').replace(/[^a-zA-Z0-9_-]+/g, '_');
+            const filename = `nasa_tlx_${safeTask}_${safePid}_${r.session_id}.json`;
+            downloadBlob(filename, json, 'application/json;charset=utf-8');
+        };
+
+        $('#btnCopyJson').onclick = async () => {
+            try {
+                await navigator.clipboard.writeText(json);
+                $('#btnCopyJson').textContent = 'Copié ✅';
+                setTimeout(() => $('#btnCopyJson').textContent = 'Copier JSON', 1200);
+            } catch {
+                alert("Impossible d'accéder au presse-papiers sur ce navigateur.");
+            }
+        };
+
+        $('#btnDownloadCsv').onclick = () => {
+            const header = [
+                'instrument', 'version', 'session_id', 'timestamp_utc', 'started_at_utc', 'participant_id', 'task_id',
+                'score_weighted', 'score_raw',
+                ...DIMENSIONS.map(d => `${d.key}_rating`),
+                ...DIMENSIONS.map(d => `${d.key}_weight`),
+                'comparisons_json'
+            ];
+
+            const row = [
+                r.instrument,
+                r.version,
+                r.session_id,
+                r.timestamp_utc,
+                r.started_at_utc,
+                r.participant_id || '',
+                r.task_id || '',
+                r.score_weighted,
+                r.score_raw,
+                ...DIMENSIONS.map(d => r.ratings_0_100[d.key]),
+                ...DIMENSIONS.map(d => r.weights_0_5[d.key]),
+                JSON.stringify(r.comparisons)
+            ];
+
+            const csv = header.map(escapeCsv).join(',') + '\n' + row.map(escapeCsv).join(',') + '\n';
+
+            const safePid = (r.participant_id || 'anon').replace(/[^a-zA-Z0-9_-]+/g, '_');
+            const safeTask = (r.task_id || 'task').replace(/[^a-zA-Z0-9_-]+/g, '_');
+            const filename = `nasa_tlx_${safeTask}_${safePid}_${r.session_id}.csv`;
+            downloadBlob(filename, csv, 'text/csv;charset=utf-8');
+        };
     }
 
-    const json = JSON.stringify(r, null, 2);
-    $('#jsonPreview').textContent = json;
+    // ---------- Navigation / events ----------
+    function wireEvents() {
+        $('#buildTag').textContent = SETTINGS.buildTag;
 
-// 1) Configure ici l’URL du webhook Power Automate
-const ONEDRIVE_FLOW_URL = "https://default566dadffe3a9465fb05eed73b33f0a.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/d159e03221bd44baa7bd3fc0fc6e8fe1/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=7Oy3b4ViRZZisk8YLR8mXiuvaHwMbhnqnJCbSAA-i-I";
+        const consentBox = $('#consentBox');
+        const btnStart = $('#btnStart');
+        const participantId = $('#participantId');
+        const taskId = $('#taskId');
 
-// Optionnel: petit secret simple (pas parfait côté sécurité, mais filtre basique)
-const FLOW_TOKEN = "change-me";
+        const refreshStartState = () => {
+            state.participantId = participantId.value.trim();
+            state.taskId = taskId.value.trim();
+            state.consent = consentBox.checked;
 
-async function sendToOneDrive(resultObj) {
-  const res = await fetch(ONEDRIVE_FLOW_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Token": FLOW_TOKEN
-    },
-    body: JSON.stringify(resultObj)
-  });
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`HTTP ${res.status} ${text}`);
-  }
-  return res.json().catch(() => ({}));
-}
-
-// Dans renderResults(), après avoir défini `const json = ...` :
-$('#btnSendOneDrive').onclick = async () => {
-  const btn = $('#btnSendOneDrive');
-  const old = btn.textContent;
-  btn.disabled = true;
-  btn.textContent = "Envoi…";
-
-  try {
-    await sendToOneDrive(r); // r = state.results :contentReference[oaicite:6]{index=6}
-    btn.textContent = "Envoyé ✅";
-    setTimeout(() => (btn.textContent = old), 1200);
-  } catch (e) {
-    btn.textContent = old;
-    alert("Échec de l’envoi vers OneDrive : " + (e?.message || e));
-  } finally {
-    btn.disabled = false;
-  }
-};
+            const pidOk = validateParticipantId();
 
 
-    // prepare download handlers
-    $('#btnDownloadJson').onclick = () => {
-      const safePid = (r.participant_id || 'anon').replace(/[^a-zA-Z0-9_-]+/g, '_');
-      const safeTask = (r.task_id || 'task').replace(/[^a-zA-Z0-9_-]+/g, '_');
-      const filename = `nasa_tlx_${safeTask}_${safePid}_${r.session_id}.json`;
-      downloadBlob(filename, json, 'application/json;charset=utf-8');
-    };
+            // Message d'erreur HTML5 (affiché si l'utilisateur essaye quand même)
+            participantId.setCustomValidity(pidOk ? '' : 'Format attendu : 3 MAJ + 3 min + nombre (ex. ABCdef12)');
 
-    $('#btnCopyJson').onclick = async () => {
-      try {
-        await navigator.clipboard.writeText(json);
-        $('#btnCopyJson').textContent = 'Copié ✅';
-        setTimeout(() => $('#btnCopyJson').textContent = 'Copier JSON', 1200);
-      } catch {
-        alert("Impossible d'accéder au presse-papiers sur ce navigateur.");
-      }
-    };
+            // ✅ On ne peut pas commencer sans consentement + PID valide
+            btnStart.disabled = !(state.consent && pidOk);
+        };
+        function validateParticipantId() {
+            const v = participantId.value.trim();
+            const ok = PARTICIPANT_ID_REGEX.test(v);
 
-    $('#btnDownloadCsv').onclick = () => {
-      const header = [
-        'instrument','version','session_id','timestamp_utc','started_at_utc','participant_id','task_id',
-        'score_weighted','score_raw',
-        ...DIMENSIONS.map(d => `${d.key}_rating`),
-        ...DIMENSIONS.map(d => `${d.key}_weight`),
-        'comparisons_json'
-      ];
+            participantId.classList.toggle('invalid', v !== '' && !ok);
+            participantId.classList.toggle('valid', ok);
 
-      const row = [
-        r.instrument,
-        r.version,
-        r.session_id,
-        r.timestamp_utc,
-        r.started_at_utc,
-        r.participant_id || '',
-        r.task_id || '',
-        r.score_weighted,
-        r.score_raw,
-        ...DIMENSIONS.map(d => r.ratings_0_100[d.key]),
-        ...DIMENSIONS.map(d => r.weights_0_5[d.key]),
-        JSON.stringify(r.comparisons)
-      ];
+            // Message HTML5 (tooltip / accessibilité)
+            participantId.setCustomValidity(
+                ok || v === ''
+                    ? ''
+                    : 'Format attendu : 3 MAJ + 3 min + nombre (ex. ABCdef12)'
+            );
 
-      const csv = header.map(escapeCsv).join(',') + '\n' + row.map(escapeCsv).join(',') + '\n';
+            // Message visible sous le champ
+            const msg = document.getElementById('participantIdMsg');
+            if (msg) {
+                if (v === '') {
+                    msg.textContent = 'Champ obligatoire';
+                } else if (!ok) {
+                    msg.textContent = 'Format invalide (ex. ABCdef12)';
+                } else {
+                    msg.textContent = 'Identifiant valide ✔';
+                }
+            }
 
-      const safePid = (r.participant_id || 'anon').replace(/[^a-zA-Z0-9_-]+/g, '_');
-      const safeTask = (r.task_id || 'task').replace(/[^a-zA-Z0-9_-]+/g, '_');
-      const filename = `nasa_tlx_${safeTask}_${safePid}_${r.session_id}.csv`;
-      downloadBlob(filename, csv, 'text/csv;charset=utf-8');
-    };
-  }
+            return ok;
+        }
 
-  // ---------- Navigation / events ----------
-  function wireEvents() {
-    $('#buildTag').textContent = SETTINGS.buildTag;
 
-    const consentBox = $('#consentBox');
-    const btnStart = $('#btnStart');
-    const participantId = $('#participantId');
-    const taskId = $('#taskId');
+        participantId.addEventListener('input', () => {
+            let v = participantId.value;
 
-    const refreshStartState = () => {
-      state.participantId = participantId.value.trim();
-      state.taskId = taskId.value.trim();
-      state.consent = consentBox.checked;
-      btnStart.disabled = !state.consent;
-    };
+            // Auto-correction douce de la casse
+            // AAA bbb 123 → AAAbbb123
+            if (v.length >= 3) {
+                v = v.slice(0, 3).toUpperCase() + v.slice(3);
+            }
+            if (v.length >= 6) {
+                v = v.slice(0, 3) + v.slice(3, 6).toLowerCase() + v.slice(6);
+            }
 
-    participantId.addEventListener('input', refreshStartState);
-    taskId.addEventListener('input', refreshStartState);
-    consentBox.addEventListener('change', refreshStartState);
+            participantId.value = v;
 
-    $('#btnStart').addEventListener('click', () => {
-      // reset session each time we start
-      state.sessionId = makeSessionId();
-      state.startedAt = new Date().toISOString();
+            validateParticipantId();
+            refreshStartState();
+        });
+        taskId.addEventListener('input', refreshStartState);
+        consentBox.addEventListener('change', refreshStartState);
 
-      showStep('#stepRatings');
-      buildRatingsUI();
-      updateRatingsProgress();
-    });
+        $('#btnStart').addEventListener('click', () => {
+            // reset session each time we start
+            state.sessionId = makeSessionId();
+            state.startedAt = new Date().toISOString();
 
-    $('#btnBackToWelcome').addEventListener('click', () => {
-      showStep('#stepWelcome');
-    });
+            showStep('#stepRatings');
+            buildRatingsUI();
+            updateRatingsProgress();
+        });
 
-    $('#btnToPairs').addEventListener('click', () => {
-      showStep('#stepPairs');
-      buildPairsAndStart();
-    });
+        $('#btnBackToWelcome').addEventListener('click', () => {
+            showStep('#stepWelcome');
+        });
 
-    $('#btnBackToRatings').addEventListener('click', () => {
-      showStep('#stepRatings');
-      // keep ratings as-is
-      buildRatingsUI();
-      updateRatingsProgress();
-    });
+        $('#btnToPairs').addEventListener('click', () => {
+            showStep('#stepPairs');
+            buildPairsAndStart();
+        });
 
-    $('#btnResetPairs').addEventListener('click', () => resetPairs());
+        $('#btnBackToRatings').addEventListener('click', () => {
+            showStep('#stepRatings');
+            // keep ratings as-is
+            buildRatingsUI();
+            updateRatingsProgress();
+        });
 
-    $('#btnRestart').addEventListener('click', () => {
-      // hard reset state (keep task id if you want: comment next line)
-      const keepTask = state.taskId;
+        $('#btnResetPairs').addEventListener('click', () => resetPairs());
 
-      state.sessionId = makeSessionId();
-      state.startedAt = new Date().toISOString();
-      state.participantId = '';
-      state.taskId = keepTask;
+        $('#btnRestart').addEventListener('click', () => {
+            // hard reset state (keep task id if you want: comment next line)
+            const keepTask = state.taskId;
 
-      state.ratings = Object.fromEntries(DIMENSIONS.map(d => [d.key, 50]));
-      state.touched = Object.fromEntries(DIMENSIONS.map(d => [d.key, false]));
-      state.pairs = [];
-      state.pairChoices = [];
-      state.pairIndex = 0;
-      state.results = null;
+            state.sessionId = makeSessionId();
+            state.startedAt = new Date().toISOString();
+            state.participantId = '';
+            state.taskId = keepTask;
 
-      // reset UI fields
-      $('#participantId').value = '';
-      $('#taskId').value = keepTask || '';
-      $('#consentBox').checked = false;
-      $('#btnStart').disabled = true;
+            state.ratings = Object.fromEntries(DIMENSIONS.map(d => [d.key, 50]));
+            state.touched = Object.fromEntries(DIMENSIONS.map(d => [d.key, false]));
+            state.pairs = [];
+            state.pairChoices = [];
+            state.pairIndex = 0;
+            state.results = null;
 
-      showStep('#stepWelcome');
-    });
-  }
+            // reset UI fields
+            $('#participantId').value = '';
+            $('#taskId').value = keepTask || '';
+            $('#consentBox').checked = false;
+            $('#btnStart').disabled = true;
 
-  // ---------- Init ----------
-  function initFromUrl() {
-    const task = getUrlParam('task');
-    const pid = getUrlParam('pid');
-    if (task) $('#taskId').value = task;
-    if (pid) $('#participantId').value = pid;
-  }
+            state.sentToOneDrive = false;
+            const sendBtn = $('#btnSendOneDrive');
+            if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = "Envoyer vers OneDrive"; }
 
-  function init() {
-    showStep('#stepWelcome');
-    initFromUrl();
-    wireEvents();
-    // ensure start disabled until consent checked
-    $('#btnStart').disabled = true;
-  }
 
-  document.addEventListener('DOMContentLoaded', init);
+            showStep('#stepWelcome');
+        });
+    }
+
+    // ---------- Init ----------
+    function initFromUrl() {
+        const task = getUrlParam('task');
+        const pid = getUrlParam('pid');
+        if (task) {
+            const t = $('#taskId');
+            t.value = task;
+            t.readOnly = true;
+            t.title = "Pré-rempli depuis l'URL, non modifiable";
+        }
+        if (pid) $('#participantId').value = pid;
+    }
+
+    function init() {
+        showStep('#stepWelcome');
+        initFromUrl();
+        wireEvents();
+        // ensure start disabled until consent checked
+        $('#btnStart').disabled = true;
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
 })();

@@ -8,9 +8,7 @@ Ce dossier contient un petit site **autonome** (HTML/CSS/JS) qui implémente le 
   - **Score pondéré** = Σ(note × poids) ÷ 15
   - **Score RAW** = moyenne des 6 notes
 - Export **JSON** et **CSV** (téléchargement côté navigateur)
-
-> ⚠️ GitHub Pages héberge un site statique : les réponses ne sont **pas** envoyées à un serveur.
-> Il faut utiliser l’export (ou ajouter un backend / Google Sheets si vous le souhaitez).
+- Envoie des données vers OneDrive (obligatoire ici mais désactivable dans le code)
 
 ---
 
@@ -54,6 +52,7 @@ Exemple :
 
 À la fin du questionnaire, le participant (ou l’expérimentateur) peut :
 
+- **Envoyer vers OneDrive** → pour un stockage centralisé (obligatoire ici mais désactivable dans le code)
 - **Télécharger (JSON)** → complet, détaillé, facile à archiver
 - **Télécharger (CSV)** → pratique pour Excel/SPSS/R/Python
 - **Copier JSON** → pour coller dans un fichier / un formulaire / un chat
@@ -100,12 +99,4 @@ Sur une page de votre site, ajoutez :
 ```
 
 ---
-
-## 7) Besoin d’un export automatique (Google Sheets, etc.) ?
-
-GitHub Pages ne peut pas écrire directement sur un serveur.
-
-Si vous voulez un **envoi automatique** des réponses, il faut :
-- un endpoint (ex : Google Apps Script / Sheet, serveur, Firebase, etc.)
-- ou héberger le questionnaire ailleurs avec backend.
 
