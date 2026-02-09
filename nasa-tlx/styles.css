@@ -12,6 +12,15 @@
   --ok:#3ddc97;
   --shadow: 0 8px 22px rgba(0,0,0,.35);
 }
+/* Les contrôles (button/input) doivent hériter la typo + la couleur du thème */
+button, input, select, textarea {
+    font: inherit;
+    color: inherit;
+}
+.choiceBtn {
+    /* … tes règles existantes … */
+    color: var(--text);
+}
 
 *{box-sizing:border-box}
 html,body{height:100%}
