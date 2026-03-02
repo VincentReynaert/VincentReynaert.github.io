@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>QCM — Goutte</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <main class="container">
+        <header class="header">
+            <div>
+                <h1 id="title">QCM — Goutte</h1>
+                <p class="subtitle" id="subtitle"></p>
+            </div>
+            <div class="pill" id="buildTag"></div>
+        </header>
+
+        <!-- ÉTAPE 1: accueil -->
+        <section class="card" id="stepWelcome">
+            <h2>Avant de commencer</h2>
+
+            <div class="grid2">
+                <div>
+                    <label class="label" for="participantId">Code participant (obligatoire)</label>
+                    <input id="participantId" class="input" type="text" autocomplete="off"
+                           placeholder="Ex. ABCdef12" maxlength="64" />
+                    <p class="hint" id="participantIdMsg">Champ obligatoire</p>
+                </div>
+
+                <div>
+                    <label class="label" for="taskId">Identifiant de la tâche</label>
+                    <input id="taskId" class="input" type="text" autocomplete="off"
+                           placeholder="Ex. GOUTTE_COURS1" maxlength="64" />
+                    <p class="hint">Pré-remplissage possible : <code>?task=GOUTTE_COURS1</code></p>
+                </div>
+            </div>
+
+            <div class="grid2">
+                <div>
+                    <label class="label" for="phase">Type de passation (obligatoire)</label>
+                    <select id="phase" class="input">
+                        <option value="">— Choisir —</option>
+                        <option value="pre">Pré-test</option>
+                        <option value="post">Post-test</option>
+                        <option value="retention">Test de rétention</option>
+                    </select>
+                    <p class="hint">
+                        L’URL est automatiquement mise à jour (ex. <code>?phase=pre</code>, <code>?phase=post</code>, <code>?phase=retention</code>).
+                        Si <code>?phase=...</code> est déjà dans l’URL, le champ est verrouillé.
+                    </p>
+                </div>
+
+                <div>
+                    <label class="label" for="shareLink">Lien de passation (phase/task)</label>
+                    <div class="row">
+                        <input id="shareLink" class="input" type="text" readonly />
+                        <button class="btn" id="btnCopyLink" type="button">Copier</button>
+                    </div>
+                    <p class="hint">Ce lien est celui à diffuser (il n’inclut pas le code participant).</p>
+                </div>
+            </div>
+
+            <div class="consent">
+                <label class="checkbox">
+                    <input type="checkbox" id="consentBox" />
+                    <span>J’ai compris et je souhaite répondre au questionnaire.</span>
+                </label>
+            </div>
+
+            <div class="actions">
+                <button class="btn primary" id="btnStart" disabled>Commencer</button>
+            </div>
+        </section>
+
+        <!-- ÉTAPE 2: questions -->
+        <section class="card" id="stepQuiz" hidden>
+            <div class="row between">
+                <h2 id="qHeader">Question</h2>
+                <div class="progress" aria-label="Progression">
+                    <div class="progressBar" id="progress"></div>
+                </div>
+            </div>
+
+            <p class="hint" id="qText"></p>
+            <div class="stack" id="options"></div>
+
+            <div class="actions">
+                <button class="btn" id="btnPrev" type="button">Retour</button>
+                <button class="btn primary" id="btnNext" type="button" disabled>Suivant</button>
+            </div>
+        </section>
+
+        <!-- ÉTAPE 3: résultats -->
+        <section class="card" id="stepResults" hidden>
+            <h2>Résultats</h2>
+
+            <div class="metrics">
+                <div class="metric">
+                    <div class="metricLabel">Score</div>
+                    <div class="metricValue" id="score">—</div>
+                    <div class="metricHint">Bonnes réponses / total</div>
+                </div>
+                <div class="metric">
+                    <div class="metricLabel">Taux</div>
+                    <div class="metricValue" id="pct">—</div>
+                    <div class="metricHint">%</div>
+                </div>
+            </div>
+
+            <div class="downloadBox">
+                <h3>Exporter</h3>
+                <div class="actions">
+                    <button class="btn primary" id="btnSendOneDrive" type="button">Envoyer vers OneDrive</button>
+                    <button class="btn" id="btnDownloadJson" type="button">Télécharger (JSON)</button>
+                    <button class="btn" id="btnCopyJson" type="button">Copier JSON</button>
+                </div>
+
+                <details class="details">
+                    <summary>Voir le JSON</summary>
+                    <pre id="jsonPreview" class="code"></pre>
+                </details>
+
+                <p class="hint">
+                    ⚠️ Le bouton <b>Nouveau participant</b> est activé uniquement après <b>envoi OneDrive</b>.
+                </p>
+            </div>
+
+            <div class="actions">
+                <button class="btn" id="btnRestart" type="button" disabled>Nouveau participant</button>
+            </div>
+        </section>
+
+        <p class="footer muted">
+            Mode clair/sombre automatique selon le device.
+        </p>
+    </main>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
