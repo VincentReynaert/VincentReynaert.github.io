@@ -16,17 +16,10 @@
             <div class="pill" id="buildTag"></div>
         </header>
 
-        <!-- ÉTAPE 1: accueil -->
+        <!-- ÉTAPE 1: intro -->
         <section class="card" id="stepWelcome">
             <h2>Avant de commencer</h2>
-            <p>
-                Ce questionnaire évalue vos connaissances sur la maladie de la goutte.
-                Il prendra la forme d'un QCM (questionnaire à choix multiples) de 20 questions.
-                Chaque question a une ou plusieurs bonnes réponses, et des points négatifs seront comptabilisés en cas de mauvaises réponses.
-                Si vous n'êtes pas sûr de vous, vous pouvez ne pas répondre.
-                Vous aurez 20 minutes pour répondre à l'ensemble des questions, mais ne vous inquiétez pas, un chronomètre sera visible pendant le questionnaire.
-                Enfin, une correction détaillée vous sera fournie sur demande, à la fin de l'expérimentation.
-            </p>
+
             <div class="grid2">
                 <div>
                     <label class="label" for="participantId">Code participant (obligatoire)</label>
@@ -36,10 +29,10 @@
                 </div>
 
                 <div>
-                    <label class="label" for="taskId">Identifiant de la tâche</label>
+                    <label class="label" for="taskId">Tâche / Condition</label>
                     <input id="taskId" class="input" type="text" autocomplete="off"
-                           placeholder="Ex. GOUTTE_COURS1" maxlength="64" />
-                    <p class="hint">Pré-remplissage possible : <code>?task=GOUTTE_COURS1</code></p>
+                           placeholder="Ex. GoutteAmphi" maxlength="64" />
+                    <p class="hint">Si ce champ est pré-rempli, ne le modifiez pas.</p>
                 </div>
             </div>
 
@@ -52,19 +45,12 @@
                         <option value="post">Post-test</option>
                         <option value="retention">Test de rétention</option>
                     </select>
-                    <p class="hint">
-                        L’URL est automatiquement mise à jour (ex. <code>?phase=pre</code>, <code>?phase=post</code>, <code>?phase=retention</code>).
-                        Si <code>?phase=...</code> est déjà dans l’URL, le champ est verrouillé.
-                    </p>
+                    <p class="hint">Si ce champ est pré-rempli, ne le modifiez pas.</p>
                 </div>
-
                 <div>
-                    <label class="label" for="shareLink">Lien de passation (phase/task)</label>
-                    <div class="row">
-                        <input id="shareLink" class="input" type="text" readonly />
-                        <button class="btn" id="btnCopyLink" type="button">Copier</button>
+                    <div class="hint" style="margin-top: 28px;">
+                        Vous pouvez laisser des questions sans réponse.
                     </div>
-                    <p class="hint">Ce lien est celui à diffuser (il n’inclut pas le code participant).</p>
                 </div>
             </div>
 
@@ -80,61 +66,50 @@
             </div>
         </section>
 
-        <!-- ÉTAPE 2: questions -->
+        <!-- ÉTAPE 2: QCM (toutes les questions sur une page) -->
         <section class="card" id="stepQuiz" hidden>
             <div class="row between">
-                <h2 id="qHeader">Question</h2>
-                <div class="progress" aria-label="Progression">
-                    <div class="progressBar" id="progress"></div>
+                <h2>Questionnaire</h2>
+                <div class="row" style="gap:10px;">
+                    <div class="pill" id="timerPill" aria-live="polite">Temps restant : 20:00</div>
+                    <div class="pill" id="answeredPill" hidden>Réponses : 0/0</div>
                 </div>
             </div>
 
-            <p class="hint" id="qText"></p>
-            <div class="stack" id="options"></div>
+            <p class="hint" id="quizHint">
+                Répondez aux questions dans l’ordre que vous souhaitez. Vous pouvez revenir sur vos réponses.
+            </p>
+
+            <div class="stack" id="questionList"></div>
 
             <div class="actions">
-                <button class="btn" id="btnPrev" type="button">Retour</button>
-                <button class="btn primary" id="btnNext" type="button" disabled>Suivant</button>
+                <button class="btn primary" id="btnSubmit" type="button">Terminer</button>
             </div>
         </section>
 
-        <!-- ÉTAPE 3: résultats -->
+        <!-- ÉTAPE 3: fin (pas de feedback de score) -->
         <section class="card" id="stepResults" hidden>
-            <h2>Résultats</h2>
+            <h2>Merci</h2>
 
-            <div class="metrics">
-                <div class="metric">
-                    <div class="metricLabel">Score</div>
-                    <div class="metricValue" id="score">—</div>
-                    <div class="metricHint">Bonnes réponses / total</div>
-                </div>
-                <div class="metric">
-                    <div class="metricLabel">Taux</div>
-                    <div class="metricValue" id="pct">—</div>
-                    <div class="metricHint">%</div>
-                </div>
+            <p id="thankYouText" class="hint">
+                Merci pour votre participation. Vous pouvez fermer cette page.
+            </p>
+
+            <p id="saveStatus" class="hint"></p>
+
+            <!-- Fallback: visible uniquement si l’envoi OneDrive échoue OU en mode debug -->
+            <div class="actions" id="fallbackActions" hidden>
+                <button class="btn" id="btnDownloadJson" type="button">Télécharger le fichier (JSON)</button>
+                <button class="btn" id="btnCopyJson" type="button">Copier le JSON</button>
             </div>
 
-            <div class="downloadBox">
-                <h3>Exporter</h3>
-                <div class="actions">
-                    <button class="btn primary" id="btnSendOneDrive" type="button">Envoyer vers OneDrive</button>
-                    <button class="btn" id="btnDownloadJson" type="button">Télécharger (JSON)</button>
-                    <button class="btn" id="btnCopyJson" type="button">Copier JSON</button>
-                </div>
+            <details class="details" id="debugPanel" hidden>
+                <summary>Debug</summary>
+                <pre id="jsonPreview" class="code"></pre>
+            </details>
 
-                <details class="details">
-                    <summary>Voir le JSON</summary>
-                    <pre id="jsonPreview" class="code"></pre>
-                </details>
-
-                <p class="hint">
-                    ⚠️ Le bouton <b>Nouveau participant</b> est activé uniquement après <b>envoi OneDrive</b>.
-                </p>
-            </div>
-
-            <div class="actions">
-                <button class="btn" id="btnRestart" type="button" disabled>Nouveau participant</button>
+            <div class="actions" id="restartRow" hidden>
+                <button class="btn" id="btnRestart" type="button" disabled>Nouvelle passation</button>
             </div>
         </section>
 
