@@ -1,22 +1,23 @@
-﻿import { QUIZ } from "./questions.js";
+﻿// qcm-goutte/app.js
+// Version robuste: charge questions.js dynamiquement + affiche une erreur claire si ça échoue.
 
-(() => {
+(async () => {
     "use strict";
 
     // =========================
     // CONFIG (à modifier facilement)
     // =========================
     const CONFIG = {
-        TIME_LIMIT_MINUTES: 20,      // 🔧 Durée (mettre 0 pour désactiver la limite)
-        SHOW_TIMER: true,            // 🔧 Afficher/masquer le chronomètre (la limite peut rester active)
-        SHUFFLE_QUESTIONS: true,     // 🔧 Shuffle questions
-        SHUFFLE_OPTIONS: true,       // 🔧 Shuffle réponses (options)
+        TIME_LIMIT_MINUTES: 20,          // 🔧 Durée (0 = pas de limite)
+        SHOW_TIMER: true,                // 🔧 Afficher/masquer le chrono (la limite peut rester active)
+        SHUFFLE_QUESTIONS: true,
+        SHUFFLE_OPTIONS: true,
 
-        AUTO_SEND_TO_ONEDRIVE: true, // 🔧 Envoi automatique à la fin
-        SHOW_RESTART_BUTTON: false,  // 🔧 Si tu fais passer plusieurs participants sur le même PC
+        AUTO_SEND_TO_ONEDRIVE: true,     // Envoi auto en fin de questionnaire
+        SHOW_RESTART_BUTTON: false,      // utile en passations successives sur le même PC
 
-        SHOW_ANSWER_COUNT_END: false,// 🔧 (option) afficher “Vous avez répondu à X/N”
-        SHOW_ANSWER_COUNT_DURING: false, // 🔧 (option) afficher pill “Réponses X/N” pendant le QCM
+        SHOW_ANSWER_COUNT_END: false,    // (option) "Vous avez répondu à X/N"
+        SHOW_ANSWER_COUNT_DURING: false, // (option) pill "Réponses X/N" pendant le QCM
     };
 
     // 🔧 Regex participant (modifier ICI si besoin)
@@ -29,6 +30,29 @@
     // HELPERS
     // =========================
     const $ = (sel) => document.querySelector(sel);
+
+    function fatal(msg, err) {
+        console.error("[QCM-GOUTTE]", msg, err || "");
+        const sub = $("#subtitle");
+        if (sub) sub.textContent = "Erreur technique : le questionnaire ne peut pas démarrer.";
+
+        const card = $("#stepWelcome");
+        if (card) {
+            const box = document.createElement("div");
+            box.className = "consent";
+            box.innerHTML = `
+        <b>Erreur :</b> ${msg}<br/>
+        <span class="muted">Ouvre la console (F12) pour le détail, et vérifie que <code>questions.js</code> est bien présent dans <code>/qcm-goutte/</code>.</span>
+      `;
+            card.prepend(box);
+        }
+
+        const btnStart = $("#btnStart");
+        if (btnStart) {
+            btnStart.disabled = true;
+            btnStart.textContent = "Indisponible";
+        }
+    }
 
     function nowIso() { return new Date().toISOString(); }
     function newSessionId() {
@@ -82,7 +106,7 @@
 
     async function sendToOneDrive(obj) {
         if (!ONEDRIVE_FLOW_URL || ONEDRIVE_FLOW_URL.includes("COLLE_ICI")) {
-            throw new Error("URL Power Automate non configurée (ONEDRIVE_FLOW_URL).");
+            throw new Error("URL Power Automate non configurée (ONEDRIVE_FLOW_URL) dans app.js.");
         }
 
         const res = await fetch(ONEDRIVE_FLOW_URL, {
@@ -99,42 +123,48 @@
     }
 
     function showStep(step) {
-        $("#stepWelcome").hidden = (step !== "welcome");
-        $("#stepQuiz").hidden = (step !== "quiz");
-        $("#stepResults").hidden = (step !== "results");
+        const w = $("#stepWelcome"), q = $("#stepQuiz"), r = $("#stepResults");
+        if (!w || !q || !r) return;
+        w.hidden = (step !== "welcome");
+        q.hidden = (step !== "quiz");
+        r.hidden = (step !== "results");
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     // =========================
-    // STATE
+    // CHARGER QUESTIONS (IMPORTANT)
     // =========================
-    const state = {
-        session_id: newSessionId(),
-        started_at_utc: nowIso(),
-        ended_at_utc: null,
+    let QUIZ;
+    try {
+        ({ QUIZ } = await import("./questions.js"));
+    } catch (e) {
+        fatal("Impossible de charger questions.js (fichier manquant ou erreur).", e);
+        return;
+    }
 
-        participant_id: "",
-        task_id: "",
-        phase: "",
-        consent: false,
-
-        // Presented quiz (shuffled)
-        presented: null, // { questions: [...] }
-        // Responses: map question_id -> array of selected presented option indices
-        responses: {},
-
-        deadline_ms: null,
-        timerHandle: null,
-        finished: false,
-        timed_out: false,
-
-        results: null,
-        sent_ok: false
-    };
+    if (!QUIZ || !Array.isArray(QUIZ.questions) || QUIZ.questions.length === 0) {
+        fatal("questions.js est chargé mais QUIZ.questions est vide ou invalide.", null);
+        return;
+    }
 
     // =========================
-    // DOM
+    // DOM (vérifs minimales)
     // =========================
+    const requiredIds = [
+        "#participantId", "#taskId", "#phase", "#consentBox", "#btnStart",
+        "#timerPill", "#answeredPill", "#questionList", "#btnSubmit",
+        "#thankYouText", "#saveStatus", "#fallbackActions",
+        "#btnDownloadJson", "#btnCopyJson", "#debugPanel", "#jsonPreview",
+        "#restartRow", "#btnRestart", "#title", "#subtitle", "#buildTag", "#participantIdMsg"
+    ];
+
+    for (const id of requiredIds) {
+        if (!$(id)) {
+            fatal(`index.html ne contient pas l’élément requis : ${id}`, null);
+            return;
+        }
+    }
+
     const participantId = $("#participantId");
     const taskId = $("#taskId");
     const phase = $("#phase");
@@ -158,6 +188,31 @@
     const btnRestart = $("#btnRestart");
 
     const DEBUG = getUrlParam("debug") === "1";
+
+    // =========================
+    // STATE
+    // =========================
+    const state = {
+        session_id: newSessionId(),
+        started_at_utc: nowIso(),
+        ended_at_utc: null,
+
+        participant_id: "",
+        task_id: "",
+        phase: "",
+        consent: false,
+
+        presented: null, // { questions: [...] }
+        responses: {},
+
+        deadline_ms: null,
+        timerHandle: null,
+        finished: false,
+        timed_out: false,
+
+        results: null,
+        sent_ok: false
+    };
 
     // =========================
     // VALIDATION
@@ -230,7 +285,7 @@
     consentBox.addEventListener("change", refreshStartState);
 
     // =========================
-    // INIT FROM URL
+    // INIT FROM URL (prefill)
     // =========================
     function initFromUrl() {
         const t = getUrlParam("task");
@@ -246,12 +301,10 @@
             phase.disabled = true;
             phase.title = "Pré-rempli par l’URL, non modifiable";
         }
-
-        // Si l’URL ne contient pas phase/task, elles seront ajoutées si l’utilisateur les saisit.
     }
 
     // =========================
-    // BUILD PRESENTED QUIZ (shuffle)
+    // PRESENTED QUIZ (shuffle)
     // =========================
     function buildPresentedQuiz() {
         const src = QUIZ.questions.map(q => ({
@@ -262,17 +315,12 @@
         }));
 
         if (CONFIG.SHUFFLE_QUESTIONS) shuffleInPlace(src);
-
         for (const q of src) {
             if (CONFIG.SHUFFLE_OPTIONS) shuffleInPlace(q.options);
         }
-
         return { questions: src };
     }
 
-    // =========================
-    // RENDER ALL QUESTIONS
-    // =========================
     function updateAnsweredPill() {
         if (!CONFIG.SHOW_ANSWER_COUNT_DURING) {
             answeredPill.hidden = true;
@@ -295,8 +343,6 @@
 
     function renderAllQuestions() {
         questionList.innerHTML = "";
-
-        const total = state.presented.questions.length;
 
         state.presented.questions.forEach((q, qi) => {
             const card = document.createElement("div");
@@ -328,9 +374,7 @@
                 input.addEventListener("change", () => {
                     const inputs = card.querySelectorAll(`input[name="${groupName}"]`);
                     const selected = [];
-                    inputs.forEach((el) => {
-                        if (el.checked) selected.push(Number(el.value));
-                    });
+                    inputs.forEach((el) => { if (el.checked) selected.push(Number(el.value)); });
                     setResponse(q.id, selected);
                 });
 
@@ -379,18 +423,12 @@
             return;
         }
 
-        if (!CONFIG.SHOW_TIMER) timerPill.hidden = true;
-        else timerPill.hidden = false;
-
+        timerPill.hidden = !CONFIG.SHOW_TIMER;
         state.deadline_ms = Date.now() + CONFIG.TIME_LIMIT_MINUTES * 60 * 1000;
 
         const tick = () => {
             const remaining = state.deadline_ms - Date.now();
-
-            if (CONFIG.SHOW_TIMER) {
-                timerPill.textContent = `Temps restant : ${formatMMSS(remaining)}`;
-            }
-
+            if (CONFIG.SHOW_TIMER) timerPill.textContent = `Temps restant : ${formatMMSS(remaining)}`;
             if (remaining <= 0) {
                 stopTimer();
                 finish(true);
@@ -402,14 +440,13 @@
     }
 
     // =========================
-    // RESULTS (no score shown)
+    // RESULTS (no performance feedback)
     // =========================
     function computeResults() {
         const presentedQuestions = state.presented.questions;
 
         const answers = presentedQuestions.map((q, qi) => {
             const selectedPresented = (state.responses[q.id] ?? []).slice().sort((a, b) => a - b);
-
             const selectedOriginal = selectedPresented
                 .map(i => q.options[i]?.orig_index)
                 .filter((x) => typeof x === "number")
@@ -474,31 +511,26 @@
 
         state.results = computeResults();
 
-        // Page de fin : pas de score, pas de feedback de performance
+        // Fin neutre (pas de score)
         if (CONFIG.SHOW_ANSWER_COUNT_END) {
-            thankYouText.textContent = `Merci pour votre participation.`;
+            thankYouText.textContent = "Merci pour votre participation.";
             saveStatus.textContent = `Questions répondues : ${state.results.n_answered}/${state.results.n_questions}.`;
         } else {
-            thankYouText.textContent = `Merci pour votre participation. Vous pouvez fermer cette page.`;
+            thankYouText.textContent = "Merci pour votre participation. Vous pouvez fermer cette page.";
             saveStatus.textContent = "";
         }
 
         showStep("results");
 
-        // Debug panel (seulement si ?debug=1)
         if (DEBUG) {
             debugPanel.hidden = false;
             jsonPreview.textContent = JSON.stringify(state.results, null, 2);
-            restartRow.hidden = !CONFIG.SHOW_RESTART_BUTTON;
         } else {
             debugPanel.hidden = true;
-            restartRow.hidden = !CONFIG.SHOW_RESTART_BUTTON;
         }
 
-        // Fallback actions: seulement si debug ou erreur d'envoi
         fallbackActions.hidden = true;
 
-        // Auto send OneDrive
         if (CONFIG.AUTO_SEND_TO_ONEDRIVE) {
             saveStatus.textContent = "Enregistrement en cours…";
             try {
@@ -510,7 +542,6 @@
                 saveStatus.textContent = "Problème d’enregistrement. Merci de prévenir l’animateur.";
                 fallbackActions.hidden = false;
 
-                // aussi afficher debug JSON si souhaité
                 if (DEBUG) {
                     debugPanel.hidden = false;
                     jsonPreview.textContent = JSON.stringify(state.results, null, 2);
@@ -518,14 +549,11 @@
             }
         }
 
-        // Restart (si activé)
-        if (CONFIG.SHOW_RESTART_BUTTON) {
-            restartRow.hidden = false;
-            btnRestart.disabled = !state.sent_ok; // seulement si sauvegarde OK
-        }
+        restartRow.hidden = !CONFIG.SHOW_RESTART_BUTTON;
+        btnRestart.disabled = !state.sent_ok;
     }
 
-    // Fallback export
+    // fallback exports
     btnDownloadJson.addEventListener("click", () => {
         const json = JSON.stringify(state.results ?? {}, null, 2);
         const blob = new Blob([json], { type: "application/json" });
@@ -545,19 +573,15 @@
         setTimeout(() => (btnCopyJson.textContent = "Copier le JSON"), 900);
     });
 
-    // Restart
     btnRestart.addEventListener("click", () => {
         if (!CONFIG.SHOW_RESTART_BUTTON) return;
         if (!state.sent_ok) return;
 
-        // reset minimal
         state.session_id = newSessionId();
         state.started_at_utc = nowIso();
-        state.ended_at_utc = null;
         state.responses = {};
         state.presented = null;
         state.deadline_ms = null;
-        state.timerHandle = null;
         state.finished = false;
         state.timed_out = false;
         state.results = null;
@@ -568,12 +592,11 @@
         $("#participantIdMsg").textContent = "Champ obligatoire";
         consentBox.checked = false;
 
-        // task / phase restent (souvent fixé par l’URL)
         refreshStartState();
         showStep("welcome");
     });
 
-    // Start
+    // Start & Submit
     btnStart.addEventListener("click", () => {
         refreshStartState();
         if (btnStart.disabled) return;
@@ -585,15 +608,11 @@
         state.finished = false;
         state.timed_out = false;
 
-        // Timer
         startTimer();
-
-        // Render
         renderAllQuestions();
         showStep("quiz");
     });
 
-    // Submit button (pas besoin d’avoir répondu à tout)
     btnSubmit.addEventListener("click", () => finish(false));
 
     // =========================
@@ -605,18 +624,15 @@
 
     initFromUrl();
 
-    // timer initial display
+    // initial timer label (hidden until quiz)
     if (CONFIG.SHOW_TIMER && CONFIG.TIME_LIMIT_MINUTES > 0) {
         timerPill.textContent = `Temps restant : ${String(CONFIG.TIME_LIMIT_MINUTES).padStart(2, "0")}:00`;
-        timerPill.hidden = true; // visible seulement en quiz
+        timerPill.hidden = true;
     } else {
         timerPill.hidden = true;
     }
 
-    // answered pill initial
     answeredPill.hidden = !CONFIG.SHOW_ANSWER_COUNT_DURING;
-
-    // restart row
     restartRow.hidden = !CONFIG.SHOW_RESTART_BUTTON;
 
     refreshStartState();
