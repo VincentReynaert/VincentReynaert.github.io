@@ -8,7 +8,7 @@
     // CONFIG (à modifier facilement)
     // =========================
     const CONFIG = {
-        TIME_LIMIT_MINUTES: 0,          // 🔧 Durée (0 = pas de limite)
+        TIME_LIMIT_MINUTES: 0.5,          // 🔧 Durée (0 = pas de limite)
         SHOW_TIMER: true,                // 🔧 Afficher/masquer le chrono (la limite peut rester active)
         SHUFFLE_QUESTIONS: true,
         SHUFFLE_OPTIONS: true,
