@@ -1,6 +1,5 @@
 /* NASA‑TLX complet (6 notes + 15 paires) — autonome pour GitHub Pages
-   - Pas de backend : export JSON/CSV côté participant
-   - Texte FR simplifié (évite de recopier mot-à-mot des formulaires propriétaires)
+   - Envoi automatique vers OneDrive à la fin (Power Automate)
 */
 
 (() => {
@@ -126,7 +125,8 @@
                 //"Content-Type": "application/json",
                 //"X-Token": FLOW_TOKEN
             },
-            body: JSON.stringify(resultObj)
+            body: JSON.stringify(resultObj),
+            keepalive: true // tente de permettre l’envoi même si l’utilisateur ferme la page juste après
         });
 
         if (!res.ok) {
@@ -157,7 +157,10 @@
         pairChoices: [],        // ['MD'|...]
         pairIndex: 0,
 
-        results: null
+        results: null,
+        // ✅ nouveaux champs
+        sentToOneDrive: false,
+        sending: false
     };
 
     function makePairs() {
@@ -356,7 +359,45 @@
             }
         }
     }
+    async function autoSendOneDrive() {
+        const r = state.results;
+        if (!r || state.sentToOneDrive || state.sending) return;
 
+        const status = $('#oneDriveStatus');
+        const btn = $('#btnSendOneDrive');
+        const restartBtn = $('#btnRestart');
+
+        state.sending = true;
+        if (status) status.textContent = "Enregistrement en cours…";
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = "Envoi…";
+        }
+        if (restartBtn) restartBtn.disabled = true;
+
+        try {
+            await sendToOneDrive(r);
+            state.sentToOneDrive = true;
+            if (status) status.textContent = "Enregistrement terminé.";
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = "Envoyé ✅ (réessayer)";
+            }
+            if (restartBtn) restartBtn.disabled = false;
+        } catch (e) {
+            state.sentToOneDrive = false;
+            if (status) status.textContent = "Problème d’enregistrement. Cliquez sur “Envoyer les résultats” pour réessayer.";
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = "Réessayer l’envoi des résultats";
+            }
+            // on laisse Restart désactivé tant que pas envoyé
+            if (restartBtn) restartBtn.disabled = true;
+            console.error(e);
+        } finally {
+            state.sending = false;
+        }
+    }
     function renderResults() {
         const r = state.results;
         if (!r) return;
@@ -385,28 +426,18 @@
         $('#jsonPreview').textContent = json;
 
         state.sentToOneDrive = false;
+        state.sending = false;
         $('#btnRestart').disabled = true;
-        // Dans renderResults(), après avoir défini `const json = ...` :
-        $('#btnSendOneDrive').onclick = async () => {
-            const btn = $('#btnSendOneDrive');
-            const old = btn.textContent;
-            btn.disabled = true;
-            btn.textContent = "Envoi…";
 
-            try {
-                await sendToOneDrive(r); // r = state.results :contentReference[oaicite:6]{index=6}
-                state.sentToOneDrive = true;
-                $('#btnRestart').disabled = false;
-                btn.textContent = "Envoyé ✅";
-                setTimeout(() => (btn.textContent = old), 1200);
-            } catch (e) {
-                btn.textContent = old;
-                btn.disabled = false;
-                alert("Échec de l’envoi vers OneDrive : " + (e?.message || e));
-            } finally {
-                btn.disabled = false;
-            }
+        // bouton = réessayer (manuel)
+        $('#btnSendOneDrive').onclick = async () => {
+            // force retry
+            state.sentToOneDrive = false;
+            await autoSendOneDrive();
         };
+
+        // auto-send immédiat
+        autoSendOneDrive();
 
 
         // prepare download handlers
