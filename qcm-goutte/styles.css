@@ -384,3 +384,53 @@ code {
         color: #0b3d91;
     }
 }
+
+/* =========================
+   Timer sticky (toujours visible)
+   ========================= */
+
+/* Sur l'étape QCM, on veut un "header" qui reste visible */
+#stepQuiz .row.between {
+    position: sticky;
+    top: 10px;
+    z-index: 20;
+    padding: 10px 10px;
+    margin: -10px -10px 10px;
+    border-radius: 14px;
+    /* fond lisible sur dark/light (le vrai rendu est adapté par les media queries plus bas) */
+    background: rgba(11, 13, 18, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,.10);
+}
+
+/* Assure que le timer reste lisible et ne "saute" pas */
+#timerPill {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Responsive: sur petits écrans, timer + compteur passent en colonne */
+@media (max-width: 540px) {
+    #stepQuiz .row.between {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+        #stepQuiz .row.between > .row {
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+
+    #timerPill, #answeredPill {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* Light theme: fond sticky adapté */
+@media (prefers-color-scheme: light) {
+    #stepQuiz .row.between {
+        background: rgba(246, 247, 251, 0.90);
+        border-color: rgba(0,0,0,.10);
+    }
+}
