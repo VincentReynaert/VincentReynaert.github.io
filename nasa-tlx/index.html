@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>NASA‑TLX (complet) — Questionnaire</title>
-  <meta name="description" content="NASA-TLX complet (6 notes + comparaisons par paires), prêt pour GitHub Pages." />
+  <title>NASA‑TLX - charge de travail</title>
+  <meta name="description" content="NASA-TLX complet (6 notes + comparaisons par paires)." />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <main class="container">
     <header class="header">
       <div>
-        <h1>NASA‑TLX (complet)</h1>
-        <p class="subtitle">6 notes (0–100) + 15 comparaisons par paires</p>
+        <h1>NASA‑TLX</h1>
+        <p class="subtitle">Charge de travail</p>
       </div>
       <div class="pill" id="buildTag" aria-label="Version"></div>
     </header>
@@ -45,7 +45,7 @@
           <label class="label" for="taskId">Identifiant de la tâche (optionnel)</label>
           <input id="taskId" class="input" type="text" inputmode="latin" autocomplete="off"
                  placeholder="Ex. VR_ConditionA" maxlength="64" />
-          <p class="hint">Vous pouvez aussi pré-remplir via l’URL : <code>?task=VR_ConditionA</code></p>
+          <!-- <p class="hint">Vous pouvez aussi pré-remplir via l’URL : <code>?task=VR_ConditionA</code></p> -->
         </div>
       </div>
 
@@ -53,6 +53,7 @@
         <label class="checkbox">
           <input type="checkbox" id="consentBox" />
           <span>J’ai compris et je souhaite répondre au questionnaire.</span>
+          <p class="hint">Les données récoltées seront anonymisées et ne seront utilisées qu'à des fins de recherche académique.</p>
         </label>
       </div>
 
