@@ -10,7 +10,7 @@ export const QUIZ = {
       id: "q01",
       text: "Parmi ces propositions, lesquelles sont correctes ?",
       // image dans la question (optionnel)
-      image: "assets/q01.png",
+      image: "assets/Camera_diff.png",
       image_alt: "Illustration de la question 1",
       multi: true,              // cases à cocher
       points: 1,                // pondération optionnelle
