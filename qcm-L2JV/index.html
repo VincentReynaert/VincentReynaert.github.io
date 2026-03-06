@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Examen - QCM</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <main class="container">
+        <header class="header">
+            <div>
+                <h1 id="title">Examen - QCM</h1>
+                <p class="subtitle" id="subtitle"></p>
+            </div>
+            <div class="pill" id="buildTag"></div>
+        </header>
+
+        <!-- INTRO -->
+        <section class="card" id="stepWelcome">
+            <h2>Avant de commencer</h2>
+
+            <div class="grid2">
+                <div>
+                    <label class="label" for="surname">Prénom *</label>
+                    <input id="surname" class="input" type="text" autocomplete="off" placeholder="Prénom"
+                        maxlength="64" />
+                    <p class="hint" id="surnameMsg">Champ obligatoire</p>
+                </div>
+
+                <div>
+                    <label class="label" for="name">Nom *</label>
+                    <input id="name" class="input" type="text" autocomplete="off" placeholder="Nom" maxlength="64" />
+                    <p class="hint" id="nameMsg">Champ obligatoire</p>
+                </div>
+            </div>
+            <hr>
+            <div>
+                <p class="hint" style="margin-top:28px;">
+                    Ce questionnaire aura une durée limitée de 1h00.<br>
+                    Vous pouvez laisser une question sans réponse.<br>
+                    Des points négatifs seront appliqués.
+                </p>
+            </div>
+            <div class="consent">
+                <label class="checkbox">
+                    <input type="checkbox" id="consentBox" />
+                    <span>J’ai compris et lu les consignes et je peux répondre au questionnaire.</span>
+                </label>
+            </div>
+
+            <div class="actions">
+                <button class="btn primary" id="btnStart" disabled>Commencer</button>
+            </div>
+        </section>
+
+        <!-- QUIZ -->
+        <section class="card" id="stepQuiz" hidden>
+            <!-- ✅ Barre sticky : reste visible quand on scroll -->
+            <div class="row between" id="quizTopBar">
+                <h2>Questionnaire</h2>
+                <div class="row timerRow">
+                    <div class="pill" id="timerPill" aria-live="polite">Temps restant : 20:00</div>
+                    <div class="pill" id="answeredPill" hidden>Réponses : 0/0</div>
+                </div>
+            </div>
+
+            <p class="hint" id="quizHint">
+                Répondez dans l’ordre que vous souhaitez. Vous pouvez revenir sur vos réponses.
+            </p>
+
+            <div class="stack" id="questionList"></div>
+
+            <div class="actions">
+                <button class="btn primary" id="btnSubmit" type="button">Terminer</button>
+            </div>
+        </section>
+
+        <!-- FIN -->
+        <section class="card" id="stepResults" hidden>
+            <h2>Merci</h2>
+            <p id="thankYouText" class="hint">Merci pour votre participation. Vous pouvez fermer cette page.</p>
+            <p id="saveStatus" class="hint" aria-live="polite"></p>
+
+            <div class="actions" id="fallbackActions" hidden>
+                <button class="btn" id="btnDownloadJson" type="button">Télécharger le JSON</button>
+                <button class="btn" id="btnCopyJson" type="button">Copier le JSON</button>
+            </div>
+
+            <details class="details" id="debugPanel" hidden>
+                <summary>Debug</summary>
+                <pre id="jsonPreview" class="code"></pre>
+            </details>
+        </section>
+
+        <p class="footer muted">Mode clair/sombre automatique selon le device.</p>
+    </main>
+
+    <script type="module" src="app.js"></script>
+</body>
+
+</html>
