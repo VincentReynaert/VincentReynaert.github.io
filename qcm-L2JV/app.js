@@ -278,13 +278,13 @@
     // =========================
     // PREFILL (task/phase) FROM URL
     // =========================
-    function initFromUrl() {
-        const t = getUrlParam("task");
-        if (t) { taskId.value = t; taskId.readOnly = true; }
+    // function initFromUrl() {
+    //     const t = getUrlParam("task");
+    //     if (t) { taskId.value = t; taskId.readOnly = true; }
 
-        const p = normalizePhase(getUrlParam("phase"));
-        if (p) { phase.value = p; phase.disabled = true; }
-    }
+    //     const p = normalizePhase(getUrlParam("phase"));
+    //     if (p) { phase.value = p; phase.disabled = true; }
+    // }
 
     // =========================
     // BUILD PRESENTED QUIZ (sample + shuffle)
@@ -711,7 +711,7 @@
     $("#subtitle").textContent = QUIZ.intro ?? "";
     $("#buildTag").textContent = QUIZ.version;
 
-    initFromUrl();
+    // initFromUrl();
     if (durationHint) {
         durationHint.textContent = formatDurationHint(CONFIG.TIME_LIMIT_MINUTES);
     }
