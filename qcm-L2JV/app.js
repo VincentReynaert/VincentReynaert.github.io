@@ -126,10 +126,10 @@
     // =========================
     // DOM
     // =========================
-    const firstNameEl = document.querySelector("#surname"); // Prénom
-    const lastNameEl = document.querySelector("#name");    // Nom
-    const firstNameMsg = document.querySelector("#surnameMsg");
-    const lastNameMsg = document.querySelector("#nameMsg");
+    const firstNameEl = document.querySelector("#givenname"); // Prénom
+    const lastNameEl = document.querySelector("#familyname");    // Nom
+    const firstNameMsg = document.querySelector("#givennameMsg");
+    const lastNameMsg = document.querySelector("#familynameMsg");
 
     const consentBox = $("#consentBox");
     const btnStart = $("#btnStart");
@@ -583,8 +583,8 @@
             ended_at_utc: ended,
             duration_seconds,
 
-            surname: first_name,
-            name: last_name,
+            givenname: first_name,
+            familyname: last_name,
 
             config: {
                 time_limit_minutes: CONFIG.TIME_LIMIT_MINUTES,

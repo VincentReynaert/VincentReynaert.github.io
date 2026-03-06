@@ -24,22 +24,22 @@
 
             <div class="grid2">
                 <div>
-                    <label class="label" for="surname">Prénom *</label>
-                    <input id="surname" class="input" type="text" autocomplete="off" placeholder="Prénom"
-                        maxlength="64" />
-                    <p class="hint" id="surnameMsg">Champ obligatoire</p>
+                    <label class="label" for="givenName">Prénom</label>
+                    <input id="givenName" name="given-name" class="input" type="text" autocomplete="given-name"
+                        maxlength="100" />
+                    <p class="hint" id="givenNameMsg">Champ obligatoire</p>
                 </div>
 
-                <div>
-                    <label class="label" for="name">Nom *</label>
-                    <input id="name" class="input" type="text" autocomplete="off" placeholder="Nom" maxlength="64" />
-                    <p class="hint" id="nameMsg">Champ obligatoire</p>
+                <div><label class="label" for="familyName">Nom</label>
+                    <input id="familyName" name="family-name" class="input" type="text" autocomplete="family-name"
+                        maxlength="100" />
+                    <p class="hint" id="familyNameMsg">Champ obligatoire</p>
                 </div>
             </div>
             <hr>
             <div>
                 <p class="hint" style="margin-top:28px;">
-                    Ce questionnaire aura une durée limitée de 1h00.<br>
+                    Ce questionnaire aura une durée limitée de <strong id="durationHint">—</strong>.<br>
                     Vous pouvez laisser une question sans réponse.<br>
                     Des points négatifs seront appliqués.
                 </p>
