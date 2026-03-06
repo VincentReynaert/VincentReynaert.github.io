@@ -21,7 +21,7 @@
     };
 
     // Regex ID étudiant (modifiable)
-    const NAME_REGEX = /^[\p{L}\p{M}][\p{L}\p{M}'\- ]*$/u;
+    const NAME_REGEX = /^[\p{L}\p{M}][\p{L}\p{M}'’\- ]*$/u;
 
     // Flow Power Automate
     const ONEDRIVE_FLOW_URL = "COLLE_ICI_L_URL_DU_FLOW";
@@ -217,30 +217,28 @@
             .replace(/\s+/g, " ")   // espaces multiples → un seul
             .trim();
     }
-    
+
     function validateHumanName(inputEl, messageEl) {
+        const raw = inputEl.value.normalize("NFC");
 
-        const raw = inputEl.value;
-        const normalized = normalizeHumanName(raw);
+        // Version "souple" pour la saisie :
+        // - on n'efface pas ce que l'utilisateur tape
+        // - on autorise les espaces internes pendant qu'il écrit
+        const trimmed = raw.trim();
+        const hasLetter = /\p{L}/u.test(trimmed);
+        const validChars = trimmed === "" || NAME_REGEX.test(trimmed);
 
-        inputEl.value = normalized;
+        const valid = trimmed.length > 0 && hasLetter && validChars;
 
-        const hasLetter = /\p{L}/u.test(normalized);
-        const validChars = NAME_REGEX.test(normalized);
-
-        const valid = normalized.length > 0 && hasLetter && validChars;
-
-        inputEl.classList.toggle("invalid", !valid);
+        inputEl.classList.toggle("invalid", trimmed !== "" && !valid);
         inputEl.classList.toggle("valid", valid);
 
         if (messageEl) {
-            if (normalized.length === 0) {
+            if (trimmed.length === 0) {
                 messageEl.textContent = "Champ obligatoire";
-            }
-            else if (!validChars) {
+            } else if (!validChars) {
                 messageEl.textContent = "Caractères non valides";
-            }
-            else {
+            } else {
                 messageEl.textContent = "OK";
             }
         }
