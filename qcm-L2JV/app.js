@@ -126,10 +126,10 @@
     // =========================
     // DOM
     // =========================
-    const firstNameEl = document.querySelector("#givenname"); // Prénom
-    const lastNameEl = document.querySelector("#familyname");    // Nom
-    const firstNameMsg = document.querySelector("#givennameMsg");
-    const lastNameMsg = document.querySelector("#familynameMsg");
+    const givenNameEl = document.querySelector("#givenname"); // Prénom
+    const familyNameEl = document.querySelector("#familyname");    // Nom
+    const givenNameMsg = document.querySelector("#givennameMsg");
+    const familyNameMsg = document.querySelector("#familynameMsg");
 
     const consentBox = $("#consentBox");
     const btnStart = $("#btnStart");
@@ -248,8 +248,8 @@
 
     function validateNames() {
 
-        const firstOk = validateHumanName(firstNameEl, firstNameMsg);
-        const lastOk = validateHumanName(lastNameEl, lastNameMsg);
+        const firstOk = validateHumanName(givenNameEl, givenNameMsg);
+        const lastOk = validateHumanName(familyNameEl, familyNameMsg);
 
         return firstOk && lastOk;
     }
@@ -259,18 +259,18 @@
         btnStart.disabled = !(consentBox.checked && okNames);
     }
 
-    firstNameEl.addEventListener("blur", () => {
-        firstNameEl.value = normalizeFirstName(firstNameEl.value);
+    givenNameEl.addEventListener("blur", () => {
+        givenNameEl.value = normalizeFirstName(givenNameEl.value);
         refreshStartState();
     });
 
-    lastNameEl.addEventListener("blur", () => {
-        lastNameEl.value = normalizeLastName(lastNameEl.value);
+    familyNameEl.addEventListener("blur", () => {
+        familyNameEl.value = normalizeLastName(familyNameEl.value);
         refreshStartState();
     });
 
-    firstNameEl.addEventListener("input", refreshStartState);
-    lastNameEl.addEventListener("input", refreshStartState);
+    givenNameEl.addEventListener("input", refreshStartState);
+    familyNameEl.addEventListener("input", refreshStartState);
     consentBox.addEventListener("change", refreshStartState);
 
     consentBox.addEventListener("change", refreshStartState);
@@ -555,8 +555,8 @@
 
         const n_questions = presentedQuestions.length;
         const n_answered = answers.filter(a => (a.selected_presented_indices?.length ?? 0) > 0).length;
-        const first_name = normalizeFirstName(firstNameEl.value);
-        const last_name = normalizeLastName(lastNameEl.value);
+        const first_name = normalizeFirstName(givenNameEl.value);
+        const last_name = normalizeLastName(familyNameEl.value);
         // total score (si scoring activé)
         let score_total = null, score_max = null, score_percent = null;
         if (CONFIG.ENABLE_CLIENT_SIDE_SCORING) {
