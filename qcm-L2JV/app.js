@@ -6,7 +6,7 @@
     // CONFIG — modifs faciles ici
     // =========================
     const CONFIG = {
-        TIME_LIMIT_MINUTES: 20,      // 0 = pas de limite
+        TIME_LIMIT_MINUTES: 60,      // 0 = pas de limite
         SHOW_TIMER: true,            // afficher/masquer le timer (le sticky reste)
         QUESTIONS_TO_ASK: 20,        // 🔥 prend N questions de la banque (si banque >= N)
         SHUFFLE_QUESTIONS: true,
