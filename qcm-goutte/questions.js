@@ -10,7 +10,7 @@ export const QUIZ = {
     "questions": [
         {
             "id": "q01",
-            "text": "Quelle(s) affirmation(s) est (sont) vraie(s) concernant l’épidémiologie de la goutte",
+            "text": "Quelle(s) affirmation(s) est (sont) vraie(s) concernant l’épidémiologie de la goutte ?",
             "options": [
                 "C’est la 3e cause la plus fréquente d’arthrite au monde",
                 "Elle touche 0,3% de la population française",
@@ -27,14 +27,14 @@ export const QUIZ = {
         },
         {
             "id": "q02",
-            "text": "A quelle(s) comorbidité(s) la goutte s’associe-t’elle ?",
+            "text": "À quelle(s) comorbidité(s) la goutte s’associe-t’elle ?",
             "options": [
-                "A l’hémochromatose",
+                "À l’hémochromatose",
                 "Aux pathologies cardiovasculaires",
-                "A l’insuffisance rénale",
-                "A l’hyperthyroïdie",
+                "À l’insuffisance rénale",
+                "À l’hyperthyroïdie",
                 "Au diabète de type 2",
-                "A la maladie d’Alzheimer"
+                "À la maladie d’Alzheimer"
             ],
             "correct": [
                 1,
@@ -68,7 +68,7 @@ export const QUIZ = {
                 "L’obésité par augmentation de l’insulino-résistance",
                 "Le traitement diurétique par diminution de l’élimination urinaire de l’acide urique",
                 "L’hyperthyroïdie par diminution de l’élimination urinaire de l’acide urique",
-                "Bières sans alcools par diminution de l’élimination urinaire de l’acide urique",
+                "Les bières sans alcool par diminution de l’élimination urinaire de l’acide urique",
                 "La génétique par défaut d’élimination urinaire d’acide urique",
                 "Le psoriasis cutané par surproduction endogène de purines"
             ],
@@ -84,7 +84,7 @@ export const QUIZ = {
             "id": "q05",
             "text": "Quelle(s) affirmation(s) est (sont) vraie(s) concernant le rôle de la génétique dans la goutte ?",
             "options": [
-                "Il est connu de longue date depuis qu’il a été identifié comme transmis de roi en roi (« la maladie des Rois)",
+                "Il est connu de longue date depuis qu’il a été identifié comme transmis de roi en roi (« la maladie des Rois »)",
                 "La génétique contribue autant que les boissons et l’hygiène diététique à l’augmentation de l’uricémie",
                 "La génétique explique une partie de l’hyperuricémie et également à la réactivité inflammatoire du système immunitaire",
                 "La génétique montre que la goutte est une maladie auto-infligée",
@@ -181,7 +181,7 @@ export const QUIZ = {
                 "En échographie",
                 "En radiographie",
                 "En microscopie optique en lumière polarisée",
-                "A l’œil nu"
+                "À l’œil nu"
             ],
             "correct": [
                 1,
@@ -215,9 +215,9 @@ export const QUIZ = {
                 "Le traitement le plus utilisé dans la crise de goutte est la cortisone",
                 "Il y a souvent des contre-indications ou précautions d’emploi permettant rarement l’utilisation de la colchicine",
                 "La colchicine est moins efficace si prise après 36 heures après le début de la crise",
-                "La colchicine et la cortisone peuvent être combinés en cas de crise réfractaire",
+                "La colchicine et la cortisone peuvent être combinées en cas de crise réfractaire",
                 "L’allopurinol va permettre de réduire rapidement l’uricémie et réduire la durée de la crise",
-                "Les biothérapies anti-interleukine 1 peuvent être utilisées en cas de crise difficile-à-traiter uniquement"
+                "Les biothérapies anti-interleukine 1 peuvent être utilisées en cas de crise difficile à traiter uniquement"
             ],
             "correct": [
                 2,
@@ -251,7 +251,7 @@ export const QUIZ = {
             "options": [
                 "Il inhibe la xanthine oxydase",
                 "Il détruit l’acide urique soluble",
-                "Il doit être initié chez tous patients avec un diagnostic de goutte retenu",
+                "Il doit être initié chez tous les patients avec un diagnostic de goutte retenu",
                 "Il doit être débuté à distance d’une crise de goutte",
                 "Il est débuté à la dose de 400mg/jour (dose moyenne nécessaire pour obtenir une uricémie cible) et secondairement adapté à l’uricémie",
                 "Il permet une diminution significative du risque de crise de goutte à partir d’un an après son introduction"
