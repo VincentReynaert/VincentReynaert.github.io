@@ -470,6 +470,10 @@ h1 {
   backdrop-filter: blur(4px);
 }
 
+.modalBackdrop[hidden] {
+  display: none !important;
+}
+
 .modalCard {
   width: min(560px, 100%);
   background: var(--card);
