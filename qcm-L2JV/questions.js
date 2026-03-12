@@ -50,11 +50,11 @@ export const QUIZ = {
       image_alt: "Illustration où unity a son interface teintée de rouge mis à part le bouton play actuellement bleu.",
       multi: true,
       points: 1,
-      correct: [0, 2],
+      correct: [0, 1, 2],
       options: [
         "Si je modifie des GameObjects dans ma scène les modifications ne seront pas enregistrables.",
         "La scène est en cours d’exécution et la teinte du playmode a été modifiée en rouge.",
-        "Si je modifie des Prefabs il faut penser à appliquer les modifications effectuées avant de quitter le playmode.",
+        "Si je modifie des Prefabs il faut penser à appliquer les modifications effectuées avant de quitter le playmode, sauf si l'autosave est actif.",
         "Si je modifie des GameObjects dans ma scène je ne verrais pas les modifications en direct.",
         "Il y a une erreur dans le code."
       ]
@@ -79,7 +79,7 @@ export const QUIZ = {
 
     {
       id: "q05",
-      text: "Je souhaite, comme sur l’image après, ajouter une barre de vie à un monstre. Celle-ci devra être en UI, visuellement positionnée sous le monstre qui est affiché via un Sprite Renderer. Que dois-je faire ?",
+      text: "Je souhaite, comme sur l’image, ajouter une barre de vie à un monstre. \nCelle-ci devra être en UI, visuellement positionnée sous le monstre qui est affiché via un Sprite Renderer. \nQue dois-je faire ?",
       image: "assets/CanvasOrder2.png",
       image_alt: "Illustration d'un monstre avec une barre de point de vie partiellement remplie et située en-dessous.",
       multi: true,
