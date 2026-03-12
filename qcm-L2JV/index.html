@@ -96,6 +96,18 @@
         </section>
 
         <p class="footer muted">Mode clair/sombre automatique selon le device.</p>
+        
+        <div class="modalBackdrop" id="confirmBackdrop" hidden>
+            <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+                <h3 id="confirmTitle">Confirmer la validation</h3>
+                <p id="confirmMessage" class="hint"></p>
+
+                <div class="actions">
+                    <button class="btn" id="btnCancelSubmit" type="button">Retour au questionnaire</button>
+                    <button class="btn primary" id="btnConfirmSubmit" type="button">Valider quand même</button>
+                </div>
+            </div>
+        </div>
     </main>
 
     <script type="module" src="app.js"></script>

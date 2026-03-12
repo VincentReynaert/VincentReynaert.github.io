@@ -108,6 +108,48 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
+    function countAnsweredQuestions() {
+        if (!state.presented || !state.presented.questions) return 0;
+        let answered = 0;
+        for (const q of state.presented.questions) {
+            const sel = state.responses[q.id] ?? [];
+            if (sel.length > 0) answered += 1;
+        }
+        return answered;
+    }
+
+    function countUnansweredQuestions() {
+        if (!state.presented || !state.presented.questions) return 0;
+        return state.presented.questions.length - countAnsweredQuestions();
+    }
+
+    function getRemainingSeconds() {
+        if (!state.deadline_ms) return 0;
+        return Math.max(0, Math.ceil((state.deadline_ms - Date.now()) / 1000));
+    }
+
+    function openSubmitConfirmModal() {
+        const unanswered = countUnansweredQuestions();
+        const remainingSeconds = getRemainingSeconds();
+
+        if (unanswered > 0) {
+            confirmMessage.textContent =
+                `Il reste ${unanswered} question${unanswered > 1 ? "s" : ""} sans réponse. Voulez-vous valider quand même ?`;
+        } else if (remainingSeconds > 0) {
+            confirmMessage.textContent =
+                `Vous avez répondu à toutes les questions. Il vous reste ${formatDurationLong(remainingSeconds)} pour relire vos réponses si vous le souhaitez. Voulez-vous valider quand même ?`;
+        } else {
+            confirmMessage.textContent =
+                `Voulez-vous valider votre questionnaire ?`;
+        }
+
+        confirmBackdrop.hidden = false;
+    }
+
+    function closeSubmitConfirmModal() {
+        confirmBackdrop.hidden = true;
+    }
+
     // =========================
     // LOAD QUESTIONS
     // =========================
@@ -150,6 +192,11 @@
     const jsonPreview = $("#jsonPreview");
 
     const DEBUG = getUrlParam("debug") === "1";
+
+    const confirmBackdrop = $("#confirmBackdrop");
+    const confirmMessage = $("#confirmMessage");
+    const btnCancelSubmit = $("#btnCancelSubmit");
+    const btnConfirmSubmit = $("#btnConfirmSubmit");
 
     // =========================
     // STATE
@@ -702,7 +749,22 @@
         showStep("quiz");
     });
 
-    btnSubmit.addEventListener("click", () => finish(false));
+    btnSubmit.addEventListener("click", () => {
+        openSubmitConfirmModal();
+    });
+    btnCancelSubmit.addEventListener("click", () => {
+        closeSubmitConfirmModal();
+    });
+
+    btnConfirmSubmit.addEventListener("click", () => {
+        closeSubmitConfirmModal();
+        finish(false);
+    });
+    confirmBackdrop.addEventListener("click", (e) => {
+        if (e.target === confirmBackdrop) {
+            closeSubmitConfirmModal();
+        }
+    });
 
     // =========================
     // BOOT
