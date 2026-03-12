@@ -119,7 +119,7 @@ export const QUIZ = {
       image_alt: "Capture d'un bout de code.",
       multi: true,
       points: 1,
-      correct: [0,1],
+      correct: [0],
       options: [
         "Aucune des autres réponses n’est une raison valable.",
         "La classe devrait être renommée Player.",
@@ -137,14 +137,27 @@ export const QUIZ = {
       image_alt: "Capture d'un bout de code.",
       multi: true,
       points: 1,
-      correct: [0,1],
+      correct: [0,1,2],
       options: [
-        "Aucune des autres réponses n’est une raison valable.",
-        "La classe devrait être renommée Player.",
-        "Il faut retirer le void.",
-        "Il faut absolument mettre un “print” à la place de “Debug.Log”.",
-        "Il faut mettre le Debug.Log dans le Start et non dans l’Update.",
-        "Le GameObject dans la scène surlequel est placé ce component s'appelle “_Script” alors qu'il devrait avoir le même nom que le Component."
+        "La variable hit est locale à la méthode Update et même plus précisément à la boucle conditionnelle démarrée ligne 18.",
+        "La variable hit récupère une intersection entre un rayon ray et un collider2D de la scène.",
+        "La variable hit est de type RaycastHit2D.",
+        "La variable hit sert à stocker une valeur entière infinie.",
+        "La variable hit a pour valeur null."
+      ]
+    },
+
+    {
+      id: "q09",
+      text: "Qu'est-ce qu'un AudioClip ?",
+      multi: true,
+      points: 1,
+      correct: [0],
+      options: [
+        "Un élément qui contient les données d'un fichier audio (*.mp3, *.ogg, ...).",
+        "Un component permettant de jouer un son.",
+        "La distance maximale d'écoute d'un son.",
+        "Un component permettant de jouer un clip vidéo."
       ]
     }
   ]
