@@ -2,7 +2,7 @@
 export const QUIZ = {
   title: "Examen — QCM",
   version: "v1.0",
-  intro: "Répondez aux questions. Vous pouvez laisser une question sans réponse.",
+  intro: "Répondez aux questions dans l'ordre que vous le souhaitez. Lorsqu'il est précisé 'plusieurs réponses possibles', il se peut qu'il n'y ait qu'une seule bonne réponse donc soyez vigilants. Vous pouvez laisser une question sans réponse.",
 
   // Banque de questions (exemple minimal)
   questions: [
@@ -180,7 +180,7 @@ export const QUIZ = {
       text: "Que va afficher le code suivant dans la console ?",
       image: "assets/animation_trigger.png",
       image_alt: "Capture d'un bout de code.",
-      multi: true,
+      multi: false,
       points: 1,
       correct: [0],
       options: [
@@ -196,7 +196,7 @@ export const QUIZ = {
       text: "Que va afficher le code suivant dans la console ?",
       image: "assets/bresom.png",
       image_alt: "Capture d'un bout de code.",
-      multi: true,
+      multi: false,
       points: 1,
       correct: [0],
       options: [
@@ -281,7 +281,7 @@ export const QUIZ = {
 
     {
       id: "q17",
-      text: "Lorsque j'ajoute pour la première fois un élément d'interface utilisateur (UI), comme un <b>Button</b>, de nouveaux GameObjects sont automatiquement créés dans la hiérarchie. <br/>Leur nom correspond au nom de leur <b>Component principal</b>. De quel(s) Component(s) s’agit-il ?",
+      text: "Lorsque j'ajoute pour la première fois un élément d'interface utilisateur (UI), comme un Button, de nouveaux GameObjects sont automatiquement créés dans la hiérarchie. \nLeur nom correspond au nom de leur Component principal. De quel(s) Component(s) s’agit-il ?",
       multi: true,
       points: 1,
       correct: [0, 1],
@@ -297,7 +297,7 @@ export const QUIZ = {
 
     {
       id: "q18",
-      text: "J’ai créé un script Player.cs, cependant, impossible d’ajouter mon nouveau component sur un GameObject. Pourquoi ? <br/> Voici le code de Player.cs :",
+      text: "J’ai créé un script Player.cs, cependant, impossible d’ajouter mon nouveau component sur un GameObject. Pourquoi ? \n Voici le code de Player.cs :",
       image: "assets/joueurplayer.png",
       image_alt: "Capture d'un bout de code.",
       multi: true,
@@ -350,7 +350,7 @@ export const QUIZ = {
       id: "q21",
       variants: [
         {
-          text: "Lors du lancement de la scène, qu’affichera la console de Unity ?<br/>Voici le code et la configuration dans l'éditeur :",
+          text: "Lors du lancement de la scène, qu’affichera la console de Unity ?\nVoici le code et la configuration dans l'éditeur :",
           image: "assets/value_editor.png",
           image_alt: "Capture d'un bout de code et de l'éditeur.",
           multi: false,
@@ -365,7 +365,7 @@ export const QUIZ = {
           ]
         },
         {
-          text: "Lors du lancement de la scène, qu’affichera la console de Unity ?<br/>Voici le code et la configuration dans l'éditeur :",
+          text: "Lors du lancement de la scène, qu’affichera la console de Unity ?\nVoici le code et la configuration dans l'éditeur :",
           image: "assets/value_editor_bis.png",
           image_alt: "Capture d'un bout de code et de l'éditeur.",
           multi: false,

@@ -17,14 +17,15 @@
 
         AUTO_SEND_TO_ONEDRIVE: true, // envoi auto à la fin
         SHOW_ANSWER_COUNT_END: false,
-        SHOW_ANSWER_COUNT_DURING: false
+        SHOW_ANSWER_COUNT_DURING: false,
+        SHOW_META: false
     };
 
     // Regex ID étudiant (modifiable)
     const NAME_REGEX = /^[\p{L}\p{M}][\p{L}\p{M}'’\- ]*$/u;
 
     // Flow Power Automate
-    const ONEDRIVE_FLOW_URL = "COLLE_ICI_L_URL_DU_FLOW";
+    const ONEDRIVE_FLOW_URL = "https://default566dadffe3a9465fb05eed73b33f0a.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/cb00d62ebe664d88868b900782f19314/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=i5rz_DvOZ3Gs2Scv4xKjjpOvDkvFGZeiAHTyAJAZ8-c";
 
     // =========================
     // HELPERS
@@ -430,8 +431,14 @@
             card.id = `q_${q.id}`;
 
             const title = document.createElement("p");
-            title.className = "qTitle";
-            title.textContent = `${qi + 1}. ${q.text}`;
+            title.className = "qTitle"; 
+            title.innerHTML = `${qi + 1}. ${q.text}`;
+            if (q.subtitle) {
+                const sub = document.createElement("p");
+                sub.className = "qSubtitle";
+                sub.textContent = q.subtitle;
+                card.appendChild(sub);
+            }
             card.appendChild(title);
 
             if (q.image) {
@@ -443,11 +450,13 @@
                 card.appendChild(img);
             }
 
-            const meta = document.createElement("p");
-            meta.className = "qMeta";
-            meta.textContent = q.multi ? "Plusieurs réponses possibles. (Vous pouvez laisser vide.)"
-                : "Une seule réponse possible. (Vous pouvez laisser vide.)";
-            card.appendChild(meta);
+            if (CONFIG.SHOW_META) {
+                const meta = document.createElement("p");
+                meta.className = "qMeta";
+                meta.textContent = q.multi ? "Plusieurs réponses possibles. (Vous pouvez laisser vide.)"
+                    : "Une seule réponse possible. (Vous pouvez laisser vide.)";
+                card.appendChild(meta);
+            }
 
             const groupName = `grp_${q.id}`;
 

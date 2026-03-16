@@ -46,7 +46,14 @@ textarea {
   margin: 0 auto;
   padding: 28px 18px 60px;
 }
-
+.qTitle{
+  white-space: pre-line;
+}
+.qSubtitle{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:14px;
+}
 .header {
   display: flex;
   align-items: flex-start;
