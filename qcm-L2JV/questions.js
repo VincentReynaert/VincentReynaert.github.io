@@ -380,6 +380,24 @@ export const QUIZ = {
           ]
         }
       ]
-    }
+    },
+    
+    {
+      id: "q22",
+      text: "Parmi les fonctions suivantes, lesquelles proviennent de MonoBehaviour ?",
+      multi: true,
+      points: 1,
+      correct: [0, 1],
+      options: [
+        "void Awake()",
+        "void Start()",
+        "void Update()",
+        "void FixedUpdate()",
+        "void FastUpdate()",
+        "void Animate()",
+        "void Play()",
+        "void Constructor()"
+      ]
+    },
   ]
 };
