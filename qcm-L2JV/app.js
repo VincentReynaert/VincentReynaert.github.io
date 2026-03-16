@@ -70,7 +70,24 @@
         history.replaceState({}, "", u.toString());
     }
 
+    function resolveVariants(questions) {
 
+        return questions.map(q => {
+
+            if (!q.variants) return q;
+
+            const index = Math.floor(Math.random() * q.variants.length);
+            const chosen = q.variants[index];
+
+            return {
+                ...q,
+                ...chosen,
+                variant_index: index
+            };
+
+        });
+
+    }
     function shuffleInPlace(arr) {
         for (let i = arr.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -349,7 +366,10 @@
     }
 
     function buildPresentedQuiz() {
-        const pool = QUIZ.questions.map((q, qIndex) => ({
+
+        const sourceQuestions = resolveVariants(QUIZ.questions);
+
+        const pool = sourceQuestions.map((q, qIndex) => ({
             id: q.id ?? `q${qIndex + 1}`,
             text: q.text ?? "",
             image: q.image ?? null,
