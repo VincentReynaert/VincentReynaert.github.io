@@ -184,10 +184,10 @@ export const QUIZ = {
       points: 1,
       correct: [0],
       options: [
-        { image: "set_trig_hit", alt: "" },
-        { image: "set_trig_heat", alt: "" },
-        { image: "get_trig_hit", alt: "" },
-        { image: "get_trig_heat", alt: "" }
+        { image: "assets/set_trig_hit.png", alt: "set_trig_hit" },
+        { image: "assets/set_trig_heat.png", alt: "set_trig_heat" },
+        { image: "assets/get_trig_hit.png", alt: "get_trig_hit" },
+        { image: "assets/get_trig_heat.png", alt: "get_trig_heat" }
       ]
     },
 
