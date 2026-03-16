@@ -179,7 +179,7 @@ export const QUIZ = {
       id: "q11",
       text: "Que va afficher le code suivant dans la console ?",
       image: "assets/animation_trigger.png",
-      image_alt: "Capture d'un bout de code'.",
+      image_alt: "Capture d'un bout de code.",
       multi: true,
       points: 1,
       correct: [0],
@@ -195,7 +195,7 @@ export const QUIZ = {
       id: "q12",
       text: "Que va afficher le code suivant dans la console ?",
       image: "assets/bresom.png",
-      image_alt: "Capture d'un bout de code'.",
+      image_alt: "Capture d'un bout de code.",
       multi: true,
       points: 1,
       correct: [0],
@@ -226,23 +226,90 @@ export const QUIZ = {
         "Une bibliothèque d'outils pour les jeux vidéo.",
         "Une API de jeux vidéo.",
         "Un IDE spécialisé dans le développement de jeux vidéo.",
-        "Un moteur de jeux vidéo open source comme Godot  "
+        "Un moteur de jeux vidéo open source comme Godot."
       ]
     },
 
     {
       id: "q14",
-      text: "Unity est :",
+      text: "Si je souhaite tester/exécuter la scène courante via l’éditeur Unity :",
+      multi: true,
+      points: 1,
+      correct: [0,1,2],
+      options: [
+        "Je clique sur Edit > Play.",
+        "Je clique sur l'icône triangulaire qui correspond généralement au bouton Play.",
+        "J'appuie sur le raccourci clavier ctrl+P.",
+        "Une bibliothèque d'outils pour les jeux vidéo.",
+        "Il faut obligatoirement que je ''build and run'' mon jeu/application.",
+        "Je clique sur les 2 traits.",
+        "J'appuie sur le raccourci clavier ctrl+S."
+      ]
+    },
+
+    {
+      id: "q15",
+      text: "Quelle(s) affirmation(s) sont/est vraie(s) ?",
       multi: true,
       points: 1,
       correct: [0,1],
       options: [
-        "Un moteur de jeux vidéo.",
-        "Un moteur d'applications en temps réel.",
-        "Une bibliothèque d'outils pour les jeux vidéo.",
-        "Une API de jeux vidéo.",
-        "Un IDE spécialisé dans le développement de jeux vidéo.",
-        "Un moteur de jeux vidéo open source comme Godot  "
+        "Un GameObject correspond à toute entité présente dans la scène.",
+        "Un GameObject est une entité sur laquelle sont appliqués des components correspondant chacun à un comportement.",
+        "Un GameObject permet de fournir un comportement à un component.",
+        "Un GameObject est un script permettant de créer des objets dans une scène.",
+        "Un GameObject que je mets dans ma scène se verra forcément dans le jeu final.",
+        "Un GameObject a formcément un component RectTransform."
+      ]
+    },
+
+    {
+      id: "q16",
+      text: "Quelle(s) affirmation(s) sont/est vraie(s) ?",
+      multi: true,
+      points: 1,
+      correct: [0,1],
+      options: [
+        "Un component permet de donner un comportement à un GameObject.",
+        "Les components Transform ou RectTransform sont préexistant dans Unity on n'a pas besoin de les coder, en plus chaque GameObject créé doit avoir l'un des deux.",
+        "Un component ne peut être appliqué qu’à un seul GameObject.",
+        "Il n’est pas possible de créer ses propres components.",
+        "Il est possible de créer ses propres components en les codants forcément en C++.",
+        "Un GameObject a forcément un component RectTransform."
+      ]
+    },
+
+    {
+      id: "q17",
+      text: "Lorsque j'ajoute pour la première fois un élément d'interface utilisateur (UI), comme un <b>Button</b>, de nouveaux GameObjects sont automatiquement créés dans la hiérarchie. <br/>Leur nom correspond au nom de leur <b>Component principal</b>. De quel(s) Component(s) s’agit-il ?",
+      multi: true,
+      points: 1,
+      correct: [0,1],
+      options: [
+        "Un component EventSystem.",
+        "Un component Canvas.",
+        "Un component UIManager.",
+        "Un component UI.",
+        "Un component Camera.",
+        "Un component Transform."
+      ]
+    },
+
+    {
+      id: "q18",
+      text: "J’ai créé un script Player.cs, cependant, impossible d’ajouter mon nouveau component sur un GameObject. Pourquoi ? <br/> Voici le code de Player.cs",
+      image: "assets/joueurplayer.png",
+      image_alt: "Capture d'un bout de code.",
+      multi: true,
+      points: 1,
+      correct: [0],
+      options: [
+        "Le nom du fichier ne correspond pas au nom de la classe.",
+        "Il faut remplacer MonoBehaviour par Component car c’est un component.",
+        "Il faut supprimer la variable de type GameObject.",
+        "Il faut relancer Unity.",
+        "Il faut débrancher-rebrancher la machine.",
+        "La nomenclature du component n’est pas respectée au niveau des majuscules."
       ]
     }
   ]
