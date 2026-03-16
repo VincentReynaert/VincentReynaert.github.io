@@ -159,6 +159,59 @@ export const QUIZ = {
         "La distance maximale d'écoute d'un son.",
         "Un component permettant de jouer un clip vidéo."
       ]
+    },
+
+    {
+      id: "q10",
+      text: "Qu'est-ce qu'un AudioSource ?",
+      multi: true,
+      points: 1,
+      correct: [1],
+      options: [
+        "Un élément qui contient les données d'un fichier audio (*.mp3, *.ogg, ...).",
+        "Un component permettant de jouer un son.",
+        "La distance maximale d'écoute d'un son.",
+        "Un component permettant de jouer un clip vidéo."
+      ]
+    },
+
+    {
+      id: "q11",
+      text: "Que va afficher le code suivant dans la console ?",
+      image: "assets/bresom.png",
+      image_alt: "Capture d'un bout de code'.",
+      multi: true,
+      points: 1,
+      correct: [0],
+      options: [
+        "the black sea",
+        "Rien",
+        "the",
+        "black",
+        "dark",
+        "Knight",
+        "sea",
+        "the dark Knight",
+        "the black dark Knight sea",
+        "the black Knight",
+        "the dark sea"
+      ]
+    },
+
+    {
+      id: "q12",
+      text: "Unity est :",
+      multi: true,
+      points: 1,
+      correct: [0,1],
+      options: [
+        "Un moteur de jeux vidéo.",
+        "Un moteur d'applications en temps réel.",
+        "Une bibliothèque d'outils pour les jeux vidéo.",
+        "Une API de jeux vidéo.",
+        "Un IDE spécialisé dans le développement de jeux vidéo.",
+        "Un moteur de jeux vidéo open source comme Godot  "
+      ]
     }
   ]
 };
