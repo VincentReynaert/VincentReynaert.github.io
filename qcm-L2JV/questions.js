@@ -31,7 +31,7 @@ export const QUIZ = {
       text: "Quelle(s) affirmation(s) sont/est vraie(s) ?",
       multi: true,             // si false alors radio (une seule réponse)
       points: 1,
-      correct: [0,1,2],
+      correct: [0, 1, 2],
       options: [
         "Les types de données String et Sprite servent respectivement à stocker en mémoire des chaînes de caractères et des images bitmap.",
         "Les types de données Text et Image proviennent de la bibliothèque UnityEngine.UI.",
@@ -101,7 +101,7 @@ export const QUIZ = {
       image_alt: "Illustration double, à gauche une capture de l'éditeur Unity avec le Monster qui en enfant possède un Canvas contenant LifePoint et LifeBar dans cette ordre, LifeBar contenant LifeFill, à droite un monstre avec une barre de point de vie partiellement remplie et située en-dessous mais sans texte.",
       multi: true,
       points: 1,
-      correct: [0,1],
+      correct: [0, 1],
       options: [
         "Dans ma hiérarchie, je dois descendre LifePoint sous LifeBar et LifeFill.",
         "Je n'ai pas importé les assets par défaut de TMPro ou j'ai oublié de mettre une police à mon Text.",
@@ -137,7 +137,7 @@ export const QUIZ = {
       image_alt: "Capture d'un bout de code.",
       multi: true,
       points: 1,
-      correct: [0,1,2],
+      correct: [0, 1, 2],
       options: [
         "La variable hit est locale à la méthode Update et même plus précisément à la boucle conditionnelle démarrée ligne 18.",
         "La variable hit récupère une intersection entre un rayon ray et un collider2D de la scène.",
@@ -184,10 +184,10 @@ export const QUIZ = {
       points: 1,
       correct: [0],
       options: [
-        {image:"set_trig_hit",alt:""},
-        {image:"set_trig_heat",alt:""},
-        {image:"get_trig_hit",alt:""},
-        {image:"get_trig_heat",alt:""}
+        { image: "set_trig_hit", alt: "" },
+        { image: "set_trig_heat", alt: "" },
+        { image: "get_trig_hit", alt: "" },
+        { image: "get_trig_heat", alt: "" }
       ]
     },
 
@@ -219,7 +219,7 @@ export const QUIZ = {
       text: "Unity est :",
       multi: true,
       points: 1,
-      correct: [0,1],
+      correct: [0, 1],
       options: [
         "Un moteur de jeux vidéo.",
         "Un moteur d'applications en temps réel.",
@@ -235,7 +235,7 @@ export const QUIZ = {
       text: "Si je souhaite tester/exécuter la scène courante via l’éditeur Unity :",
       multi: true,
       points: 1,
-      correct: [0,1,2],
+      correct: [0, 1, 2],
       options: [
         "Je clique sur Edit > Play.",
         "Je clique sur l'icône triangulaire qui correspond généralement au bouton Play.",
@@ -252,7 +252,7 @@ export const QUIZ = {
       text: "Quelle(s) affirmation(s) sont/est vraie(s) ?",
       multi: true,
       points: 1,
-      correct: [0,1],
+      correct: [0, 1],
       options: [
         "Un GameObject correspond à toute entité présente dans la scène.",
         "Un GameObject est une entité sur laquelle sont appliqués des components correspondant chacun à un comportement.",
@@ -268,7 +268,7 @@ export const QUIZ = {
       text: "Quelle(s) affirmation(s) sont/est vraie(s) ?",
       multi: true,
       points: 1,
-      correct: [0,1],
+      correct: [0, 1],
       options: [
         "Un component permet de donner un comportement à un GameObject.",
         "Les components Transform ou RectTransform sont préexistant dans Unity on n'a pas besoin de les coder, en plus chaque GameObject créé doit avoir l'un des deux.",
@@ -284,7 +284,7 @@ export const QUIZ = {
       text: "Lorsque j'ajoute pour la première fois un élément d'interface utilisateur (UI), comme un <b>Button</b>, de nouveaux GameObjects sont automatiquement créés dans la hiérarchie. <br/>Leur nom correspond au nom de leur <b>Component principal</b>. De quel(s) Component(s) s’agit-il ?",
       multi: true,
       points: 1,
-      correct: [0,1],
+      correct: [0, 1],
       options: [
         "Un component EventSystem.",
         "Un component Canvas.",
@@ -297,7 +297,7 @@ export const QUIZ = {
 
     {
       id: "q18",
-      text: "J’ai créé un script Player.cs, cependant, impossible d’ajouter mon nouveau component sur un GameObject. Pourquoi ? <br/> Voici le code de Player.cs",
+      text: "J’ai créé un script Player.cs, cependant, impossible d’ajouter mon nouveau component sur un GameObject. Pourquoi ? <br/> Voici le code de Player.cs :",
       image: "assets/joueurplayer.png",
       image_alt: "Capture d'un bout de code.",
       multi: true,
@@ -310,6 +310,75 @@ export const QUIZ = {
         "Il faut relancer Unity.",
         "Il faut débrancher-rebrancher la machine.",
         "La nomenclature du component n’est pas respectée au niveau des majuscules."
+      ]
+    },
+
+    {
+      id: "q19",
+      text: "Lorsque je crée un bouton dans Unity (GameObject > UI > Button), celui-ci est composé de :",
+      multi: true,
+      points: 1,
+      correct: [0, 1, 2],
+      options: [
+        "Un Component Text (TMPro) sur un GameObject enfant.",
+        "Un Component Button sur le GameObject principal.",
+        "Un Component Image sur le GameObject principal.",
+        "Un Component Sprite sur un GameObject enfant.",
+        "Un Component Button sur un GameObject enfant.",
+        "Un seul GameObject regroupant un Component Button et Text (TMPro).",
+        "Un seul GameObject regroupant un Component Image et Text (TMPro)."
+      ]
+    },
+
+    {
+      id: "q20",
+      text: "Le component RectTransform :",
+      multi: true,
+      points: 1,
+      correct: [0, 1],
+      options: [
+        "Permet de définir des points d’ancrages.",
+        "Remplace le component Transform sur tous les éléments de l’UI.",
+        "Est un Component que l’on peut ajouter si l’on souhaite obtenir une forme rectangulaire.",
+        "Ne se pose pas sur un GameObject.",
+        "Transforme mes GameObject en Rect.",
+        "Se pose sur un GameObject en plus d'un Component Transform."
+      ]
+    },
+
+    {
+      id: "q21",
+      variants: [
+        {
+          text: "Lors du lancement de la scène, qu’affichera la console de Unity ?<br/>Voici le code et la configuration dans l'éditeur :",
+          image: "assets/value_editor.png",
+          image_alt: "Capture d'un bout de code et de l'éditeur.",
+          multi: false,
+          correct: [4],
+          options: [
+            "54",
+            "42",
+            "12",
+            "30",
+            "Rien du tout",
+            "Appel à un ami"
+          ]
+        },
+        {
+          text: "Lors du lancement de la scène, qu’affichera la console de Unity ?<br/>Voici le code et la configuration dans l'éditeur :",
+          image: "assets/value_editor_bis.png",
+          image_alt: "Capture d'un bout de code et de l'éditeur.",
+          multi: false,
+          correct: [0],
+          options: [
+            "54",
+            "42",
+            "12",
+            "30",
+            "Rien du tout",
+            "Appel à un ami"
+          ]
+        }
       ]
     }
   ]
