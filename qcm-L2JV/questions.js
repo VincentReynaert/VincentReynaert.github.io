@@ -178,6 +178,22 @@ export const QUIZ = {
     {
       id: "q11",
       text: "Que va afficher le code suivant dans la console ?",
+      image: "assets/animation_trigger.png",
+      image_alt: "Capture d'un bout de code'.",
+      multi: true,
+      points: 1,
+      correct: [0],
+      options: [
+        {image:"set_trig_hit",alt:""},
+        {image:"set_trig_heat",alt:""},
+        {image:"get_trig_hit",alt:""},
+        {image:"get_trig_heat",alt:""}
+      ]
+    },
+
+    {
+      id: "q12",
+      text: "Que va afficher le code suivant dans la console ?",
       image: "assets/bresom.png",
       image_alt: "Capture d'un bout de code'.",
       multi: true,
@@ -199,7 +215,23 @@ export const QUIZ = {
     },
 
     {
-      id: "q12",
+      id: "q13",
+      text: "Unity est :",
+      multi: true,
+      points: 1,
+      correct: [0,1],
+      options: [
+        "Un moteur de jeux vidéo.",
+        "Un moteur d'applications en temps réel.",
+        "Une bibliothèque d'outils pour les jeux vidéo.",
+        "Une API de jeux vidéo.",
+        "Un IDE spécialisé dans le développement de jeux vidéo.",
+        "Un moteur de jeux vidéo open source comme Godot  "
+      ]
+    },
+
+    {
+      id: "q14",
       text: "Unity est :",
       multi: true,
       points: 1,
