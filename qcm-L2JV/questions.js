@@ -2,7 +2,7 @@
 export const QUIZ = {
   title: "Examen — QCM",
   version: "v1.0",
-  intro: "Répondez aux questions dans l'ordre que vous le souhaitez. Lorsqu'il est précisé 'plusieurs réponses possibles', il se peut qu'il n'y ait qu'une seule bonne réponse donc soyez vigilants. Vous pouvez laisser une question sans réponse.",
+  intro: "Répondez aux questions dans l'ordre que vous le souhaitez. Vous pouvez laisser une question sans réponse.",
 
   // Banque de questions (exemple minimal)
   questions: [
