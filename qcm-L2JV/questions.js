@@ -47,7 +47,7 @@ export const QUIZ = {
       id: "q03",
       text: "Dans cette situation, quelle(s) affirmation(s) sont/est vraie(s) ?",
       image: "assets/unity_editor_red.png",
-      image_alt: "Illustration où unity a son interface teintée de rouge mis à part le bouton play actuellement bleu.",
+      image_alt: "Illustration où Unity a son interface teintée de rouge mis à part le bouton play actuellement bleu.",
       multi: true,
       points: 1,
       correct: [0, 1, 2],
@@ -399,5 +399,20 @@ export const QUIZ = {
         "void Constructor()"
       ]
     },
+    
+    {
+      id: "q23",
+      text: "Quel est l'intérêt principal d'un Prefab ?",
+      multi: true,
+      points: 1,
+      correct: [0],
+      options: [
+        "Réutiliser un GameObject plus facilement.",
+        "Créer des animations.",
+        "Optimiser les performances.",
+        "Modifier la Camera.",
+        "Préfabriquer une UI."
+      ]
+    }
   ]
 };
