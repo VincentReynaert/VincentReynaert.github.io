@@ -267,8 +267,6 @@
         session_id: newSessionId(),
         started_at_utc: nowIso(),
         participant_id: "",
-        task_id: "",
-        phase: "",
         consent: false,
 
         presented: null, // { questions: [...] }
@@ -789,8 +787,6 @@
         state.session_id = s.session_id ?? newSessionId();
         state.started_at_utc = s.started_at_utc ?? nowIso();
         state.participant_id = s.participant_id ?? "";
-        state.task_id = s.task_id ?? "";
-        state.phase = s.phase ?? "";
         state.consent = !!s.consent;
 
         state.presented = s.presented ?? null;
@@ -804,8 +800,6 @@
 
         if (givenNameEl) givenNameEl.value = f.givenName ?? "";
         if (familyNameEl) familyNameEl.value = f.familyName ?? "";
-        if (taskId) taskId.value = f.taskId ?? "";
-        if (phase) phase.value = f.phase ?? "";
         if (consentBox) consentBox.checked = !!f.consent;
 
         refreshStartState();
