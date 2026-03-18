@@ -89,10 +89,51 @@
                 ...chosen,
                 variant_index: index
             };
-
         });
-
     }
+
+    function buildCanonicalQuestionsForCorrection() {
+        return QUIZ.questions.map((q, qIndex) => {
+            if (q.variants && Array.isArray(q.variants) && q.variants.length > 0) {
+                return {
+                    id: q.id ?? `q${qIndex + 1}`,
+                    variants: q.variants.map((variant) => ({
+                        text: variant.text ?? "",
+                        image: variant.image ?? null,
+                        image_alt: variant.image_alt ?? variant.imageAlt ?? "",
+                        multi: (variant.multi !== undefined)
+                            ? !!variant.multi
+                            : (Array.isArray(variant.correct) && variant.correct.length > 1),
+                        points: (typeof variant.points === "number" && isFinite(variant.points))
+                            ? variant.points
+                            : (typeof q.points === "number" && isFinite(q.points) ? q.points : 1),
+                        correct: Array.isArray(variant.correct) ? variant.correct.slice() : [],
+                        explanation: variant.explanation ?? q.explanation ?? "",
+                        options: (variant.options ?? []).map((opt, oi) => ({
+                            orig_index: oi,
+                            ...normalizeOption(opt)
+                        }))
+                    }))
+                };
+            }
+
+            return {
+                id: q.id ?? `q${qIndex + 1}`,
+                text: q.text ?? "",
+                image: q.image ?? null,
+                image_alt: q.image_alt ?? q.imageAlt ?? "",
+                multi: (q.multi !== undefined) ? !!q.multi : (Array.isArray(q.correct) && q.correct.length > 1),
+                points: (typeof q.points === "number" && isFinite(q.points)) ? q.points : 1,
+                correct: Array.isArray(q.correct) ? q.correct.slice() : [],
+                explanation: q.explanation ?? "",
+                options: (q.options ?? []).map((opt, oi) => ({
+                    orig_index: oi,
+                    ...normalizeOption(opt)
+                }))
+            };
+        });
+    }
+
     function shuffleInPlace(arr) {
         for (let i = arr.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -521,8 +562,14 @@
     }
 
     function setResponse(qid, selectedPresentedIndices) {
-        state.responses[qid] = selectedPresentedIndices.slice().sort((a, b) => a - b);
+        const normalized = selectedPresentedIndices
+            .map(Number)
+            .filter((n) => Number.isInteger(n))
+            .sort((a, b) => a - b);
+
+        state.responses[qid] = normalized;
         updateAnsweredPill();
+        saveRuntimeState("quiz");
     }
 
     function renderAllQuestions() {
@@ -573,10 +620,18 @@
                 input.name = groupName;
                 input.value = String(oi);
 
-                input.addEventListener("change", () => {
+                // input.addEventListener("change", () => {
+                //     const inputs = card.querySelectorAll(`input[name="${groupName}"]`);
+                //     const selected = [];
+                //     inputs.forEach((el) => { if (el.checked) selected.push(Number(el.value)); });
+                //     setResponse(q.id, selected);
+                // });
+                input.addEventListener("input", () => {
                     const inputs = card.querySelectorAll(`input[name="${groupName}"]`);
-                    const selected = [];
-                    inputs.forEach((el) => { if (el.checked) selected.push(Number(el.value)); });
+                    const selected = Array.from(inputs)
+                        .filter((el) => el.checked)
+                        .map((el) => Number(el.value));
+
                     setResponse(q.id, selected);
                 });
 
@@ -666,82 +721,108 @@
             }
         });
     }
+    function renderCorrectionQuestionCard(container, q) {
+        const card = document.createElement("div");
+        card.className = "qCard";
+
+        const title = document.createElement("p");
+        title.className = "qTitle";
+        title.innerHTML = `${q.indexLabel}. ${q.text}`;
+        card.appendChild(title);
+
+        if (q.image) {
+            const img = document.createElement("img");
+            img.className = "qImg";
+            img.src = q.image;
+            img.alt = q.image_alt || "Image de la question";
+            img.loading = "lazy";
+            card.appendChild(img);
+        }
+
+        q.options.forEach((opt) => {
+            const row = document.createElement("div");
+            row.className = "option";
+            if (q.correct.includes(opt.orig_index)) {
+                row.classList.add("solutionGood");
+            }
+
+            const body = document.createElement("div");
+            body.className = "optionBody";
+
+            if (opt.text) {
+                const p = document.createElement("p");
+                p.className = "optionText";
+                p.textContent = opt.text;
+                body.appendChild(p);
+            }
+
+            if (opt.image) {
+                const img = document.createElement("img");
+                img.className = "optImg";
+                img.src = opt.image;
+                img.alt = opt.alt || "Image de réponse";
+                img.loading = "lazy";
+                body.appendChild(img);
+            }
+
+            row.appendChild(body);
+            card.appendChild(row);
+        });
+
+        container.appendChild(card);
+    }
+
     function renderSolutions() {
         const list = $("#solutionsList");
         list.innerHTML = "";
 
-        const questions = buildCanonicalQuestions();
+        const questions = buildCanonicalQuestionsForCorrection();
 
         questions.forEach((q, qi) => {
-            const card = document.createElement("div");
-            card.className = "qCard";
-
-            const title = document.createElement("p");
-            title.className = "qTitle";
-            title.innerHTML = `${qi + 1}. ${q.text}`;
-            card.appendChild(title);
-
-            if (q.subtitle) {
-                const sub = document.createElement("p");
-                sub.className = "qSubtitle";
-                sub.textContent = q.subtitle;
-                card.appendChild(sub);
+            if (q.variants) {
+                q.variants.forEach((variant, vi) => {
+                    renderCorrectionQuestionCard(list, {
+                        id: `${q.id}_v${vi + 1}`,
+                        indexLabel: `${qi + 1}.${vi + 1}`,
+                        ...variant
+                    });
+                });
+            } else {
+                renderCorrectionQuestionCard(list, {
+                    id: q.id,
+                    indexLabel: `${qi + 1}`,
+                    ...q
+                });
             }
-
-            if (q.image) {
-                const img = document.createElement("img");
-                img.className = "qImg";
-                img.src = q.image;
-                img.alt = q.image_alt || "Image de la question";
-                img.loading = "lazy";
-                card.appendChild(img);
-            }
-
-            q.options.forEach((opt) => {
-                const label = document.createElement("div");
-                label.className = "option";
-
-                const body = document.createElement("div");
-                body.className = "optionBody";
-
-                if (opt.text) {
-                    const p = document.createElement("p");
-                    p.className = "optionText";
-                    p.textContent = opt.text;
-                    body.appendChild(p);
-                }
-
-                if (opt.image) {
-                    const img = document.createElement("img");
-                    img.className = "optImg";
-                    img.src = opt.image;
-                    img.alt = opt.alt || "Image de réponse";
-                    img.loading = "lazy";
-                    body.appendChild(img);
-                }
-
-                if (q.correct.includes(opt.orig_index)) {
-                    label.classList.add("solutionGood");
-                }
-
-                label.appendChild(body);
-                card.appendChild(label);
-            });
-
-            const status = document.createElement("div");
-            status.className = "reviewStatus good";
-            status.textContent = `Bonne(s) réponse(s) : ${q.correct.map(i => i + 1).join(", ")}`;
-            card.appendChild(status);
-
-            if (q.explanation) {
-                const exp = document.createElement("div");
-                exp.className = "explanationBox";
-                exp.textContent = q.explanation;
-                card.appendChild(exp);
-            }
-
-            list.appendChild(card);
         });
+    }
+    function findReviewedQuestionDefinition(answerEntry) {
+        const questions = buildCanonicalQuestionsForCorrection();
+        const q = questions.find((item) => item.id === answerEntry.question_id);
+        if (!q) return null;
+
+        if (!q.variants) return q;
+
+        const presentedSignature = JSON.stringify(
+            (answerEntry.options_presented ?? []).map((o) => ({
+                orig_index: o.orig_index,
+                text: o.text ?? "",
+                image: o.image ?? null
+            }))
+        );
+
+        const matchedVariant = q.variants.find((variant) => {
+            const variantSignature = JSON.stringify(
+                variant.options.map((o) => ({
+                    orig_index: o.orig_index,
+                    text: o.text ?? "",
+                    image: o.image ?? null
+                }))
+            );
+            return variantSignature === presentedSignature;
+        });
+
+        return matchedVariant ?? q.variants[0];
     }
     function renderReviewFromJson(reviewData) {
         const list = $("#reviewList");
@@ -762,7 +843,7 @@
         summary.textContent = `${givenName} ${familyName} — Score : ${scoreTotal}/${scoreMax} (${scorePercent}%)`;
 
         answers.forEach((a, idx) => {
-            const q = byId.get(a.question_id);
+            const q = findReviewedQuestionDefinition(a);
             if (!q) return;
 
             const selectedOriginal = Array.isArray(a.selected_original_indices) ? a.selected_original_indices : [];
@@ -941,7 +1022,24 @@
         inputs.forEach(el => { if (el.id !== "btnSubmit") el.disabled = true; });
         btnSubmit.disabled = true;
     }
+    function syncResponsesFromDom() {
+        if (!state.presented || !state.presented.questions) return;
 
+        for (const q of state.presented.questions) {
+            const card = document.querySelector(`#q_${q.id}`);
+            if (!card) continue;
+
+            const groupName = `grp_${q.id}`;
+            const selected = Array.from(card.querySelectorAll(`input[name="${groupName}"]`))
+                .filter((el) => el.checked)
+                .map((el) => Number(el.value))
+                .sort((a, b) => a - b);
+
+            state.responses[q.id] = selected;
+        }
+
+        saveRuntimeState("quiz");
+    }
     function computeResults() {
         const presentedQuestions = state.presented.questions;
 
@@ -1029,6 +1127,7 @@
 
     async function finish(timedOut) {
         if (state.finished) return;
+        syncResponsesFromDom();
         state.finished = true;
         state.timed_out = !!timedOut;
         stopTimer();
