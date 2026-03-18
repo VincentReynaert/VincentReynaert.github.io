@@ -46,14 +46,17 @@ textarea {
   margin: 0 auto;
   padding: 28px 18px 60px;
 }
-.qTitle{
+
+.qTitle {
   white-space: pre-line;
 }
-.qSubtitle{
-  margin-top:6px;
-  color:var(--muted);
-  font-size:14px;
+
+.qSubtitle {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 14px;
 }
+
 .header {
   display: flex;
   align-items: flex-start;
@@ -499,4 +502,87 @@ h1 {
   .modalBackdrop {
     background: rgba(0, 0, 0, .35);
   }
+}
+
+/* =========================
+   Solutions / Review
+   ========================= */
+
+.solutionGood {
+  border-color: rgba(61, 220, 151, .45) !important;
+  background: rgba(61, 220, 151, .10) !important;
+}
+
+.solutionUserWrong {
+  border-color: rgba(255, 107, 107, .45) !important;
+  background: rgba(255, 107, 107, .10) !important;
+}
+
+.solutionUserPartial {
+  border-color: rgba(255, 193, 7, .45) !important;
+  background: rgba(255, 193, 7, .10) !important;
+}
+
+.reviewStatus {
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.reviewStatus.good {
+  color: var(--ok);
+}
+
+.reviewStatus.bad {
+  color: var(--danger);
+}
+
+.reviewStatus.partial {
+  color: #f0c24b;
+}
+
+.reviewStatus.empty {
+  color: var(--muted);
+}
+
+.explanationBox {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, .10);
+  background: rgba(255, 255, 255, .04);
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+@media (prefers-color-scheme: light) {
+  .solutionGood {
+    background: rgba(61, 220, 151, .12) !important;
+    border-color: rgba(61, 220, 151, .45) !important;
+  }
+
+  .solutionUserWrong {
+    background: rgba(255, 107, 107, .10) !important;
+    border-color: rgba(255, 107, 107, .40) !important;
+  }
+
+  .solutionUserPartial {
+    background: rgba(255, 193, 7, .12) !important;
+    border-color: rgba(255, 193, 7, .45) !important;
+  }
+
+  .explanationBox {
+    background: rgba(0, 0, 0, .03);
+    border-color: rgba(0, 0, 0, .10);
+  }
+}
+
+#solutionsPasswordMsg {
+  min-height: 1.2em;
+}
+
+#solutionsPassword.invalid {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 2px rgba(255, 107, 107, .25);
 }

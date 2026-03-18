@@ -77,6 +77,72 @@
                 <button class="btn primary" id="btnSubmit" type="button">Terminer</button>
             </div>
         </section>
+        
+        <!-- SOLUTIONS LOCK -->
+        <section class="card" id="stepSolutionsLock" hidden>
+            <div class="row between">
+                <h2>Accès au corrigé</h2>
+                <div class="pill">Protégé</div>
+            </div>
+
+            <p class="hint">
+                Entrez le mot de passe pour afficher le corrigé.
+            </p>
+
+            <div class="grid2">
+                <div>
+                    <label class="label" for="solutionsPassword">Mot de passe</label>
+                    <input id="solutionsPassword" class="input" type="password" autocomplete="current-password" />
+                    <p class="hint" id="solutionsPasswordMsg"></p>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn primary" id="btnUnlockSolutions" type="button">Afficher le corrigé</button>
+            </div>
+        </section>
+        
+        <!-- SOLUTIONS -->
+        <section class="card" id="stepSolutions" hidden>
+            <div class="row between">
+                <h2>Corrigé</h2>
+                <div class="pill">Mode solutions</div>
+            </div>
+
+            <p class="hint">
+                Voici l’ensemble des questions avec les bonnes réponses.
+            </p>
+
+            <div class="stack" id="solutionsList"></div>
+        </section>
+
+        <!-- REVIEW -->
+        <section class="card" id="stepReview" hidden>
+            <div class="row between">
+                <h2>Correction personnalisée</h2>
+                <div class="pill">Mode review</div>
+            </div>
+
+            <p class="hint">
+                Chargez votre fichier JSON pour voir vos réponses et vos erreurs.
+            </p>
+
+            <div class="grid2">
+                <div>
+                    <label class="label" for="reviewFile">Fichier JSON étudiant</label>
+                    <input id="reviewFile" class="input" type="file" accept=".json,application/json" />
+                    <p class="hint">Choisissez le fichier exporté ou reçu après votre passation.</p>
+                </div>
+                <div>
+                    <div class="metric">
+                        <div class="metricLabel">Résumé</div>
+                        <div class="metricHint" id="reviewSummary">Aucun fichier chargé.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stack" id="reviewList"></div>
+        </section>
 
         <!-- FIN -->
         <section class="card" id="stepResults" hidden>
@@ -96,7 +162,7 @@
         </section>
 
         <p class="footer muted">Mode clair/sombre automatique selon le device.</p>
-        
+
         <div class="modalBackdrop" id="confirmBackdrop" hidden>
             <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
                 <h3 id="confirmTitle">Confirmer la validation</h3>

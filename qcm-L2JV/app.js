@@ -18,7 +18,8 @@
         AUTO_SEND_TO_ONEDRIVE: true, // envoi auto à la fin
         SHOW_ANSWER_COUNT_END: false,
         SHOW_ANSWER_COUNT_DURING: false,
-        SHOW_META: false
+        SHOW_META: false,
+        SOLUTIONS_PASSWORD: "MonMotDePasse2026",
     };
 
     // Session pour sauvegarder la progression en cas de mise à jour de la page
@@ -126,6 +127,9 @@
         $("#stepWelcome").hidden = (step !== "welcome");
         $("#stepQuiz").hidden = (step !== "quiz");
         $("#stepResults").hidden = (step !== "results");
+        $("#stepSolutionsLock").hidden = (step !== "solutionsLock");
+        $("#stepSolutions").hidden = (step !== "solutions");
+        $("#stepReview").hidden = (step !== "review");
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
@@ -367,16 +371,24 @@
         saveRuntimeState("welcome");
     }
 
+    // givenNameEl.addEventListener("blur", () => {
+    //     givenNameEl.value = normalizeFirstName(givenNameEl.value);
+    //     refreshStartState();
+    // });
+
+    // familyNameEl.addEventListener("blur", () => {
+    //     familyNameEl.value = normalizeLastName(familyNameEl.value);
+    //     refreshStartState();
+    // });
     givenNameEl.addEventListener("blur", () => {
-        givenNameEl.value = normalizeFirstName(givenNameEl.value);
+        givenNameEl.value = normalizeHumanName(givenNameEl.value);
         refreshStartState();
     });
 
     familyNameEl.addEventListener("blur", () => {
-        familyNameEl.value = normalizeLastName(familyNameEl.value);
+        familyNameEl.value = normalizeHumanName(familyNameEl.value);
         refreshStartState();
     });
-
     givenNameEl.addEventListener("input", refreshStartState);
     familyNameEl.addEventListener("input", refreshStartState);
     consentBox.addEventListener("change", refreshStartState);
@@ -393,7 +405,56 @@
     //     const p = normalizePhase(getUrlParam("phase"));
     //     if (p) { phase.value = p; phase.disabled = true; }
     // }
+    function getMode() {
+        const m = getUrlParam("mode").toLowerCase();
+        if (["solutions", "review", "exam"].includes(m)) return m;
+        return "exam";
+    }
+    function buildCanonicalQuestions() {
+        return QUIZ.questions.map((q, qIndex) => ({
+            id: q.id ?? `q${qIndex + 1}`,
+            text: q.text ?? "",
+            subtitle: q.subtitle ?? "",
+            image: q.image ?? null,
+            image_alt: q.image_alt ?? q.imageAlt ?? "",
+            multi: (q.multi !== undefined) ? !!q.multi : (Array.isArray(q.correct) && q.correct.length > 1),
+            points: (typeof q.points === "number" && isFinite(q.points)) ? q.points : 1,
+            correct: Array.isArray(q.correct) ? q.correct.slice() : [],
+            explanation: q.explanation ?? "",
+            options: (q.options ?? []).map((opt, oi) => ({
+                orig_index: oi,
+                ...normalizeOption(opt)
+            }))
+        }));
+    }
 
+    function arraysEqual(a, b) {
+        if (a.length !== b.length) return false;
+        for (let i = 0; i < a.length; i++) {
+            if (a[i] !== b[i]) return false;
+        }
+        return true;
+    }
+
+    function getReviewStatus(question, selectedOriginal) {
+        const correct = (question.correct ?? []).slice().sort((a, b) => a - b);
+        const selected = (selectedOriginal ?? []).slice().sort((a, b) => a - b);
+
+        if (selected.length === 0) {
+            return { kind: "empty", label: "Non répondu" };
+        }
+
+        const hasWrong = selected.some(i => !correct.includes(i));
+        if (hasWrong) {
+            return { kind: "bad", label: "Incorrect" };
+        }
+
+        if (arraysEqual(selected, correct)) {
+            return { kind: "good", label: "Correct" };
+        }
+
+        return { kind: "partial", label: "Partiellement correct" };
+    }
     // =========================
     // BUILD PRESENTED QUIZ (sample + shuffle)
     // =========================
@@ -569,7 +630,243 @@
             answeredPill.hidden = true;
         }
     }
+    function unlockSolutions() {
+        const input = $("#solutionsPassword");
+        const msg = $("#solutionsPasswordMsg");
+        const value = input.value;
 
+        if (value === CONFIG.SOLUTIONS_PASSWORD) {
+            sessionStorage.setItem("solutions_unlocked", "1");
+            input.classList.remove("invalid");
+            msg.textContent = "";
+            renderSolutions();
+            showStep("solutions");
+        } else {
+            input.classList.add("invalid");
+            msg.textContent = "Mot de passe incorrect.";
+        }
+    }
+
+    function initSolutionsLock() {
+        const input = $("#solutionsPassword");
+        const btn = $("#btnUnlockSolutions");
+        const msg = $("#solutionsPasswordMsg");
+
+        btn.addEventListener("click", unlockSolutions);
+
+        input.addEventListener("input", () => {
+            input.classList.remove("invalid");
+            msg.textContent = "";
+        });
+
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                unlockSolutions();
+            }
+        });
+    }
+    function renderSolutions() {
+        const list = $("#solutionsList");
+        list.innerHTML = "";
+
+        const questions = buildCanonicalQuestions();
+
+        questions.forEach((q, qi) => {
+            const card = document.createElement("div");
+            card.className = "qCard";
+
+            const title = document.createElement("p");
+            title.className = "qTitle";
+            title.innerHTML = `${qi + 1}. ${q.text}`;
+            card.appendChild(title);
+
+            if (q.subtitle) {
+                const sub = document.createElement("p");
+                sub.className = "qSubtitle";
+                sub.textContent = q.subtitle;
+                card.appendChild(sub);
+            }
+
+            if (q.image) {
+                const img = document.createElement("img");
+                img.className = "qImg";
+                img.src = q.image;
+                img.alt = q.image_alt || "Image de la question";
+                img.loading = "lazy";
+                card.appendChild(img);
+            }
+
+            q.options.forEach((opt) => {
+                const label = document.createElement("div");
+                label.className = "option";
+
+                const body = document.createElement("div");
+                body.className = "optionBody";
+
+                if (opt.text) {
+                    const p = document.createElement("p");
+                    p.className = "optionText";
+                    p.textContent = opt.text;
+                    body.appendChild(p);
+                }
+
+                if (opt.image) {
+                    const img = document.createElement("img");
+                    img.className = "optImg";
+                    img.src = opt.image;
+                    img.alt = opt.alt || "Image de réponse";
+                    img.loading = "lazy";
+                    body.appendChild(img);
+                }
+
+                if (q.correct.includes(opt.orig_index)) {
+                    label.classList.add("solutionGood");
+                }
+
+                label.appendChild(body);
+                card.appendChild(label);
+            });
+
+            const status = document.createElement("div");
+            status.className = "reviewStatus good";
+            status.textContent = `Bonne(s) réponse(s) : ${q.correct.map(i => i + 1).join(", ")}`;
+            card.appendChild(status);
+
+            if (q.explanation) {
+                const exp = document.createElement("div");
+                exp.className = "explanationBox";
+                exp.textContent = q.explanation;
+                card.appendChild(exp);
+            }
+
+            list.appendChild(card);
+        });
+    }
+    function renderReviewFromJson(reviewData) {
+        const list = $("#reviewList");
+        const summary = $("#reviewSummary");
+        list.innerHTML = "";
+
+        const questions = buildCanonicalQuestions();
+        const byId = new Map(questions.map(q => [q.id, q]));
+
+        const answers = Array.isArray(reviewData.answers) ? reviewData.answers : [];
+
+        const givenName = reviewData.givenName ?? "";
+        const familyName = reviewData.familyName ?? "";
+        const scoreTotal = reviewData.score_total ?? "—";
+        const scoreMax = reviewData.score_max ?? "—";
+        const scorePercent = reviewData.score_percent ?? "—";
+
+        summary.textContent = `${givenName} ${familyName} — Score : ${scoreTotal}/${scoreMax} (${scorePercent}%)`;
+
+        answers.forEach((a, idx) => {
+            const q = byId.get(a.question_id);
+            if (!q) return;
+
+            const selectedOriginal = Array.isArray(a.selected_original_indices) ? a.selected_original_indices : [];
+            const statusInfo = getReviewStatus(q, selectedOriginal);
+
+            const card = document.createElement("div");
+            card.className = "qCard";
+
+            const title = document.createElement("p");
+            title.className = "qTitle";
+            title.innerHTML = `${idx + 1}. ${q.text}`;
+            card.appendChild(title);
+
+            if (q.subtitle) {
+                const sub = document.createElement("p");
+                sub.className = "qSubtitle";
+                sub.textContent = q.subtitle;
+                card.appendChild(sub);
+            }
+
+            if (q.image) {
+                const img = document.createElement("img");
+                img.className = "qImg";
+                img.src = q.image;
+                img.alt = q.image_alt || "Image de la question";
+                img.loading = "lazy";
+                card.appendChild(img);
+            }
+
+            q.options.forEach((opt) => {
+                const row = document.createElement("div");
+                row.className = "option";
+
+                const body = document.createElement("div");
+                body.className = "optionBody";
+
+                if (opt.text) {
+                    const p = document.createElement("p");
+                    p.className = "optionText";
+                    p.textContent = opt.text;
+                    body.appendChild(p);
+                }
+
+                if (opt.image) {
+                    const img = document.createElement("img");
+                    img.className = "optImg";
+                    img.src = opt.image;
+                    img.alt = opt.alt || "Image de réponse";
+                    img.loading = "lazy";
+                    body.appendChild(img);
+                }
+
+                const isCorrect = q.correct.includes(opt.orig_index);
+                const isSelected = selectedOriginal.includes(opt.orig_index);
+
+                if (isCorrect) {
+                    row.classList.add("solutionGood");
+                }
+
+                if (isSelected && !isCorrect) {
+                    row.classList.add("solutionUserWrong");
+                }
+
+                if (isSelected && isCorrect && statusInfo.kind === "partial") {
+                    row.classList.add("solutionUserPartial");
+                }
+
+                row.appendChild(body);
+                card.appendChild(row);
+            });
+
+            const status = document.createElement("div");
+            status.className = `reviewStatus ${statusInfo.kind}`;
+            status.textContent = statusInfo.label;
+            card.appendChild(status);
+
+            if (q.explanation) {
+                const exp = document.createElement("div");
+                exp.className = "explanationBox";
+                exp.textContent = q.explanation;
+                card.appendChild(exp);
+            }
+
+            list.appendChild(card);
+        });
+    }
+    function initReviewMode() {
+        const reviewFile = $("#reviewFile");
+
+        reviewFile.addEventListener("change", async (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+
+            try {
+                const text = await file.text();
+                const json = JSON.parse(text);
+                renderReviewFromJson(json);
+            } catch (err) {
+                console.error(err);
+                $("#reviewSummary").textContent = "Impossible de lire ce fichier JSON.";
+                $("#reviewList").innerHTML = "";
+            }
+        });
+    }
     // =========================
     // TIMER
     // =========================
@@ -675,8 +972,10 @@
 
         const n_questions = presentedQuestions.length;
         const n_answered = answers.filter(a => (a.selected_presented_indices?.length ?? 0) > 0).length;
-        const first_name = normalizeFirstName(givenNameEl.value);
-        const last_name = normalizeLastName(familyNameEl.value);
+        // const first_name = normalizeFirstName(givenNameEl.value);
+        // const last_name = normalizeLastName(familyNameEl.value);
+        const first_name = normalizeHumanName(givenNameEl.value);
+        const last_name = normalizeHumanName(familyNameEl.value);
         // total score (si scoring activé)
         let score_total = null, score_max = null, score_percent = null;
         if (CONFIG.ENABLE_CLIENT_SIDE_SCORING) {
@@ -927,22 +1226,43 @@
     $("#subtitle").textContent = QUIZ.intro ?? "";
     $("#buildTag").textContent = QUIZ.version;
 
-    // initFromUrl();
     window.addEventListener("beforeunload", (e) => {
-        if (!state.finished && state.presented) {
+        if (!state.finished && state.presented && getMode() === "exam") {
             e.preventDefault();
             e.returnValue = "";
         }
     });
+
     if (durationHint) {
         durationHint.textContent = formatDurationHint(CONFIG.TIME_LIMIT_MINUTES);
     }
-    // timer hidden until quiz starts (mais sticky prêt)
+
     timerPill.hidden = true;
     answeredPill.hidden = !CONFIG.SHOW_ANSWER_COUNT_DURING;
-    const restored = restoreRuntimeState();
-    if (!restored) {
-        refreshStartState();
-        showStep("welcome");
+
+    const mode = getMode();
+
+    if (mode === "solutions") {
+        $("#subtitle").textContent = "Mode correction générale";
+
+        initSolutionsLock();
+
+        const alreadyUnlocked = sessionStorage.getItem("solutions_unlocked") === "1";
+        if (alreadyUnlocked) {
+            renderSolutions();
+            showStep("solutions");
+        } else {
+            showStep("solutionsLock");
+        }
+    } else if (mode === "review") {
+        $("#subtitle").textContent = "Mode correction personnalisée";
+        initReviewMode();
+        showStep("review");
+    } else {
+        const restored = restoreRuntimeState();
+        if (!restored) {
+            refreshStartState();
+            showStep("welcome");
+        }
     }
 })();
