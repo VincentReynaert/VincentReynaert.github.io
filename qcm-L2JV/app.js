@@ -178,8 +178,6 @@
                 session_id: state.session_id,
                 started_at_utc: state.started_at_utc,
                 participant_id: state.participant_id,
-                task_id: state.task_id,
-                phase: state.phase,
                 consent: state.consent,
 
                 presented: state.presented,
