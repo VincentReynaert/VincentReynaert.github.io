@@ -21,6 +21,9 @@
         SHOW_META: false
     };
 
+    // Session pour sauvegarder la progression en cas de mise à jour de la page
+    const SESSION_STORAGE_KEY = "exam_qcm_runtime_v1";
+
     // Regex ID étudiant (modifiable)
     const NAME_REGEX = /^[\p{L}\p{M}][\p{L}\p{M}'’\- ]*$/u;
 
@@ -168,6 +171,51 @@
         confirmBackdrop.hidden = true;
     }
 
+    function saveRuntimeState(currentStep = null) {
+        const payload = {
+            currentStep,
+            state: {
+                session_id: state.session_id,
+                started_at_utc: state.started_at_utc,
+                participant_id: state.participant_id,
+                task_id: state.task_id,
+                phase: state.phase,
+                consent: state.consent,
+
+                presented: state.presented,
+                responses: state.responses,
+
+                deadline_ms: state.deadline_ms,
+                finished: state.finished,
+                timed_out: state.timed_out,
+
+                results: state.results
+            },
+            form: {
+                givenName: givenNameEl ? givenNameEl.value : "",
+                familyName: familyNameEl ? familyNameEl.value : "",
+                taskId: taskId ? taskId.value : "",
+                phase: phase ? phase.value : "",
+                consent: consentBox ? consentBox.checked : false
+            }
+        };
+
+        sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(payload));
+    }
+
+    function loadRuntimeState() {
+        try {
+            const raw = sessionStorage.getItem(SESSION_STORAGE_KEY);
+            if (!raw) return null;
+            return JSON.parse(raw);
+        } catch {
+            return null;
+        }
+    }
+
+    function clearRuntimeState() {
+        sessionStorage.removeItem(SESSION_STORAGE_KEY);
+    }
     // =========================
     // LOAD QUESTIONS
     // =========================
@@ -322,6 +370,7 @@
     function refreshStartState() {
         const okNames = validateNames();
         btnStart.disabled = !(consentBox.checked && okNames);
+        saveRuntimeState("welcome");
     }
 
     givenNameEl.addEventListener("blur", () => {
@@ -431,7 +480,7 @@
             card.id = `q_${q.id}`;
 
             const title = document.createElement("p");
-            title.className = "qTitle"; 
+            title.className = "qTitle";
             title.innerHTML = `${qi + 1}. ${q.text}`;
             if (q.subtitle) {
                 const sub = document.createElement("p");
@@ -561,6 +610,7 @@
 
         timerPill.hidden = !CONFIG.SHOW_TIMER;
         state.deadline_ms = Date.now() + CONFIG.TIME_LIMIT_MINUTES * 60 * 1000;
+        saveRuntimeState("quiz");
 
         const tick = () => {
             const remaining = state.deadline_ms - Date.now();
@@ -692,6 +742,7 @@
         disableQuizInputs();
 
         state.results = computeResults();
+        saveRuntimeState("results");
 
         // fin neutre
         thankYouText.textContent = "Merci pour votre participation. Vous pouvez fermer cette page.";
@@ -718,6 +769,8 @@
             try {
                 await sendToOneDrive(state.results);
                 saveStatus.textContent = "Enregistrement terminé.";
+                clearRuntimeState();
+                state.finished = true;
             } catch (e) {
                 console.error(e);
                 saveStatus.textContent = "Problème d’enregistrement. Merci de prévenir l’enseignant.";
@@ -730,7 +783,88 @@
             }
         }
     }
+    function restoreRuntimeState() {
+        const saved = loadRuntimeState();
+        if (!saved || !saved.state) return false;
 
+        const s = saved.state;
+        const f = saved.form || {};
+
+        state.session_id = s.session_id ?? newSessionId();
+        state.started_at_utc = s.started_at_utc ?? nowIso();
+        state.participant_id = s.participant_id ?? "";
+        state.task_id = s.task_id ?? "";
+        state.phase = s.phase ?? "";
+        state.consent = !!s.consent;
+
+        state.presented = s.presented ?? null;
+        state.responses = s.responses ?? {};
+
+        state.deadline_ms = s.deadline_ms ?? null;
+        state.finished = !!s.finished;
+        state.timed_out = !!s.timed_out;
+
+        state.results = s.results ?? null;
+
+        if (givenNameEl) givenNameEl.value = f.givenName ?? "";
+        if (familyNameEl) familyNameEl.value = f.familyName ?? "";
+        if (taskId) taskId.value = f.taskId ?? "";
+        if (phase) phase.value = f.phase ?? "";
+        if (consentBox) consentBox.checked = !!f.consent;
+
+        refreshStartState();
+
+        if (saved.currentStep === "quiz" && state.presented && !state.finished) {
+            renderAllQuestions();
+
+            // restaurer les cases cochées
+            for (const q of state.presented.questions) {
+                const selected = state.responses[q.id] ?? [];
+                const groupName = `grp_${q.id}`;
+                const card = document.querySelector(`#q_${q.id}`);
+                if (!card) continue;
+
+                const inputs = card.querySelectorAll(`input[name="${groupName}"]`);
+                inputs.forEach((el) => {
+                    el.checked = selected.includes(Number(el.value));
+                });
+            }
+
+            // relancer le timer avec la deadline existante
+            if (state.deadline_ms && !state.finished) {
+                timerPill.hidden = !CONFIG.SHOW_TIMER;
+
+                const tick = () => {
+                    const remaining = state.deadline_ms - Date.now();
+                    if (CONFIG.SHOW_TIMER) {
+                        timerPill.textContent = `Temps restant : ${formatDurationLong(remaining / 1000)}`;
+                    }
+                    if (remaining <= 0) {
+                        stopTimer();
+                        finish(true);
+                    }
+                };
+
+                tick();
+                state.timerHandle = setInterval(tick, 250);
+            }
+
+            showStep("quiz");
+            return true;
+        }
+
+        if (saved.currentStep === "results" && state.results) {
+            if (DEBUG) {
+                debugPanel.hidden = false;
+                jsonPreview.textContent = JSON.stringify(state.results, null, 2);
+            }
+            showStep("results");
+            return true;
+        }
+
+        showStep("welcome");
+        return true;
+    }
     // fallback export/copy
     btnDownloadJson.addEventListener("click", () => {
         const json = JSON.stringify(state.results ?? {}, null, 2);
@@ -764,6 +898,7 @@
         state.responses = {};
         state.finished = false;
         state.timed_out = false;
+        saveRuntimeState("quiz");
 
         // init timer label
         if (CONFIG.SHOW_TIMER && CONFIG.TIME_LIMIT_MINUTES > 0) {
@@ -803,13 +938,21 @@
     $("#buildTag").textContent = QUIZ.version;
 
     // initFromUrl();
+    window.addEventListener("beforeunload", (e) => {
+        if (!state.finished && state.presented) {
+            e.preventDefault();
+            e.returnValue = "";
+        }
+    });
     if (durationHint) {
         durationHint.textContent = formatDurationHint(CONFIG.TIME_LIMIT_MINUTES);
     }
     // timer hidden until quiz starts (mais sticky prêt)
     timerPill.hidden = true;
     answeredPill.hidden = !CONFIG.SHOW_ANSWER_COUNT_DURING;
-
-    refreshStartState();
-    showStep("welcome");
+    const restored = restoreRuntimeState();
+    if (!restored) {
+        refreshStartState();
+        showStep("welcome");
+    }
 })();
