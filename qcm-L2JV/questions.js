@@ -480,7 +480,7 @@ export const QUIZ = {
     {
       id: "q28",
       text: "Pour récupérer l'input du joueur sur le déplacement d'un personnage, vous utilisez le code suivant :\nCependant dans le jeu rien ne se passe, vous avez même une erreur dans la console :\nInvalidOperationException: You are trying to read Input using the UnityEngine.Input class, but you have switched active Input handling to Input System package in Player Settings.\nQue faire pour que les input soient bien récupérés dans mon code ?",
-      image: "assets/get_axis0.png",
+      image: "assets/get_axis_0.png",
       image_alt: "Bout de code.",
       multi: true,
       points: 1,
