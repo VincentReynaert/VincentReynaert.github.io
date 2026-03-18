@@ -1076,6 +1076,23 @@
             }
         }
     }
+    function restoreRenderedResponses() {
+        if (!state.presented || !state.presented.questions) return;
+
+        for (const q of state.presented.questions) {
+            const selected = state.responses[q.id] ?? [];
+            const groupName = `grp_${q.id}`;
+            const card = document.querySelector(`#q_${q.id}`);
+            if (!card) continue;
+
+            const inputs = card.querySelectorAll(`input[name="${groupName}"]`);
+            inputs.forEach((el) => {
+                el.checked = selected.includes(Number(el.value));
+            });
+        }
+
+        updateAnsweredPill();
+    }
     function restoreRuntimeState() {
         const saved = loadRuntimeState();
         if (!saved || !saved.state) return false;
@@ -1105,19 +1122,20 @@
 
         if (saved.currentStep === "quiz" && state.presented && !state.finished) {
             renderAllQuestions();
+            restoreRenderedResponses();
 
-            // restaurer les cases cochées
-            for (const q of state.presented.questions) {
-                const selected = state.responses[q.id] ?? [];
-                const groupName = `grp_${q.id}`;
-                const card = document.querySelector(`#q_${q.id}`);
-                if (!card) continue;
+            // // restaurer les cases cochées
+            // for (const q of state.presented.questions) {
+            //     const selected = state.responses[q.id] ?? [];
+            //     const groupName = `grp_${q.id}`;
+            //     const card = document.querySelector(`#q_${q.id}`);
+            //     if (!card) continue;
 
-                const inputs = card.querySelectorAll(`input[name="${groupName}"]`);
-                inputs.forEach((el) => {
-                    el.checked = selected.includes(Number(el.value));
-                });
-            }
+            //     const inputs = card.querySelectorAll(`input[name="${groupName}"]`);
+            //     inputs.forEach((el) => {
+            //         el.checked = selected.includes(Number(el.value));
+            //     });
+            // }
 
             // relancer le timer avec la deadline existante
             if (state.deadline_ms && !state.finished) {
