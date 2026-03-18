@@ -471,10 +471,47 @@ export const QUIZ = {
       options: [
         "Sinon Unity ne compile pas correctement le script.",
         "Pour des raisons esthétiques.",
-        "Pour nous casser les *****.",
         "Pour faciliter le debug.",
         "Sinon Unity devient rouge.",
         "Sinon quand on appuie sur le bouton Play, le jeu s'arrête au bout de 5 minutes."
+      ]
+    },
+
+    {
+      id: "q28",
+      text: "Pour récupérer l'input du joueur sur le déplacement d'un personnage, vous utilisez le code suivant :\nCependant dans le jeu rien ne se passe, vous avez même une erreur dans la console :\nInvalidOperationException: You are trying to read Input using the UnityEngine.Input class, but you have switched active Input handling to Input System package in Player Settings.\nQue faire pour que les input soient bien récupérés dans mon code ?",
+      image: "assets/get_axis0.png",
+      image_alt: "Bout de code.",
+      multi: true,
+      points: 1,
+      correct: [0],
+      options: [
+        "Sur Unity 6 et le New input system est utilisé par défaut. Pour corriger cela il faut aller dans les Player settings et mettre l'input system en Old ou Both.",
+        "Ajouter un component InputManager sur le GameObject du joueur.",
+        "Remplacer Input.GetAxis par Time.deltaTime pour corriger le déplacement.",
+        "Ajouter un EventSystem dans la scène pour récupérer les inputs clavier.",
+        "Passer la caméra en mode Orthographic pour activer les inputs."
+      ]
+    },
+
+    {
+      id: "q29",
+      text: "Sur la capture d'écran ci-après, pourqoi les personnages et le pilier tombent à travers le sol ?",
+      image: "assets/grav.png",
+      image_alt: "Capture d'écran avec deux personnages et un pilier qui tombent à travers une plateform qui aurait dû les stopper dans leur chute.",
+      multi: true,
+      points: 1,
+      correct: [0,1,2],
+      options: [
+        "Le sol ne possède pas de Collider2D.",
+        "Les personnages et le pilier n'ont pas de Collider2D.",
+        "Les objets qui chuttent ont un Rigidbody2D mais leur Collider2D ou celui du sol est en mode Trigger.",
+        "Le sol ne possède pas de Rigidbody2D.",
+        "Les personnages et le pilier n'ont pas de Rigidbody2D.",
+        "Les sprites ne sont pas au bon Order in Layer.",
+        "Les objets sont des Prefabs non appliqués.",
+        "Le projet est configuré en 3D au lieu de 2D.",
+        "Il manque un EventSystem dans la scène."
       ]
     }
   ]
