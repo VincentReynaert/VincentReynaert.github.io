@@ -192,8 +192,6 @@
             form: {
                 givenName: givenNameEl ? givenNameEl.value : "",
                 familyName: familyNameEl ? familyNameEl.value : "",
-                taskId: taskId ? taskId.value : "",
-                phase: phase ? phase.value : "",
                 consent: consentBox ? consentBox.checked : false
             }
         };
