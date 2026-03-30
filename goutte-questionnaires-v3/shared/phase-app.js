@@ -298,7 +298,7 @@ export async function renderPhase(config) {
   const progress = getProgress(config, store);
   renderPhaseHeader(root, config, participant, progress);
   renderStepList(root, config, participant, store, progress);
-  renderBackupCard(root, participant, config);
+  renderBackupCard(root, participant, config, finalPhasePayload);
 
 
 }
