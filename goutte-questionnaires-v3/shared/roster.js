@@ -22,9 +22,12 @@ function normalizeEntry(entry) {
 export async function loadRoster() {
   if (cachedRoster) return cachedRoster;
   const url = new URL('../data/roster.json', import.meta.url);
+  console.log('[Roster] fetch url =', url.href);
   const response = await fetch(url);
+  console.log('[Roster] status =', response.status, 'ok =', response.ok);
   if (!response.ok) throw new Error('Impossible de charger data/roster.json');
   const json = await response.json();
+  console.log('[Roster] loaded data =', json);
   const localRoster = getLocalRoster();
   cachedRoster = [...(Array.isArray(json) ? json : []), ...localRoster].map(normalizeEntry);
   return cachedRoster;
