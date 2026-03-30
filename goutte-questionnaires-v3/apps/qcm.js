@@ -374,6 +374,7 @@ export function bootQcm(options = {}) {
   }
 
   async function finish(timedOut = false) {
+    console.log('[QCM] finish called');
     stopTimer();
     showStep(stepResults);
     const payload = computePayload(timedOut);
