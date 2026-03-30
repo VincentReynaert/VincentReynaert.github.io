@@ -1,6 +1,6 @@
 import { saveAndSend } from '../shared/integration.js';
 import { findRosterMatches } from '../shared/roster.js';
-import { getParams, qs, el, showMessage, clearMessage } from '../shared/utils.js';
+import { getParams, qs, el, showMessage, clearMessage, escapeHtml } from '../shared/utils.js';
 import { mergeStore, readStore } from '../shared/storage.js';
 
 const DIMENSIONS = [
