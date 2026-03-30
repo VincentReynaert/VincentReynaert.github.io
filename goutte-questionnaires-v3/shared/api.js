@@ -1,5 +1,5 @@
 export const API_CONFIG = {
-  endpoint: 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL_HERE',
+  endpoint: 'https://default566dadffe3a9465fb05eed73b33f0a.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f4f44419a2d749d0970208eaee43229d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=qmxZsCkwQZaUo1UzpbtPr7lbuoNJXLdIzWHUoCdBNYI',
   enabled: false,
 };
 
