@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UX VR</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main id="app" class="container"></main>
+  <script type="module">
+import { renderQuestionnaire } from './shared/form-engine.js';
+import config from './configs/ux-vr.js';
+renderQuestionnaire(config);
+  </script>
+</body>
+</html>
