@@ -1,16 +1,19 @@
 <!doctype html>
 <html lang="fr">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>NASA TLX cours</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
+
 <body>
   <main id="app" class="container"></main>
   <script type="module">
-import { bootNasa } from './apps/nasa.js';
-bootNasa({ key: 'nasa_cours', title: 'NASA-TLX — Cours', taskLabel: 'Cours', condition: 'cours' });
+    import { bootNasa } from './apps/nasa.js';
+    bootNasa({ key: 'nasa_cours', title: 'NASA-TLX — Cours', taskLabel: 'Cours', condition: 'cours' });
   </script>
 </body>
+
 </html>
