@@ -22,6 +22,29 @@ function getProgress(config, store) {
   };
 }
 
+
+function downloadPhaseJson(filename, data) {
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  URL.revokeObjectURL(url);
+}
+
+function makePhaseExportFilename(payload) {
+  const pid = (payload.participant?.pid || "anon").replace(/[^a-zA-Z0-9_-]+/g, "_");
+  const phase = (payload.phase || "phase").replace(/[^a-zA-Z0-9_-]+/g, "_");
+  const ts = new Date().toISOString().replace(/[:.]/g, "-");
+  return `goutte_${phase}_${pid}_${ts}.json`;
+}
+
 function renderPhaseHeader(root, config, participant, progress) {
   const header = el('header', 'page-header');
   const left = el('div');
@@ -155,7 +178,7 @@ async function renderIdentityGate(root, config) {
     const matches = await findRosterMatches(lastName, firstName);
     if (!matches.length) {
       message.className = 'message show error';
-      message.textContent = 'Aucun identifiant trouvé dans la base. En phase 2, le participant doit déjà exister dans la base.';
+      message.textContent = 'Aucun identifiant trouvé dans la base. En phases 2 et 3, le participant doit déjà exister dans la base.';
       return;
     }
 
@@ -210,4 +233,24 @@ export async function renderPhase(config) {
   const progress = getProgress(config, store);
   renderPhaseHeader(root, config, participant, progress);
   renderStepList(root, config, participant, store, progress);
+
+  let finalPhasePayload = null;
+  finalPhasePayload = {
+    phase: currentPhase,
+    participant: participantData,
+    condition: currentCondition || null,
+    questionnaires: collectedQuestionnaires,
+    analyses: computedAnalyses,
+    exported_at_utc: new Date().toISOString()
+  };
+
+  const btnDownloadPhaseJson = document.getElementById("btnDownloadPhaseJson");
+  if (btnDownloadPhaseJson) {
+    btnDownloadPhaseJson.onclick = () => {
+      if (!finalPhasePayload) return;
+      const filename = makePhaseExportFilename(finalPhasePayload);
+      downloadPhaseJson(filename, finalPhasePayload);
+    };
+  }
+
 }
