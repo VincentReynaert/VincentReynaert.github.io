@@ -1,6 +1,6 @@
 import { sendPayload } from './api.js';
 import { mergeStore, readStore, saveQuestionnaireResult } from './storage.js';
-
+console.log('[INTEGRATION] module loaded');
 export function buildGlobalAnalyses(store = readStore()) {
   const analyses = {};
   for (const [key, payload] of Object.entries(store.questionnaires || {})) {
