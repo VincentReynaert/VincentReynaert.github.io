@@ -23,21 +23,53 @@ function getProgress(config, store) {
 }
 
 
-function downloadPhaseJson(filename, data) {
+function downloadJsonFile(filename, data) {
   const json = JSON.stringify(data, null, 2);
-  const blob = new Blob([json], { type: "application/json;charset=utf-8" });
+  const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
   const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
+  const a = document.createElement('a');
   a.href = url;
   a.download = filename;
   document.body.appendChild(a);
   a.click();
   a.remove();
-
   URL.revokeObjectURL(url);
 }
+function renderBackupCard(root, participant, config) {
+  const raw = localStorage.getItem('goutte_last_global_payload');
+  if (!raw) return;
 
+  let payload = null;
+  try {
+    payload = JSON.parse(raw);
+  } catch {
+    return;
+  }
+
+  const hadError = localStorage.getItem('goutte_last_send_error') === '1';
+
+  const card = el('section', 'summary-card');
+  card.append(el('h3', '', 'Sauvegarde locale'));
+
+  const text = hadError
+    ? 'Un problème d’envoi a été détecté. Téléchargez le JSON de sauvegarde de cette phase.'
+    : 'Vous pouvez télécharger une copie locale du JSON de la phase en cas de besoin.';
+
+  card.append(el('p', 'hint', text));
+
+  const actions = el('div', 'actions');
+  const btn = el('button', 'secondary-button', 'Télécharger le JSON de la phase');
+  btn.type = 'button';
+  btn.addEventListener('click', () => {
+    const pid = (participant.pid || 'anon').replace(/[^a-zA-Z0-9_-]+/g, '_');
+    const phase = (config.phase || 'phase').replace(/[^a-zA-Z0-9_-]+/g, '_');
+    downloadJsonFile(`goutte_${phase}_${pid}.json`, payload);
+  });
+  actions.append(btn);
+  card.append(actions);
+
+  root.append(card);
+}
 function makePhaseExportFilename(payload) {
   const pid = (payload.participant?.pid || "anon").replace(/[^a-zA-Z0-9_-]+/g, "_");
   const phase = (payload.phase || "phase").replace(/[^a-zA-Z0-9_-]+/g, "_");
@@ -97,7 +129,20 @@ function renderStepList(root, config, participant, store, progress) {
     const current = !progress.isComplete && index === progress.nextIndex;
     const locked = !done && index > progress.nextIndex;
     const card = el('article', 'phase-card');
+    if (done) card.classList.add('is-done');
+    else if (current) card.classList.add('is-current');
+    else if (locked) card.classList.add('is-locked');
+    else card.classList.add('is-pending');
     card.append(el('h3', '', `${index + 1}. ${step.label}`));
+    const status = done
+      ? 'Complété'
+      : current
+        ? 'À faire maintenant'
+        : locked
+          ? 'Verrouillé'
+          : 'Non commencé';
+
+    card.append(el('div', 'step-status', status));
     card.append(el('p', '', done ? 'Déjà complété.' : current ? 'Prochaine étape à compléter.' : 'Verrouillé jusqu’aux étapes précédentes.'));
     const actions = el('div', 'actions');
     if (done || current || progress.isComplete) {
@@ -232,6 +277,7 @@ export async function renderPhase(config) {
   root.innerHTML = '';
   const progress = getProgress(config, store);
   renderPhaseHeader(root, config, participant, progress);
+  renderBackupCard(root, participant, config);
   renderStepList(root, config, participant, store, progress);
 
   let finalPhasePayload = null;

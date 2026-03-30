@@ -28,8 +28,16 @@ export async function saveAndSend(questionnaireKey, payload) {
     analyses: buildGlobalAnalyses(readStore()),
   });
 
-  const individualResult = await sendPayload(payload);
   const globalPayload = buildGlobalPayload(store);
-  const globalResult = await sendPayload(globalPayload);
-  return { individualResult, globalResult };
+  localStorage.setItem('goutte_last_global_payload', JSON.stringify(globalPayload));
+
+  try {
+    const individualResult = await sendPayload(payload);
+    const globalResult = await sendPayload(globalPayload);
+    localStorage.removeItem('goutte_last_send_error');
+    return { individualResult, globalResult };
+  } catch (error) {
+    localStorage.setItem('goutte_last_send_error', '1');
+    throw error;
+  }
 }

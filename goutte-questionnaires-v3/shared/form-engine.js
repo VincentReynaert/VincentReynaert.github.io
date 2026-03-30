@@ -384,6 +384,49 @@ async function renderIdentityGate(root, config, onResolved) {
     }
   });
 }
+function updateItemState(itemNode) {
+  if (!itemNode) return;
+
+  const inputs = itemNode.querySelectorAll('input, select, textarea');
+  let touched = false;
+  let answered = false;
+
+  inputs.forEach((input) => {
+    if (input.type === 'radio') {
+      if (input.checked) answered = true;
+      if (input.dataset.touched === '1') touched = true;
+    } else if (input.type === 'checkbox') {
+      if (input.checked) answered = true;
+      if (input.dataset.touched === '1') touched = true;
+    } else {
+      if ((input.value || '').trim() !== '') answered = true;
+      if (input.dataset.touched === '1') touched = true;
+    }
+  });
+
+  itemNode.classList.toggle('is-touched', touched);
+  itemNode.classList.toggle('is-answered', answered);
+  itemNode.classList.toggle('is-unanswered', touched && !answered);
+  itemNode.classList.toggle('is-pristine', !touched && !answered);
+}
+
+function wireItemState(itemNode) {
+  const inputs = itemNode.querySelectorAll('input, select, textarea');
+
+  inputs.forEach((input) => {
+    const markTouched = () => {
+      input.dataset.touched = '1';
+      updateItemState(itemNode);
+    };
+
+    input.addEventListener('input', markTouched);
+    input.addEventListener('change', markTouched);
+    input.addEventListener('blur', markTouched);
+  });
+
+  updateItemState(itemNode);
+}
+
 function downloadJsonFile(filename, data) {
   const json = JSON.stringify(data, null, 2);
   const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
@@ -432,7 +475,10 @@ export async function renderQuestionnaire(config) {
     else if (item.type === 'singleChoice') node = renderSingleChoice(item, initialAnswers[item.id], index);
     else if (item.type === 'likert') node = renderLikert(item, initialAnswers[item.id], index);
     else if (item.type === 'sortable') node = renderSortable(item, initialAnswers[item.id], index);
-    if (node) form.append(node);
+    if (node) {
+      form.append(node);
+      wireItemState(node);
+    }
   });
 
   if (config.key === 'consent') {
@@ -518,28 +564,7 @@ export async function renderQuestionnaire(config) {
         setTimeout(() => { window.location.href = params.returnUrl; }, 700);
       }
     } catch (error) {
-      const globalPayload = buildGlobalPayload(readStore());
-      const phaseName = params.phase || config.phase || 'phase';
-      const pid = (finalParticipant.pid || 'anon').replace(/[^a-zA-Z0-9_-]+/g, '_');
-
-      showMessage(
-        message,
-        'error',
-        `Erreur d'envoi : ${error.message}. Téléchargez le JSON de sauvegarde si nécessaire.`
-      );
-
-      const fallbackBtn = document.createElement('button');
-      fallbackBtn.type = 'button';
-      fallbackBtn.className = 'secondary-button';
-      fallbackBtn.textContent = 'Télécharger le JSON de sauvegarde';
-
-      fallbackBtn.addEventListener('click', () => {
-        downloadJsonFile(`goutte_${phaseName}_${pid}.json`, globalPayload);
-      });
-      const existingFallback = actions.querySelector('.download-fallback-json');
-      if (existingFallback) existingFallback.remove();
-      fallbackBtn.classList.add('download-fallback-json');
-      actions.append(fallbackBtn);
+      showMessage(message, 'error', `Erreur d'envoi : ${error.message}. Retournez sur la phase pour télécharger le JSON de sauvegarde.`);
     }
   });
 }
