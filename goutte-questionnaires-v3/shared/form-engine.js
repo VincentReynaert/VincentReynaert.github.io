@@ -231,6 +231,7 @@ async function attachConsentPidResolver(form) {
     form.dataset.pidMode = '';
 
     if (!lastName || !firstName) return;
+    if (lastName.length < 2 || firstName.length < 2) return;
 
     try {
       const exactMatches = await findRosterMatches(lastName, firstName);
@@ -269,14 +270,24 @@ async function attachConsentPidResolver(form) {
       pidInput.value = suggestion.pid;
       form.dataset.pidMode = 'new';
       showMessage(message, 'warning', `Participant non trouvé dans la base. Nouvel identifiant proposé : ${suggestion.pid}`);
-      chooserWrap.append(el('p', 'hint', 'Cet identifiant sera ajouté à la base au moment de la validation du formulaire de consentement. Sans backend activé, l’ajout restera local à ce navigateur.'));
+      chooserWrap.append(
+        el('p', 'hint', 'Cet identifiant sera ajouté à la base au moment de la validation du formulaire de consentement. Sans backend activé, l’ajout restera local à ce navigateur.')
+      );
     } catch (error) {
       showMessage(message, 'error', error.message);
     }
   }
 
-  // lastInput.addEventListener('change', refreshPid);
-  // firstInput.addEventListener('change', refreshPid);
+  const resolveBtn = el('button', 'secondary-button', 'Rechercher / générer l’identifiant');
+  resolveBtn.type = 'button';
+  resolveBtn.addEventListener('click', refreshPid);
+  chooserWrap.before(resolveBtn);
+
+  lastInput.removeEventListener?.('input', refreshPid);
+  firstInput.removeEventListener?.('input', refreshPid);
+
+  lastInput.addEventListener('change', refreshPid);
+  firstInput.addEventListener('change', refreshPid);
 }
 
 async function renderIdentityGate(root, config, onResolved) {
@@ -493,10 +504,6 @@ export async function renderQuestionnaire(config) {
     const chooserWrap = el('div', 'stack');
     chooserWrap.id = 'pid-chooser-wrap';
     pidInfo.append(message, chooserWrap);
-    const resolveBtn = el('button', 'secondary-button', 'Rechercher / générer l’identifiant');
-    resolveBtn.type = 'button';
-    resolveBtn.addEventListener('click', refreshPid);
-    pidInfo.append(resolveBtn);
     const pidItem = qs('[data-item-id="pid"]', form);
     pidItem.append(pidInfo);
   }
