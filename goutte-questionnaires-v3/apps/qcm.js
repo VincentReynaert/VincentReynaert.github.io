@@ -323,7 +323,30 @@ export function bootQcm(options = {}) {
     const exactCount = answers.filter((answer) => answer.exact).length;
     const answeredCount = answers.filter((answer) => answer.selected_presented_indices.length > 0).length;
     const percentage = Number(((exactCount / answers.length) * 100).toFixed(2));
+    let goodCount = 0;
+    let badCount = 0;
 
+    answers.forEach((answer) => {
+      const correctSet = new Set(
+        answer.selected_original_indices.length
+          ? answer.selected_original_indices.map((_, i) => answer.options_presented.find(o => o.original_index === answer.selected_original_indices[i])?.original_index)
+          : []
+      );
+
+      const trueAnswers = new Set(
+        QUIZ.questions.find(q => q.id === answer.question_id).correct
+      );
+
+      // réponses cochées
+      answer.selected_original_indices.forEach((idx) => {
+        if (trueAnswers.has(idx)) {
+          goodCount += 1;
+        } else {
+          badCount += 1;
+        }
+      });
+    });
+    const score = goodCount - badCount;
     return {
       schemaVersion: 2,
       questionnaireKey: `qcm_${fixedPhase}`,
@@ -331,6 +354,9 @@ export function bootQcm(options = {}) {
       participant: { ...state.participant, condition: state.participant.condition || taskLabel || '' },
       answers: { questions: answers },
       computed: {
+        qcm_good_answers: goodCount,
+        qcm_bad_answers: badCount,
+        qcm_score: score,
         qcm_exact_score: exactCount,
         qcm_answered_count: answeredCount,
         qcm_total: answers.length,
