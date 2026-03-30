@@ -11,6 +11,9 @@ export function hasRemoteApi() {
 export async function postJson(payload) {
   console.log('[API] POST start', {
     endpoint: API_CONFIG.endpoint,
+    action: payload?.action || 'questionnaire_or_bundle',
+    questionnaireKey: payload?.questionnaireKey || null,
+    kind: payload?.kind || null,
     payload
   });
 
