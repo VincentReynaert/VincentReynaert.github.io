@@ -269,7 +269,7 @@ export function bootQcm(options = {}) {
   function renderQuestions() {
     questionList.innerHTML = '';
     state.presentedQuestions.forEach((question, index) => {
-      const card = el('div', 'q-card');
+      const card = el('div', 'q-card unanswered');
       card.append(el('p', 'q-title', `${index + 1}. ${question.text}`));
       card.append(el('p', 'q-meta', question.multi ? 'Plusieurs réponses possibles.' : 'Une seule réponse possible.'));
       const optionsWrap = el('div', 'option-list');
@@ -283,6 +283,8 @@ export function bootQcm(options = {}) {
           const selected = [...questionList.querySelectorAll(`[name="q_${question.id}"]:checked`)].map((node) => Number(node.value)).sort((a, b) => a - b);
           state.responses[question.id] = selected;
           updateAnswered();
+          card.classList.toggle('answered', selected.length > 0);
+          card.classList.toggle('unanswered', selected.length === 0);
         });
         const text = el('p', 'option-text', option.text);
         label.append(input, text);
@@ -294,6 +296,8 @@ export function bootQcm(options = {}) {
         questionList.querySelectorAll(`[name="q_${question.id}"]`).forEach((node) => { node.checked = false; });
         state.responses[question.id] = [];
         updateAnswered();
+        card.classList.remove('answered');
+        card.classList.add('unanswered');
       });
       card.append(optionsWrap, clearBtn);
       questionList.append(card);

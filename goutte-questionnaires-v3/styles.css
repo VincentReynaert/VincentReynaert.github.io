@@ -115,6 +115,20 @@ h1 {
   padding: 16px;
 }
 
+.q-card {
+  border-left: 6px solid transparent;
+  transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+
+.q-card.answered {
+  border-left-color: var(--ok);
+  background: rgba(61, 220, 151, .06);
+}
+
+.q-card.unanswered {
+  border-left-color: rgba(255, 255, 255, .10);
+}
+
 /* États visuels des questions */
 .item {
   position: relative;
@@ -413,7 +427,9 @@ h1 {
 .checkbox-line input,
 .choice-option input,
 .option-line input {
-  margin-top: 3px;
+  margin: 0;
+  flex: 0 0 auto;
+  transform: scale(1.2);
 }
 
 .item-title,
@@ -487,10 +503,46 @@ h1 {
 
 .choice-option,
 .option-choice {
-  padding: 12px;
-  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 16px;
+  border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, .12);
   background: rgba(255, 255, 255, .05);
+  transition: transform .06s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+
+.choice-option:hover,
+.option-choice:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, .08);
+}
+
+.option-text {
+  margin: 0;
+  line-height: 1.45;
+  flex: 1 1 auto;
+}
+
+.option-choice:has(input:checked),
+.choice-option:has(input:checked) {
+  border-color: rgba(61, 220, 151, .50);
+  background: rgba(61, 220, 151, .14);
+  box-shadow: 0 0 0 2px rgba(61, 220, 151, .18);
+}
+
+.option-choice:has(input:checked) .option-text,
+.choice-option:has(input:checked) .option-text {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.option-choice input[type="checkbox"],
+.option-choice input[type="radio"],
+.choice-option input[type="checkbox"],
+.choice-option input[type="radio"] {
+  accent-color: var(--ok);
 }
 
 .sortable-list {
