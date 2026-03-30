@@ -275,9 +275,8 @@ async function attachConsentPidResolver(form) {
     }
   }
 
-  lastInput.addEventListener('input', refreshPid);
-  firstInput.addEventListener('input', refreshPid);
-  await refreshPid();
+  lastInput.addEventListener('change', refreshPid);
+  firstInput.addEventListener('change', refreshPid);
 }
 
 async function renderIdentityGate(root, config, onResolved) {
