@@ -53,21 +53,26 @@ function renderBackupCard(root, participant, config) {
 
   const text = hadError
     ? 'Un problème d’envoi a été détecté. Téléchargez le JSON de sauvegarde de cette phase.'
-    : 'Vous pouvez télécharger une copie locale du JSON de la phase en cas de besoin.';
+    : 'Une copie locale du JSON de la phase est disponible en sauvegarde.';
 
   card.append(el('p', 'hint', text));
 
   const actions = el('div', 'actions');
-  const btn = el('button', 'secondary-button', 'Télécharger le JSON de la phase');
+  const btn = el(
+    'button',
+    hadError ? 'secondary-button backup-error' : 'secondary-button backup-ok',
+    hadError ? 'Télécharger le JSON (envoi échoué)' : 'Télécharger le JSON (backup local)'
+  );
   btn.type = 'button';
+
   btn.addEventListener('click', () => {
     const pid = (participant.pid || 'anon').replace(/[^a-zA-Z0-9_-]+/g, '_');
     const phase = (config.phase || 'phase').replace(/[^a-zA-Z0-9_-]+/g, '_');
     downloadJsonFile(`goutte_${phase}_${pid}.json`, payload);
   });
+
   actions.append(btn);
   card.append(actions);
-
   root.append(card);
 }
 function makePhaseExportFilename(payload) {
