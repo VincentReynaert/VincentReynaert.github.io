@@ -1,6 +1,7 @@
 import { clearStore, readStore } from './storage.js';
 import { getParams, el, qs } from './utils.js';
 import { findRosterMatches } from './roster.js';
+import { sendFinalPhasePayload } from './integration.js';
 
 function resolveParticipant(params, store) {
   return {
@@ -34,6 +35,43 @@ function downloadJsonFile(filename, data) {
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
+}
+function renderSendCard(root, participant, config, progress) {
+  if (!progress.isComplete) return;
+
+  const card = el('section', 'summary-card');
+  card.append(el('h3', '', 'Envoi final de la phase'));
+
+  const status = el(
+    'p',
+    'hint',
+    'Tous les questionnaires de cette phase sont complétés. Vous pouvez maintenant envoyer les données finales.'
+  );
+
+  const actions = el('div', 'actions');
+  const btn = el('button', 'primary-button', 'Envoyer les données de la phase');
+  btn.type = 'button';
+
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    status.textContent = 'Envoi en cours...';
+
+    try {
+      await sendFinalPhasePayload();
+      status.textContent = 'Envoi terminé.';
+      btn.classList.remove('backup-error');
+      btn.classList.add('backup-ok');
+    } catch (error) {
+      status.textContent = `Erreur d’envoi : ${error.message}`;
+      btn.disabled = false;
+      btn.classList.remove('backup-ok');
+      btn.classList.add('backup-error');
+    }
+  });
+
+  actions.append(btn);
+  card.append(status, actions);
+  root.append(card);
 }
 function renderBackupCard(root, participant, config) {
   const raw = localStorage.getItem('goutte_last_global_payload');
@@ -282,8 +320,17 @@ export async function renderPhase(config) {
 
   root.innerHTML = '';
   const progress = getProgress(config, store);
+  if (progress.isComplete) {
+  try {
+    await sendFinalPhasePayload();
+    localStorage.removeItem('goutte_last_send_error');
+  } catch (error) {
+    localStorage.setItem('goutte_last_send_error', '1');
+  }
+}
   renderPhaseHeader(root, config, participant, progress);
   renderStepList(root, config, participant, store, progress);
+  renderSendCard(root, participant, config, progress);
   renderBackupCard(root, participant, config);
 
 
