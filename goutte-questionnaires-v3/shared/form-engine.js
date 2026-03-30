@@ -275,8 +275,8 @@ async function attachConsentPidResolver(form) {
     }
   }
 
-  lastInput.addEventListener('change', refreshPid);
-  firstInput.addEventListener('change', refreshPid);
+  // lastInput.addEventListener('change', refreshPid);
+  // firstInput.addEventListener('change', refreshPid);
 }
 
 async function renderIdentityGate(root, config, onResolved) {
@@ -487,6 +487,10 @@ export async function renderQuestionnaire(config) {
     const chooserWrap = el('div', 'stack');
     chooserWrap.id = 'pid-chooser-wrap';
     pidInfo.append(message, chooserWrap);
+    const resolveBtn = el('button', 'secondary-button', 'Rechercher / générer l’identifiant');
+    resolveBtn.type = 'button';
+    resolveBtn.addEventListener('click', refreshPid);
+    pidInfo.append(resolveBtn);
     const pidItem = qs('[data-item-id="pid"]', form);
     pidItem.append(pidInfo);
   }
