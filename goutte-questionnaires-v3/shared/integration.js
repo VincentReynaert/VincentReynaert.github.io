@@ -21,6 +21,7 @@ export function buildGlobalPayload(store = readStore()) {
 }
 
 export async function saveAndSend(questionnaireKey, payload) {
+  console.log('[Integration] saveAndSend start', { questionnaireKey, payload });
   saveQuestionnaireResult(questionnaireKey, payload);
   const participantPatch = payload.participant || {};
   const store = mergeStore({
@@ -30,7 +31,7 @@ export async function saveAndSend(questionnaireKey, payload) {
 
   const globalPayload = buildGlobalPayload(store);
   localStorage.setItem('goutte_last_global_payload', JSON.stringify(globalPayload));
-
+  console.log('[Integration] global payload', globalPayload);
   try {
     const individualResult = await sendPayload(payload);
     const globalResult = await sendPayload(globalPayload);
