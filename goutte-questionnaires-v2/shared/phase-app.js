@@ -11,6 +11,28 @@ function resolveParticipant(params, store) {
   };
 }
 
+function downloadPhaseJson(filename, data) {
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  URL.revokeObjectURL(url);
+}
+
+function makePhaseExportFilename(payload) {
+  const pid = (payload.participant?.pid || "anon").replace(/[^a-zA-Z0-9_-]+/g, "_");
+  const phase = (payload.phase || "phase").replace(/[^a-zA-Z0-9_-]+/g, "_");
+  const ts = new Date().toISOString().replace(/[:.]/g, "-");
+  return `goutte_${phase}_${pid}_${ts}.json`;
+}
+
 function renderPhaseHeader(root, config, participant, doneCount) {
   const header = el('header', 'page-header');
   const left = el('div');
@@ -190,4 +212,24 @@ export async function renderPhase(config) {
   const doneCount = config.steps.filter((step) => !!store.questionnaires?.[step.key]).length;
   renderPhaseHeader(root, config, participant, doneCount);
   renderStepList(root, config, participant, store);
+
+  let finalPhasePayload = null;
+  finalPhasePayload = {
+    phase: currentPhase,
+    participant: participantData,
+    condition: currentCondition || null,
+    questionnaires: collectedQuestionnaires,
+    analyses: computedAnalyses,
+    exported_at_utc: new Date().toISOString()
+  };
+
+  const btnDownloadPhaseJson = document.getElementById("btnDownloadPhaseJson");
+  if (btnDownloadPhaseJson) {
+    btnDownloadPhaseJson.onclick = () => {
+      if (!finalPhasePayload) return;
+      const filename = makePhaseExportFilename(finalPhasePayload);
+      downloadPhaseJson(filename, finalPhasePayload);
+    };
+  }
+  
 }
