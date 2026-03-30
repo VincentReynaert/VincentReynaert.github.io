@@ -5,7 +5,8 @@ export default {
   title: 'Formulaire de participation libre et éclairé',
   description: 'Formulaire de consentement et de profil participant.',
   items: [
-    { id: 'full_name', type: 'text', label: 'Nom et prénom', required: true },
+    { id: 'given_name', type: 'text', label: 'Prénom', required: true },
+    { id: 'family_name', type: 'text', label: 'Nom', required: true },
     { id: 'pid', type: 'text', label: 'Identifiant', required: true, placeholder: 'Ex. P001' },
     { id: 'age', type: 'text', label: 'Âge', required: true, inputType: 'number' },
     { id: 'sex', type: 'singleChoice', label: 'Sexe', required: true, options: [
