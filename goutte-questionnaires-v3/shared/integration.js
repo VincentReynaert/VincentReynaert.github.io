@@ -21,7 +21,6 @@ export function buildGlobalPayload(store = readStore()) {
 }
 
 export async function saveAndSend(questionnaireKey, payload) {
-  console.log('[Integration] saveAndSend start', { questionnaireKey, payload });
   saveQuestionnaireResult(questionnaireKey, payload);
   const participantPatch = payload.participant || {};
   const store = mergeStore({
@@ -31,12 +30,23 @@ export async function saveAndSend(questionnaireKey, payload) {
 
   const globalPayload = buildGlobalPayload(store);
   localStorage.setItem('goutte_last_global_payload', JSON.stringify(globalPayload));
-  console.log('[Integration] global payload', globalPayload);
+
+  return {
+    individualResult: { ok: true, mode: 'local-only' },
+    globalResult: { ok: true, mode: 'local-only' }
+  };
+}
+
+export async function sendFinalPhasePayload() {
+  const store = readStore();
+  const globalPayload = buildGlobalPayload(store);
+
+  localStorage.setItem('goutte_last_global_payload', JSON.stringify(globalPayload));
+
   try {
-    const individualResult = await sendPayload(payload);
-    const globalResult = await sendPayload(globalPayload);
+    const result = await sendPayload(globalPayload);
     localStorage.removeItem('goutte_last_send_error');
-    return { individualResult, globalResult };
+    return result;
   } catch (error) {
     localStorage.setItem('goutte_last_send_error', '1');
     throw error;
