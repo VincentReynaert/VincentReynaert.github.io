@@ -1,6 +1,6 @@
 export const API_CONFIG = {
   endpoint: 'https://default566dadffe3a9465fb05eed73b33f0a.a5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f4f44419a2d749d0970208eaee43229d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=qmxZsCkwQZaUo1UzpbtPr7lbuoNJXLdIzWHUoCdBNYI',
-  enabled: false,
+  enabled: true,
 };
 
 export function hasRemoteApi() {
@@ -8,21 +8,48 @@ export function hasRemoteApi() {
 }
 
 export async function postJson(payload) {
+  console.log('[API] POST start', {
+    endpoint: API_CONFIG.endpoint,
+    payload
+  });
+
   const response = await fetch(API_CONFIG.endpoint, {
     method: 'POST',
     mode: 'cors',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify(payload),
   });
+
   const text = await response.text();
+
+  console.log('[API] POST response', {
+    status: response.status,
+    ok: response.ok,
+    rawText: text
+  });
+
   let data;
-  try { data = JSON.parse(text); } catch { data = { raw: text }; }
-  if (!response.ok || data?.ok === false) throw new Error(data?.error || `HTTP ${response.status}`);
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = { raw: text };
+  }
+
+  if (!response.ok || data?.ok === false) {
+    console.error('[API] POST error', data);
+    throw new Error(data?.error || `HTTP ${response.status}`);
+  }
+
+  console.log('[API] POST success', data);
   return data;
 }
-
 export async function sendPayload(payload) {
-  if (!hasRemoteApi()) return { ok: true, mode: 'local-only' };
+  if (!hasRemoteApi()) {
+    console.warn('[API] Remote API disabled, local-only mode');
+    return { ok: true, mode: 'local-only' };
+  }
+
+  console.log('[API] sendPayload called', payload);
   return postJson(payload);
 }
 
