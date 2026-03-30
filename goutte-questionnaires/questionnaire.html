@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Questionnaire goutte</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main id="app" class="container"></main>
+  <script type="module">
+    import { renderQuestionnaire } from './shared/engine.js';
+    import consent from './configs/consent.js';
+    import hexad from './configs/hexad.js';
+    import autoefficacy from './configs/autoefficacy.js';
+    import chargecoCours from './configs/chargeco-cours.js';
+    import chargecoVr from './configs/chargeco-vr.js';
+    import panas from './configs/panas.js';
+    import uxCours from './configs/ux-cours.js';
+    import uxVr from './configs/ux-vr.js';
+
+    const registry = {
+      consent,
+      hexad,
+      autoefficacy,
+      chargeco_cours: chargecoCours,
+      chargeco_vr: chargecoVr,
+      panas,
+      ux_cours: uxCours,
+      ux_vr: uxVr,
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const key = params.get('form');
+    const config = registry[key];
+    if (!config) {
+      document.querySelector('#app').innerHTML = '<h1>Questionnaire introuvable</h1><p>Ajoutez ?form=consent, ?form=hexad, etc.</p>';
+    } else {
+      renderQuestionnaire(config);
+    }
+  </script>
+</body>
+</html>
