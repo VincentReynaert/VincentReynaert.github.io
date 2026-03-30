@@ -330,6 +330,12 @@ async function renderIdentityGate(root, config, onResolved) {
     clearMessage(message);
     const lastName = lastInput.value.trim();
     const firstName = firstInput.value.trim();
+    if (lastName.length < 2 || firstName.length < 2) {
+      clearMessage(message);
+      chooserWrap.innerHTML = '';
+      pidInput.value = '';
+      return;
+    }
     if (!lastName || !firstName) {
       showMessage(message, 'error', 'Merci de renseigner le nom et le prénom.');
       return;
