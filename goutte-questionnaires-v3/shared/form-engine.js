@@ -1,4 +1,4 @@
-import { saveAndSend } from './integration.js';
+import { saveAndSend, buildGlobalPayload } from './integration.js';
 import { findRosterMatches, getRosterPrefixMatches, suggestNextPid, createRosterParticipant } from './roster.js';
 import { getParams, el, qs, shuffle, buildPidPrefix, showMessage, clearMessage, moveItem, escapeHtml } from './utils.js';
 import { mergeStore, readStore } from './storage.js';
@@ -290,7 +290,7 @@ async function renderIdentityGate(root, config, onResolved) {
   const form = el('form', 'stack');
   const grid = el('div', 'grid-2');
   const lastWrap = el('div');
-  lastWrap.append(el('label', 'label', 'Nom')); 
+  lastWrap.append(el('label', 'label', 'Nom'));
   const lastInput = document.createElement('input');
   lastInput.className = 'input';
   lastInput.name = 'last_name';
@@ -306,7 +306,7 @@ async function renderIdentityGate(root, config, onResolved) {
 
   if (config.phase === 'phase2' && !config.condition) {
     const conditionWrap = el('div');
-    conditionWrap.append(el('label', 'label', 'Condition')); 
+    conditionWrap.append(el('label', 'label', 'Condition'));
     const select = document.createElement('select');
     select.className = 'select';
     select.name = 'condition';
@@ -384,7 +384,18 @@ async function renderIdentityGate(root, config, onResolved) {
     }
   });
 }
-
+function downloadJsonFile(filename, data) {
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
 export async function renderQuestionnaire(config) {
   const params = getParams();
   const root = qs('#app');
@@ -507,7 +518,28 @@ export async function renderQuestionnaire(config) {
         setTimeout(() => { window.location.href = params.returnUrl; }, 700);
       }
     } catch (error) {
-      showMessage(message, 'error', `Erreur d'envoi : ${error.message}`);
+      const globalPayload = buildGlobalPayload(readStore());
+      const phaseName = params.phase || config.phase || 'phase';
+      const pid = (finalParticipant.pid || 'anon').replace(/[^a-zA-Z0-9_-]+/g, '_');
+
+      showMessage(
+        message,
+        'error',
+        `Erreur d'envoi : ${error.message}. Téléchargez le JSON de sauvegarde si nécessaire.`
+      );
+
+      const fallbackBtn = document.createElement('button');
+      fallbackBtn.type = 'button';
+      fallbackBtn.className = 'secondary-button';
+      fallbackBtn.textContent = 'Télécharger le JSON de sauvegarde';
+
+      fallbackBtn.addEventListener('click', () => {
+        downloadJsonFile(`goutte_${phaseName}_${pid}.json`, globalPayload);
+      });
+      const existingFallback = actions.querySelector('.download-fallback-json');
+      if (existingFallback) existingFallback.remove();
+      fallbackBtn.classList.add('download-fallback-json');
+      actions.append(fallbackBtn);
     }
   });
 }
