@@ -269,25 +269,6 @@ export async function renderPhase(config) {
   const store = readStore();
   const participant = resolveParticipant(params, store);
 
-  let finalPhasePayload = null;
-
-  finalPhasePayload = {
-    phase: config.phase,
-    participant,
-    condition: participant.condition || null,
-    questionnaires: store.questionnaires || {},
-    analyses: store.analyses || {},
-    exported_at_utc: new Date().toISOString()
-  };
-
-  const btnDownloadPhaseJson = document.getElementById("btnDownloadPhaseJson");
-  if (btnDownloadPhaseJson) {
-    btnDownloadPhaseJson.onclick = () => {
-      if (!finalPhasePayload) return;
-      const filename = makePhaseExportFilename(finalPhasePayload);
-      downloadPhaseJson(filename, finalPhasePayload);
-    };
-  }
   const needsGate = config.requirePidLookup && !participant.pid;
   if (needsGate) {
     await renderIdentityGate(root, config);
@@ -298,7 +279,7 @@ export async function renderPhase(config) {
   const progress = getProgress(config, store);
   renderPhaseHeader(root, config, participant, progress);
   renderStepList(root, config, participant, store, progress);
-  renderBackupCard(root, participant, config, finalPhasePayload);
+  renderBackupCard(root, participant, config);
 
 
 }
