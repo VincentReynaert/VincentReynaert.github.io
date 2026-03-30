@@ -1,5 +1,23 @@
 [
   {
+    "lastName": "REYNAERT",
+    "firstName": "Vincent",
+    "pid": "REYvin000",
+    "condition": "vr"
+  },
+  {
+    "lastName": "DE WITTE",
+    "firstName": "Benjamin",
+    "pid": "DEWben000",
+    "condition": "cours"
+  },
+  {
+    "lastName": "WALENCZAK",
+    "firstName": "Simon",
+    "pid": "WALsim000",
+    "condition": "vr"
+  },
+  {
     "lastName": "GUIRAGOSSIAN",
     "firstName": "Lea",
     "pid": "GUIlea001",
