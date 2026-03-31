@@ -26,6 +26,7 @@ function getParticipant(params, store) {
     last_name: params.last_name || store.participant?.last_name || '',
     first_name: params.first_name || store.participant?.first_name || '',
     condition: params.condition || store.participant?.condition || '',
+    phase: params.phase || store.participant?.phase || '',
   };
 }
 
