@@ -57,11 +57,6 @@ export async function sendPayload(payload) {
   return postJson(payload);
 }
 
-export async function lookupRosterRemote(lastName, firstName) {
-  if (!hasRemoteApi()) return null;
-  return postJson({ action: 'roster_lookup', lastName, firstName });
-}
-
 export async function createRosterRemote(entry) {
   if (!hasRemoteApi()) return null;
   return postJson({ action: 'roster_create', entry });
