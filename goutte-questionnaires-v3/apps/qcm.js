@@ -14,9 +14,9 @@ function shuffleInPlace(items) {
 
 function normalizePhase(value) {
   const raw = String(value || '').toLowerCase().trim();
-  if (['pre', 'pretest', 'pre-test', 'pre_test', 'pré', 'pré-test'].includes(raw)) return 'pre';
-  if (['post', 'posttest', 'post-test', 'post_test'].includes(raw)) return 'post';
-  if (['retention', 'rétention', 'ret', 'retention_test', 'retention-test'].includes(raw)) return 'retention';
+  if (['phase1','pre', 'pretest', 'pre-test', 'pre_test', 'pré', 'pré-test'].includes(raw)) return 'pre';
+  if (['phase2','post', 'posttest', 'post-test', 'post_test'].includes(raw)) return 'post';
+  if (['phase3','retention', 'rétention', 'ret', 'retention_test', 'retention-test'].includes(raw)) return 'retention';
   return '';
 }
 
