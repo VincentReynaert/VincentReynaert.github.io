@@ -1,5 +1,5 @@
 import { buildPidPrefix, normalizeName } from './utils.js';
-import { createRosterRemote, lookupRosterRemote } from './api.js';
+import { createRosterRemote } from './api.js';
 import { getLocalRoster, upsertLocalRosterEntry } from './storage.js';
 
 let cachedRoster = null;
@@ -42,28 +42,16 @@ function mergeEntries(baseEntries = [], extraEntries = []) {
   return [...map.values()];
 }
 
-async function resolveRoster(lastName, firstName) {
-  const local = await loadRoster();
-  const remote = await lookupRosterRemote(lastName, firstName).catch(() => null);
-  if (remote?.roster) {
-    cachedRoster = mergeEntries(local, remote.roster);
-    return { roster: cachedRoster, remote };
-  }
-  return { roster: local, remote: null };
-}
-
 export async function findRosterMatches(lastName, firstName) {
-  const { roster, remote } = await resolveRoster(lastName, firstName);
-  if (remote?.matches) return remote.matches.map(normalizeEntry);
+  const roster = await loadRoster();
   const targetLast = normalizeName(lastName);
   const targetFirst = normalizeName(firstName);
   return roster.filter((row) => row._last === targetLast && row._first === targetFirst);
 }
 
 export async function getRosterPrefixMatches(lastName, firstName) {
-  const { roster, remote } = await resolveRoster(lastName, firstName);
+  const roster = await loadRoster();
   const prefix = buildPidPrefix(lastName, firstName);
-  if (remote?.prefixMatches) return remote.prefixMatches.map(normalizeEntry);
   return roster.filter((row) => row.pid.startsWith(prefix));
 }
 
