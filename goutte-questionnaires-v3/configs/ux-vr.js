@@ -6,7 +6,7 @@ const gamificationOptions = [
   'L’environnement (le fait d’être dans un vaisseau spatial)',
   'La frise chronologique (qui vous permet de récapituler les points importants)',
   'La récompense (médaille)',
-  'Interaction avec l’environnement (tirer avec le pistolet / injecteur, prendre des objets)',
+  'Interaction avec l’environnement (tirer avec le pistolet / propulseur, prendre des objets)',
 ];
 
 export default {
@@ -27,7 +27,7 @@ export default {
     { id: 'ux_9', type: 'likert', label: 'Après le cours, j’ai discuté de mon expérience en réalité virtuelle (manettes, interactions, environnement) avec les autres étudiants.', required: true, options: likert7, legendLeft: '1 = Tout à fait d’accord', legendRight: '7 = Pas du tout d’accord' },
     { id: 'ux_10', type: 'likert', label: 'Après le cours, j’ai eu envie de réaliser à nouveau l’expérience en réalité virtuelle pour mieux comprendre la goutte.', required: true, options: likert7, legendLeft: '1 = Pas du tout d’accord', legendRight: '7 = Tout à fait d’accord' },
     { id: 'gamif_useful', type: 'sortable', label: 'Classez les éléments suivants du plus utile au moins utile selon vous', required: true, options: gamificationOptions },
-    { id: 'gamif_preference', type: 'sortable', label: 'Classez les éléments suivants selon un ordre de préférence (mettez en premier celui que vous préférez le plus)', required: true, options: gamificationOptions },
+    { id: 'gamif_preference', type: 'sortable', label: 'Classez les éléments suivants selon un ordre de préférence (mettez en premier celui que vous appréciez le plus)', required: true, options: gamificationOptions },
   ],
   scales: [
     { key: 'ux_motivation', items: ['ux_1', 'ux_2', 'ux_3', 'ux_4'] },
