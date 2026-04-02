@@ -11,6 +11,40 @@ function resolveParticipant(params, store) {
     condition: params.condition || store.participant?.condition || '',
   };
 }
+function getPhaseStartKey(phase) {
+  return `goutte_${phase}_started_at`;
+}
+
+function getPhaseDurationKey(phase) {
+  return `goutte_${phase}_duration_seconds`;
+}
+
+function ensurePhaseStarted(phase) {
+  const key = getPhaseStartKey(phase);
+  let startedAt = localStorage.getItem(key);
+  if (!startedAt) {
+    startedAt = String(Date.now());
+    localStorage.setItem(key, startedAt);
+  }
+  return Number(startedAt);
+}
+
+function finalizePhaseDuration(phase) {
+  const startKey = getPhaseStartKey(phase);
+  const durationKey = getPhaseDurationKey(phase);
+  const startedAt = Number(localStorage.getItem(startKey));
+
+  if (!startedAt) return null;
+
+  const durationSeconds = Math.max(0, Math.round((Date.now() - startedAt) / 1000));
+  localStorage.setItem(durationKey, String(durationSeconds));
+  return durationSeconds;
+}
+
+function readPhaseDuration(phase) {
+  const value = localStorage.getItem(getPhaseDurationKey(phase));
+  return value ? Number(value) : null;
+}
 
 function getProgress(config, store) {
   const doneMap = Object.fromEntries(config.steps.map((step) => [step.key, !!store.questionnaires?.[step.key]]));
@@ -311,6 +345,7 @@ export async function renderPhase(config) {
   const params = getParams();
   const store = readStore();
   const participant = resolveParticipant(params, store);
+  ensurePhaseStarted(config.phase);
 
   const needsGate = config.requirePidLookup && !participant.pid;
   if (needsGate) {
@@ -321,13 +356,14 @@ export async function renderPhase(config) {
   root.innerHTML = '';
   const progress = getProgress(config, store);
   if (progress.isComplete) {
-  try {
-    await sendFinalPhasePayload();
-    localStorage.removeItem('goutte_last_send_error');
-  } catch (error) {
-    localStorage.setItem('goutte_last_send_error', '1');
+    finalizePhaseDuration(config.phase);
+    try {
+      await sendFinalPhasePayload();
+      localStorage.removeItem('goutte_last_send_error');
+    } catch (error) {
+      localStorage.setItem('goutte_last_send_error', '1');
+    }
   }
-}
   renderPhaseHeader(root, config, participant, progress);
   renderStepList(root, config, participant, store, progress);
   renderSendCard(root, participant, config, progress);

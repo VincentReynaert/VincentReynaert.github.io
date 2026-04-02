@@ -17,6 +17,11 @@ export function buildGlobalPayload(store = readStore()) {
     participant: store.participant || {},
     questionnaires: store.questionnaires || {},
     analyses: buildGlobalAnalyses(store),
+    phaseDurations: {
+      phase1_seconds: Number(localStorage.getItem('goutte_phase1_duration_seconds') || 0) || null,
+      phase2_seconds: Number(localStorage.getItem('goutte_phase2_duration_seconds') || 0) || null,
+      phase3_seconds: Number(localStorage.getItem('goutte_phase3_duration_seconds') || 0) || null,
+    },
   };
 }
 
