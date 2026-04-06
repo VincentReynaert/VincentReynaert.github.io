@@ -177,7 +177,7 @@ export const QUIZ = {
 
     {
       id: "q11",
-      text: "Que va afficher le code suivant dans la console ?",
+      text: "Quel code utiliser pour effectuer la transition ci-dessous ?",
       image: "assets/animation_trigger.png",
       image_alt: "Capture d'un bout de code.",
       multi: false,
@@ -512,6 +512,67 @@ export const QUIZ = {
         "Les objets sont des Prefabs non appliqués.",
         "Le projet est configuré en 3D au lieu de 2D.",
         "Il manque un EventSystem dans la scène."
+      ]
+    },
+
+    {
+      id: "q30",
+      text: "Soit un projectile que vous instanciez régulièrement, afin d'éviter de surcharger la mémoire de votre ordinateur, vous voulez le détruite s'il part trop loin.\nQuel(s) code(s) utiliser ?",
+      multi: true,
+      points: 1,
+      correct: [0],
+      options: [
+        { image: "assets/Projectile-supsup.png" },
+        { image: "assets/Projectile-supinf.png" },
+        { image: "assets/Projectile-infsup.png" },
+        { image: "assets/Projectile-infinf.png" }
+      ]
+    },
+
+    {
+      id: "q31",
+      text: "Soit le code suivant. Quelle(s) affirmation(s) est(sont) vraie(s) ?",
+      image: "assets/Projectile-Enemy.png",
+      image_alt: "Bout de code.",
+      multi: true,
+      points: 1,
+      correct: [0,1],
+      options: [
+        "Si mon projectile touche un GameObject avec le Tag \"Enemy\" et un Component \"Enemy\" alors l'Enemy prend des dégâts et mon projectile est détruit.",
+        "Si mon projectile touche un GameObject avec le Tag \"Enemy\" mais pas de Component \"Enemy\" alors une erreur va apparaître dans la console.",
+        "Si mon projectile touche un GameObject avec le Tag \"Enemy\" alors l'Enemy prend des dégâts et mon projectile est détruit.",
+        "Si mon projectile touche un GameObject avec un Component \"Enemy\" alors l'Enemy prend des dégâts et mon projectile est détruit.",
+      ]
+    },
+
+    {
+      id: "q32",
+      text: "Dans un jeu 2D je veux faire déplacer mon personnage. Quelle(s) affirmation(s) est(sont) vraie(s) ?",
+      multi: true,
+      points: 1,
+      correct: [0,1,2,3,4,5],
+      options: [
+        "Pour cela je peux écrire un script qui lui fait suivre ma souris.",
+        "Pour cela je peux écrire un script qui lui fait suivre case par case à chaque input Horizontal et Vertical.",
+        "Pour cela je peux écrire un script qui lui fait suivre une suite de points correspondant aux endroits de l'écran cliqués par ma souris.",
+        "Pour cela je peux écrire un script qui lui fournit une impulsion dans la direction formée par les inputs Horizontal et Vertical.",
+        "Pour cela je peux écrire un script qui lui faire une translation dans la direction formée par les inputs Horizontal et Vertical.",
+        "Pour cela je peux écrire un script qui me permet de le drag and drop.",
+        "Aucune des réponses n'est une option viable."
+      ]
+    },
+
+    {
+      id: "q33",
+      text: "Je veux mettre une place un timer dans l'Update pour déclancher MaFonction() toutes les 5 secondes.\nQuel(s) code(s) utiliser ?",
+      multi: true,
+      points: 1,
+      correct: [0,1],
+      options: [
+        { image: "assets/MaFonctionTime_0.png" },
+        { image: "assets/MaFonctionTime_1.png" },
+        { image: "assets/MaFonctionTime_2.png" },
+        { image: "assets/MaFonctionTime_3.png" }
       ]
     }
   ]
