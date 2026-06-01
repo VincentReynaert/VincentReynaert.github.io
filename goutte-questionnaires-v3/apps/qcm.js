@@ -1,5 +1,5 @@
 import { saveAndSend } from '../shared/integration.js';
-import { findRosterMatches } from '../shared/roster.js';
+import { createRosterParticipant, findRosterMatches, suggestNextPid } from '../shared/roster.js';
 import { getParams, qs, el, showMessage, clearMessage, escapeHtml } from '../shared/utils.js';
 import { mergeStore, readStore } from '../shared/storage.js';
 import { QUIZ } from '../qcm/questions.js';
@@ -58,11 +58,33 @@ function renderIdentityHelper(host, state, onReady) {
     if (!lastName || !firstName) return false;
     const matches = await findRosterMatches(lastName, firstName);
     if (!matches.length) {
+      const suggestion = await suggestNextPid(lastName, firstName);
+      await createRosterParticipant({
+        pid: suggestion.pid,
+        lastName,
+        firstName,
+        condition: state.participant.condition || '',
+      });
+      state.participant = {
+        ...state.participant,
+        pid: suggestion.pid,
+        last_name: lastName,
+        first_name: firstName,
+      };
+      mergeStore({ participant: state.participant });
+      onReady();
+      return true;
       showMessage(message, 'error', 'Aucun identifiant trouvé dans la base.');
       return false;
     }
     if (matches.length === 1) {
-      state.participant = { ...state.participant, pid: matches[0].pid, last_name: lastName, first_name: firstName };
+      state.participant = {
+        ...state.participant,
+        pid: matches[0].pid,
+        last_name: matches[0].lastName || lastName,
+        first_name: matches[0].firstName || firstName,
+        condition: state.participant.condition || matches[0].condition || '',
+      };
       mergeStore({ participant: state.participant });
       onReady();
       return true;
@@ -81,7 +103,14 @@ function renderIdentityHelper(host, state, onReady) {
     button.type = 'button';
     button.addEventListener('click', () => {
       if (!select.value) return;
-      state.participant = { ...state.participant, pid: select.value, last_name: lastName, first_name: firstName };
+      const selected = matches.find((match) => match.pid === select.value);
+      state.participant = {
+        ...state.participant,
+        pid: select.value,
+        last_name: selected?.lastName || lastName,
+        first_name: selected?.firstName || firstName,
+        condition: state.participant.condition || selected?.condition || '',
+      };
       mergeStore({ participant: state.participant });
       onReady();
     });

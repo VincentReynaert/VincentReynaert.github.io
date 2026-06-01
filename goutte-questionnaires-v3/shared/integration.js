@@ -37,8 +37,8 @@ export async function saveAndSend(questionnaireKey, payload) {
   localStorage.setItem('goutte_last_global_payload', JSON.stringify(globalPayload));
 
   return {
-    individualResult: { ok: true, mode: 'local-only' },
-    globalResult: { ok: true, mode: 'local-only' }
+    individualResult: { ok: true, mode: 'bundle-pending' },
+    globalResult: { ok: true, mode: 'bundle-pending' },
   };
 }
 

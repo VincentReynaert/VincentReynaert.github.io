@@ -42,11 +42,33 @@ function mergeEntries(baseEntries = [], extraEntries = []) {
   return [...map.values()];
 }
 
+function isLooseNameMatch(candidate, input) {
+  if (!candidate || !input) return false;
+  if (candidate === input) return true;
+  const shortest = candidate.length <= input.length ? candidate : input;
+  if (shortest.length < 4) return false;
+  return candidate.includes(input) || input.includes(candidate);
+}
+
 export async function findRosterMatches(lastName, firstName) {
   const roster = await loadRoster();
   const targetLast = normalizeName(lastName);
   const targetFirst = normalizeName(firstName);
-  return roster.filter((row) => row._last === targetLast && row._first === targetFirst);
+  if (!targetLast || !targetFirst) return [];
+
+  const strategies = [
+    (row) => row._last === targetLast && row._first === targetFirst,
+    (row) => row._last === targetFirst && row._first === targetLast,
+    (row) => row._first === targetFirst && isLooseNameMatch(row._last, targetLast),
+    (row) => row._first === targetLast && isLooseNameMatch(row._last, targetFirst),
+  ];
+
+  for (const predicate of strategies) {
+    const matches = roster.filter(predicate);
+    if (matches.length) return matches;
+  }
+
+  return [];
 }
 
 export async function getRosterPrefixMatches(lastName, firstName) {

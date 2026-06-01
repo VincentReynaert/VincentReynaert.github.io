@@ -1,6 +1,6 @@
-import { clearStore, readStore } from './storage.js';
+import { clearStore, mergeStore, readStore } from './storage.js';
 import { getParams, el, qs } from './utils.js';
-import { findRosterMatches } from './roster.js';
+import { createRosterParticipant, findRosterMatches, suggestNextPid } from './roster.js';
 import { sendFinalPhasePayload } from './integration.js';
 
 function resolveParticipant(params, store) {
@@ -299,17 +299,47 @@ async function renderIdentityGate(root, config) {
 
     const matches = await findRosterMatches(lastName, firstName);
     if (!matches.length) {
+      const suggestion = await suggestNextPid(lastName, firstName);
+      const resolvedParticipant = {
+        pid: suggestion.pid,
+        last_name: lastName,
+        first_name: firstName,
+        condition,
+      };
+      await createRosterParticipant({
+        pid: suggestion.pid,
+        lastName,
+        firstName,
+        condition,
+      });
+      mergeStore({ participant: resolvedParticipant });
+      const url = new URL(window.location.href);
+      url.searchParams.set('pid', suggestion.pid);
+      url.searchParams.set('last_name', lastName);
+      url.searchParams.set('first_name', firstName);
+      if (condition) url.searchParams.set('condition', condition);
+      window.location.href = url.toString();
+      return;
       message.className = 'message show error';
       message.textContent = 'Aucun identifiant trouvé dans la base. En phases 2 et 3, le participant doit déjà exister dans la base.';
       return;
     }
 
     if (matches.length === 1) {
+      const resolvedCondition = config.condition || matches[0].condition || condition;
+      mergeStore({
+        participant: {
+          pid: matches[0].pid,
+          last_name: matches[0].lastName || lastName,
+          first_name: matches[0].firstName || firstName,
+          condition: resolvedCondition,
+        },
+      });
       const url = new URL(window.location.href);
       url.searchParams.set('pid', matches[0].pid);
-      url.searchParams.set('last_name', lastName);
-      url.searchParams.set('first_name', firstName);
-      if (condition) url.searchParams.set('condition', condition);
+      url.searchParams.set('last_name', matches[0].lastName || lastName);
+      url.searchParams.set('first_name', matches[0].firstName || firstName);
+      if (resolvedCondition) url.searchParams.set('condition', resolvedCondition);
       window.location.href = url.toString();
       return;
     }
@@ -329,11 +359,21 @@ async function renderIdentityGate(root, config) {
     continueBtn.type = 'button';
     continueBtn.addEventListener('click', () => {
       if (!select.value) return;
+      const selected = matches.find((match) => match.pid === select.value);
+      const resolvedCondition = config.condition || selected?.condition || condition;
+      mergeStore({
+        participant: {
+          pid: select.value,
+          last_name: selected?.lastName || lastName,
+          first_name: selected?.firstName || firstName,
+          condition: resolvedCondition,
+        },
+      });
       const url = new URL(window.location.href);
       url.searchParams.set('pid', select.value);
-      url.searchParams.set('last_name', lastName);
-      url.searchParams.set('first_name', firstName);
-      if (condition) url.searchParams.set('condition', condition);
+      url.searchParams.set('last_name', selected?.lastName || lastName);
+      url.searchParams.set('first_name', selected?.firstName || firstName);
+      if (resolvedCondition) url.searchParams.set('condition', resolvedCondition);
       window.location.href = url.toString();
     });
     chooser.append(select, continueBtn);

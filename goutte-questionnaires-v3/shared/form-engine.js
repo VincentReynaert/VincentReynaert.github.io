@@ -222,6 +222,17 @@ async function attachConsentPidResolver(form) {
   const chooserWrap = qs('#pid-chooser-wrap', form);
   form.dataset.pidMode = '';
 
+  function applyResolvedEntry(entry, fallback = {}) {
+    const lastName = entry?.lastName || entry?.last_name || fallback.lastName || fallback.last_name || '';
+    const firstName = entry?.firstName || entry?.first_name || fallback.firstName || fallback.first_name || '';
+    const condition = entry?.condition || fallback.condition || '';
+    if (lastName) lastInput.value = lastName;
+    if (firstName) firstInput.value = firstName;
+    form.dataset.resolvedLastName = lastName;
+    form.dataset.resolvedFirstName = firstName;
+    form.dataset.resolvedCondition = condition;
+  }
+
   async function refreshPid() {
     const lastName = lastInput.value.trim();
     const firstName = firstInput.value.trim();
@@ -229,6 +240,9 @@ async function attachConsentPidResolver(form) {
     chooserWrap.innerHTML = '';
     clearMessage(message);
     form.dataset.pidMode = '';
+    form.dataset.resolvedLastName = '';
+    form.dataset.resolvedFirstName = '';
+    form.dataset.resolvedCondition = '';
 
     if (!lastName || !firstName) return;
     if (lastName.length < 2 || firstName.length < 2) return;
@@ -240,6 +254,7 @@ async function attachConsentPidResolver(form) {
       if (exactMatches.length === 1) {
         pidInput.value = exactMatches[0].pid;
         form.dataset.pidMode = 'existing';
+        applyResolvedEntry(exactMatches[0]);
         showMessage(message, 'success', `Identifiant existant retrouvé : ${exactMatches[0].pid}`);
         return;
       }
@@ -261,7 +276,11 @@ async function attachConsentPidResolver(form) {
           option.textContent = match.pid;
           select.append(option);
         });
-        select.addEventListener('change', () => { pidInput.value = select.value; });
+        select.addEventListener('change', () => {
+          pidInput.value = select.value;
+          const selected = exactMatches.find((match) => match.pid === select.value);
+          if (selected) applyResolvedEntry(selected);
+        });
         chooserWrap.append(label, select);
         return;
       }
@@ -269,6 +288,7 @@ async function attachConsentPidResolver(form) {
       const suggestion = await suggestNextPid(lastName, firstName);
       pidInput.value = suggestion.pid;
       form.dataset.pidMode = 'new';
+      applyResolvedEntry(null, { lastName, firstName });
       showMessage(message, 'warning', `Participant non trouvé dans la base. Nouvel identifiant proposé : ${suggestion.pid}`);
       chooserWrap.append(
         el('p', 'hint', 'Cet identifiant sera ajouté à la base au moment de la validation du formulaire de consentement. Sans backend activé, l’ajout restera local à ce navigateur.')
@@ -344,7 +364,6 @@ async function renderIdentityGate(root, config, onResolved) {
     if (lastName.length < 2 || firstName.length < 2) {
       clearMessage(message);
       chooserWrap.innerHTML = '';
-      pidInput.value = '';
       return;
     }
     if (!lastName || !firstName) {
@@ -353,8 +372,30 @@ async function renderIdentityGate(root, config, onResolved) {
     }
 
     try {
+      const phaseConditionInput = qs('[name="condition"]', form);
+      const resolvedGateCondition = config.condition || phaseConditionInput?.value || '';
+      if (config.phase === 'phase2' && !resolvedGateCondition) {
+        showMessage(message, 'error', 'Merci de choisir la condition Cours ou VR.');
+        return;
+      }
       const matches = await findRosterMatches(lastName, firstName);
       if (!matches.length) {
+        const suggestion = await suggestNextPid(lastName, firstName);
+        const resolvedParticipant = {
+          pid: suggestion.pid,
+          last_name: lastName,
+          first_name: firstName,
+          condition: resolvedGateCondition,
+        };
+        await createRosterParticipant({
+          pid: suggestion.pid,
+          lastName,
+          firstName,
+          condition: resolvedGateCondition,
+        });
+        mergeStore({ participant: resolvedParticipant });
+        onResolved(resolvedParticipant);
+        return;
         const prefix = buildPidPrefix(lastName, firstName);
         showMessage(message, 'error', `Aucun identifiant trouvé pour ${prefix}. Vérifiez data/roster.json.`);
         return;
@@ -368,8 +409,15 @@ async function renderIdentityGate(root, config, onResolved) {
       }
 
       if (matches.length === 1) {
-        mergeStore({ participant: { pid: matches[0].pid, last_name: lastName, first_name: firstName, condition } });
-        onResolved({ pid: matches[0].pid, last_name: lastName, first_name: firstName, condition });
+        const resolvedCondition = condition || matches[0].condition || '';
+        const resolvedParticipant = {
+          pid: matches[0].pid,
+          last_name: matches[0].lastName || lastName,
+          first_name: matches[0].firstName || firstName,
+          condition: resolvedCondition,
+        };
+        mergeStore({ participant: resolvedParticipant });
+        onResolved(resolvedParticipant);
         return;
       }
 
@@ -391,8 +439,16 @@ async function renderIdentityGate(root, config, onResolved) {
           showMessage(message, 'error', 'Merci de choisir votre identifiant.');
           return;
         }
-        mergeStore({ participant: { pid: select.value, last_name: lastName, first_name: firstName, condition } });
-        onResolved({ pid: select.value, last_name: lastName, first_name: firstName, condition });
+        const selected = matches.find((match) => match.pid === select.value);
+        const resolvedCondition = condition || selected?.condition || '';
+        const resolvedParticipant = {
+          pid: select.value,
+          last_name: selected?.lastName || lastName,
+          first_name: selected?.firstName || firstName,
+          condition: resolvedCondition,
+        };
+        mergeStore({ participant: resolvedParticipant });
+        onResolved(resolvedParticipant);
       });
       chooserWrap.append(label, select, continueBtn);
     } catch (error) {
@@ -530,11 +586,12 @@ export async function renderQuestionnaire(config) {
       return;
     }
 
+    const resolvedCondition = form.dataset.resolvedCondition || '';
     const finalParticipant = {
       pid: answers.pid || participant.pid,
-      last_name: answers.last_name || participant.last_name,
-      first_name: answers.first_name || participant.first_name,
-      condition: params.condition || store.participant?.condition || '',
+      last_name: form.dataset.resolvedLastName || answers.last_name || participant.last_name,
+      first_name: form.dataset.resolvedFirstName || answers.first_name || participant.first_name,
+      condition: params.condition || store.participant?.condition || resolvedCondition || '',
       phase: params.phase || config.phase || '',
     };
 
