@@ -72,6 +72,12 @@
     "condition": "vr"
   },
   {
+    "pid": "CROhug01",
+    "lastName": "Croizet--Marcahl",
+    "firstName": "Hugo",
+    "condition": "vr"
+  },
+  {
     "lastName": "ALI",
     "firstName": "Nour",
     "pid": "ALInou010",
@@ -327,6 +333,12 @@
     "lastName": "DAABOUL",
     "firstName": "Sinem-Nour",
     "pid": "DAAsin052",
+    "condition": "vr"
+  },
+  {
+    "pid": "DAAsin01",
+    "lastName": "Daaboul",
+    "firstName": "Sinem",
     "condition": "vr"
   },
   {
@@ -750,6 +762,18 @@
     "condition": "cours"
   },
   {
+    "pid": "AGAalv01",
+    "lastName": "Agatha",
+    "firstName": "Alvarez",
+    "condition": "cours"
+  },
+  {
+    "pid": "ALVaga01",
+    "lastName": "ALVAREZ ORDAZ",
+    "firstName": "Agatha",
+    "condition": "cours"
+  },
+  {
     "lastName": "ALLIALI-DIE",
     "firstName": "Lorine",
     "pid": "ALLlor123",
@@ -771,6 +795,12 @@
     "lastName": "DUNOYER-DE SALIGNAC FENELON",
     "firstName": "Fleur",
     "pid": "DUNfle126",
+    "condition": "cours"
+  },
+  {
+    "pid": "DUNfle01",
+    "lastName": "Dunoyer",
+    "firstName": "Fleur",
     "condition": "cours"
   },
   {
@@ -837,6 +867,12 @@
     "lastName": "PEREIRA DE MORAES",
     "firstName": "Tomas",
     "pid": "PERtom137",
+    "condition": "cours"
+  },
+  {
+    "pid": "PERtom01",
+    "lastName": "PEREIRA",
+    "firstName": "Tomas",
     "condition": "cours"
   },
   {
