@@ -1,0 +1,1185 @@
+{
+  "metadata": {
+    "schemaVersion": 3,
+    "experimentVersion": "0.4.0",
+    "configurationId": "redlights-fr-default",
+    "locale": "fr-FR",
+    "participantIdRegex": "^[A-Za-z0-9_-]{3,32}$"
+  },
+  "texts": {
+    "generalInstructions": "Dans cette expérience, vous allez parcourir un environnement urbain à vélo.\nVous commencerez par une courte phase de prise en main. Les consignes des essais vous seront ensuite présentées.",
+    "neutralEquipmentNote": "Certains éléments visuels liés au vélo, à l’équipement ou à l’environnement peuvent apparaître à l’écran.",
+    "tutorialIntroduction": "Vous allez maintenant réaliser une courte phase de prise en main.\nLes consignes apparaîtront progressivement à l’écran pendant l’exercice.\nSuivez simplement les indications au fur et à mesure.",
+    "tutorialFailureMessage": "La phase de prise en main n’a pas pu être validée. Merci pour votre participation.",
+    "endMessage": "L’expérience est terminée. Merci pour votre participation.",
+    "trialInstructions": "Dans cette expérience, vous allez parcourir un environnement urbain à vélo.\nVotre tâche est de vous déplacer naturellement, comme vous le feriez dans vos trajets habituels, tout en observant votre environnement.\nRégulièrement, de courtes questions vous seront posées sur ce que vous venez de voir et de ressentir."
+  },
+  "tutorial": {
+    "inputMode": "HoldToPedalMode",
+    "maxTutorialDurationSeconds": 360,
+    "requiredSuccessfulStops": 1,
+    "requiredTargetZonesReached": 3,
+    "stopSpeedThreshold": 0.2,
+    "requiredStopDuration": 1,
+    "allowRetry": true,
+    "maxAttempts": 2,
+    "neutralWaitDurationSeconds": 1.5,
+    "objectives": [
+      {
+        "objectiveId": "move",
+        "instruction": "Avancez jusqu’à la zone bleue.",
+        "objectiveType": "ReachZone",
+        "zoneId": "tutorial_zone_move",
+        "waitDurationSeconds": 1
+      },
+      {
+        "objectiveId": "stop",
+        "instruction": "Arrêtez-vous dans la zone verte.",
+        "objectiveType": "StopInZone",
+        "zoneId": "tutorial_zone_stop",
+        "waitDurationSeconds": 1
+      },
+      {
+        "objectiveId": "wait",
+        "instruction": "Attendez le signal en restant dans la zone verte.",
+        "objectiveType": "WaitForSignal",
+        "zoneId": "tutorial_zone_stop",
+        "waitDurationSeconds": 1.5
+      },
+      {
+        "objectiveId": "restart",
+        "instruction": "Repartez jusqu’à la zone orange.",
+        "objectiveType": "ReachZone",
+        "zoneId": "tutorial_zone_restart",
+        "waitDurationSeconds": 1
+      },
+      {
+        "objectiveId": "finish",
+        "instruction": "Enfin atteignez la zone violette.",
+        "objectiveType": "ReachFinalZone",
+        "zoneId": "tutorial_zone_final",
+        "waitDurationSeconds": 1
+      }
+    ]
+  },
+  "bikeControlProfiles": [
+    {
+      "profileId": "default",
+      "maxSpeed": 8,
+      "accelerationForce": 140,
+      "brakingForce": 230,
+      "passiveDeceleration": 0.08,
+      "brakeWhenPedalReleased": true,
+      "steeringSensitivity": 0,
+      "steeringReturnSpeed": 0,
+      "stopSpeedThreshold": 0.2,
+      "stopDurationThreshold": 0.2,
+      "restartSpeedThreshold": 0.5
+    }
+  ],
+  "trialOrdering": {
+    "orderingMode": "RandomWithFixedGreenGap",
+    "redTrialsBetweenGreenTrials": 3
+  },
+  "trafficLightProfiles": [
+    {
+      "profileId": "green_static",
+      "initialGreenDurationSeconds": 0,
+      "orangeDurationSeconds": 0,
+      "redHoldMinSeconds": 0,
+      "redHoldMaxSeconds": 0,
+      "redHoldTriggerDistanceMeters": 0,
+      "redDurationSeconds": 0
+    },
+    {
+      "profileId": "red_then_green",
+      "initialGreenDurationSeconds": 2.5,
+      "orangeDurationSeconds": 2,
+      "redHoldMinSeconds": 25,
+      "redHoldMaxSeconds": 35,
+      "redHoldTriggerDistanceMeters": 8,
+      "redDurationSeconds": 0
+    }
+  ],
+  "spatialProfiles": [
+    {
+      "profileId": "default",
+      "participantStartDistanceMeters": 50,
+      "lightVisibleDistanceMeters": 60,
+      "postIntersectionQuestionnaireDistance": 2,
+      "npcFrontRowStopOffsetMeters": 0,
+      "npcRearRowLongitudinalOffsetMeters": 0.8,
+      "npcLateralSpacingMeters": 1.7,
+      "trafficLightScale": 1,
+      "trafficLightHeight": 0,
+      "npcStopClearanceMeters": 0.3
+    }
+  ],
+  "npcProfiles": [
+    {
+      "profileId": "default",
+      "cyclistSpeed": 6,
+      "cyclistAcceleration": 2,
+      "npcResumeDelayAfterGreenSeconds": 0.1,
+      "movingVehicleCruiseSpeedMetersPerSecond": 11.11,
+      "leaderVehicleAccelerationMetersPerSecondSquared": 6,
+      "carDespawnDelay": 2,
+      "leaderReleaseDelayAfterRedSeconds": 3.5,
+      "followerReleaseSpacingSecondsMin": 3,
+      "followerReleaseSpacingSecondsMax": 5.5,
+      "cyclistAnimationStopSpeedThreshold": 0.2,
+      "helmetColorAssignmentMode": "FixedPattern",
+      "fixedHelmetColor": "yellow",
+      "helmetColorPattern": [
+        "yellow",
+        "none",
+        "red",
+        "none"
+      ],
+      "helmetColorPalette": [
+        "yellow",
+        "red"
+      ]
+    }
+  ],
+  "trialDefinitions": [
+    {
+      "trialId": "EXP_Red_NoCyclists_NoCar",
+      "enabled": true,
+      "category": "Experimental",
+      "studyTrafficLightCondition": "Red",
+      "initialTrafficLightState": "Green",
+      "allowTrafficLightStateChangeDuringTrial": true,
+      "trafficLightTimingProfileId": "red_then_green",
+      "hasOtherCyclists": false,
+      "cyclistCount": 0,
+      "otherCyclistBehavior": "NotApplicable",
+      "hasCar": false,
+      "carScenario": "None",
+      "bikeControlProfileId": "default",
+      "spatialProfileId": "default",
+      "npcBehaviorProfileId": "default"
+    },
+    {
+      "trialId": "EXP_Red_NoCyclists_Car",
+      "enabled": true,
+      "category": "Experimental",
+      "studyTrafficLightCondition": "Red",
+      "initialTrafficLightState": "Green",
+      "allowTrafficLightStateChangeDuringTrial": true,
+      "trafficLightTimingProfileId": "red_then_green",
+      "hasOtherCyclists": false,
+      "cyclistCount": 0,
+      "otherCyclistBehavior": "NotApplicable",
+      "hasCar": true,
+      "carScenario": "CrossingBidirectional",
+      "bikeControlProfileId": "default",
+      "spatialProfileId": "default",
+      "npcBehaviorProfileId": "default"
+    },
+    {
+      "trialId": "EXP_Red_CyclistsStop_NoCar",
+      "enabled": true,
+      "category": "Experimental",
+      "studyTrafficLightCondition": "Red",
+      "initialTrafficLightState": "Green",
+      "allowTrafficLightStateChangeDuringTrial": true,
+      "trafficLightTimingProfileId": "red_then_green",
+      "hasOtherCyclists": true,
+      "cyclistCount": 4,
+      "otherCyclistBehavior": "StopAtLight",
+      "hasCar": false,
+      "carScenario": "None",
+      "bikeControlProfileId": "default",
+      "spatialProfileId": "default",
+      "npcBehaviorProfileId": "default"
+    },
+    {
+      "trialId": "EXP_Red_CyclistsStop_Car",
+      "enabled": true,
+      "category": "Experimental",
+      "studyTrafficLightCondition": "Red",
+      "initialTrafficLightState": "Green",
+      "allowTrafficLightStateChangeDuringTrial": true,
+      "trafficLightTimingProfileId": "red_then_green",
+      "hasOtherCyclists": true,
+      "cyclistCount": 4,
+      "otherCyclistBehavior": "StopAtLight",
+      "hasCar": true,
+      "carScenario": "CrossingBidirectional",
+      "bikeControlProfileId": "default",
+      "spatialProfileId": "default",
+      "npcBehaviorProfileId": "default"
+    },
+    {
+      "trialId": "EXP_Red_CyclistsCross_NoCar",
+      "enabled": true,
+      "category": "Experimental",
+      "studyTrafficLightCondition": "Red",
+      "initialTrafficLightState": "Green",
+      "allowTrafficLightStateChangeDuringTrial": true,
+      "trafficLightTimingProfileId": "red_then_green",
+      "hasOtherCyclists": true,
+      "cyclistCount": 4,
+      "otherCyclistBehavior": "CrossAtLight",
+      "hasCar": false,
+      "carScenario": "None",
+      "bikeControlProfileId": "default",
+      "spatialProfileId": "default",
+      "npcBehaviorProfileId": "default"
+    },
+    {
+      "trialId": "EXP_Red_CyclistsCross_Car",
+      "enabled": true,
+      "category": "Experimental",
+      "studyTrafficLightCondition": "Red",
+      "initialTrafficLightState": "Green",
+      "allowTrafficLightStateChangeDuringTrial": true,
+      "trafficLightTimingProfileId": "red_then_green",
+      "hasOtherCyclists": true,
+      "cyclistCount": 4,
+      "otherCyclistBehavior": "CrossAtLight",
+      "hasCar": true,
+      "carScenario": "CrossingBidirectional",
+      "bikeControlProfileId": "default",
+      "spatialProfileId": "default",
+      "npcBehaviorProfileId": "default"
+    },
+    {
+      "trialId": "EXP_Green_NoCyclists_NoCar",
+      "enabled": true,
+      "category": "Experimental",
+      "studyTrafficLightCondition": "Green",
+      "initialTrafficLightState": "Green",
+      "allowTrafficLightStateChangeDuringTrial": false,
+      "trafficLightTimingProfileId": "green_static",
+      "hasOtherCyclists": false,
+      "cyclistCount": 0,
+      "otherCyclistBehavior": "NotApplicable",
+      "hasCar": false,
+      "carScenario": "None",
+      "bikeControlProfileId": "default",
+      "spatialProfileId": "default",
+      "npcBehaviorProfileId": "default"
+    },
+    {
+      "trialId": "EXP_Green_CyclistsCross_NoCar",
+      "enabled": true,
+      "category": "Experimental",
+      "studyTrafficLightCondition": "Green",
+      "initialTrafficLightState": "Green",
+      "allowTrafficLightStateChangeDuringTrial": false,
+      "trafficLightTimingProfileId": "green_static",
+      "hasOtherCyclists": true,
+      "cyclistCount": 4,
+      "otherCyclistBehavior": "CrossAtLight",
+      "hasCar": false,
+      "carScenario": "None",
+      "bikeControlProfileId": "default",
+      "spatialProfileId": "default",
+      "npcBehaviorProfileId": "default"
+    }
+  ],
+  "questionnaires": {
+    "screening": {
+      "questionnaireId": "screening",
+      "enabled": false,
+      "version": "1.0",
+      "title": "Questions préalables",
+      "description": "Veuillez répondre aux questions suivantes.",
+      "questions": [
+        {
+          "questionId": "screen_bike_weekly",
+          "label": "Vous déplacez-vous à vélo au moins une fois par semaine ?",
+          "type": "SingleChoice",
+          "options": [
+            {
+              "value": "no",
+              "label": "Non",
+              "hasNumericValue": true,
+              "numericValue": 0
+            },
+            {
+              "value": "yes",
+              "label": "Oui",
+              "hasNumericValue": true,
+              "numericValue": 1
+            }
+          ],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "",
+          "maxLabel": "",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "screen_bike_urban",
+          "label": "Vous déplacez-vous à vélo majoritairement en milieu urbain ?",
+          "type": "SingleChoice",
+          "options": [
+            {
+              "value": "no",
+              "label": "Non",
+              "hasNumericValue": true,
+              "numericValue": 0
+            },
+            {
+              "value": "yes",
+              "label": "Oui",
+              "hasNumericValue": true,
+              "numericValue": 1
+            }
+          ],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "",
+          "maxLabel": "",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        }
+      ],
+      "qualificationRules": [
+        {
+          "questionId": "screen_bike_weekly",
+          "operator": "Equals",
+          "expectedValue": "yes"
+        },
+        {
+          "questionId": "screen_bike_urban",
+          "operator": "Equals",
+          "expectedValue": "yes"
+        }
+      ],
+      "failureMessage": "Vous ne remplissez pas les critères de participation configurés pour cette étude. Merci pour votre intérêt."
+    },
+    "postTrial": {
+      "questionnaireId": "post_trial",
+      "enabled": true,
+      "version": "1.0",
+      "title": "Questions après l’intersection",
+      "description": "Répondez en pensant uniquement au trajet que vous venez d'effectuer.",
+      "questions": [
+        {
+          "questionId": "saw_cars",
+          "label": "Avez-vous vu des voitures ?",
+          "type": "SingleChoice",
+          "options": [
+            {
+              "value": "no",
+              "label": "Non",
+              "hasNumericValue": true,
+              "numericValue": 0
+            },
+            {
+              "value": "yes",
+              "label": "Oui",
+              "hasNumericValue": true,
+              "numericValue": 1
+            }
+          ],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "",
+          "maxLabel": "",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "saw_cyclists",
+          "label": "Avez-vous vu des cyclistes ?",
+          "type": "SingleChoice",
+          "options": [
+            {
+              "value": "no",
+              "label": "Non",
+              "hasNumericValue": true,
+              "numericValue": 0
+            },
+            {
+              "value": "yes",
+              "label": "Oui",
+              "hasNumericValue": true,
+              "numericValue": 1
+            }
+          ],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "",
+          "maxLabel": "",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "cyclist_count",
+          "label": "Combien de cyclistes avez-vous vus ?",
+          "type": "Integer",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 20,
+          "maxLength": 2,
+          "minLabel": "",
+          "maxLabel": "",
+          "required": true,
+          "visibleWhen": [
+            {
+              "questionId": "saw_cyclists",
+              "operator": "Equals",
+              "expectedValue": "yes"
+            }
+          ],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "saw_helmeted_cyclists",
+          "label": "Avez-vous vu certains cyclistes porter un casque ?",
+          "type": "SingleChoice",
+          "options": [
+            {
+              "value": "no",
+              "label": "Non",
+              "hasNumericValue": true,
+              "numericValue": 0
+            },
+            {
+              "value": "yes",
+              "label": "Oui",
+              "hasNumericValue": true,
+              "numericValue": 1
+            }
+          ],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "",
+          "maxLabel": "",
+          "required": true,
+          "visibleWhen": [
+            {
+              "questionId": "saw_cyclists",
+              "operator": "Equals",
+              "expectedValue": "yes"
+            }
+          ],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "helmet_colors",
+          "label": "De quelle couleur étaient les casques ?",
+          "type": "MultipleChoice",
+          "options": [
+            {
+              "value": "red",
+              "label": "Rouge",
+              "hasNumericValue": false,
+              "numericValue": 0
+            },
+            {
+              "value": "orange",
+              "label": "Orange",
+              "hasNumericValue": false,
+              "numericValue": 0
+            },
+            {
+              "value": "blue",
+              "label": "Bleu",
+              "hasNumericValue": false,
+              "numericValue": 0
+            },
+            {
+              "value": "yellow",
+              "label": "Jaune",
+              "hasNumericValue": false,
+              "numericValue": 0
+            },
+            {
+              "value": "green",
+              "label": "Vert",
+              "hasNumericValue": false,
+              "numericValue": 0
+            },
+            {
+              "value": "grey",
+              "label": "Gris",
+              "hasNumericValue": false,
+              "numericValue": 0
+            },
+            {
+              "value": "unknown",
+              "label": "Je ne sais plus",
+              "hasNumericValue": false,
+              "numericValue": 0
+            }
+          ],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 120,
+          "minLabel": "",
+          "maxLabel": "",
+          "required": true,
+          "visibleWhen": [
+            {
+              "questionId": "saw_helmeted_cyclists",
+              "operator": "Equals",
+              "expectedValue": "yes"
+            }
+          ],
+          "exclusiveOptionValues": [
+            "unknown"
+          ]
+        },
+        {
+          "questionId": "saw_cat",
+          "label": "Avez-vous vu un chat ?",
+          "type": "SingleChoice",
+          "options": [
+            {
+              "value": "no",
+              "label": "Non",
+              "hasNumericValue": true,
+              "numericValue": 0
+            },
+            {
+              "value": "yes",
+              "label": "Oui",
+              "hasNumericValue": true,
+              "numericValue": 1
+            }
+          ],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "",
+          "maxLabel": "",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "saw_pedestrians",
+          "label": "Avez-vous vu des piétons ?",
+          "type": "SingleChoice",
+          "options": [
+            {
+              "value": "no",
+              "label": "Non",
+              "hasNumericValue": true,
+              "numericValue": 0
+            },
+            {
+              "value": "yes",
+              "label": "Oui",
+              "hasNumericValue": true,
+              "numericValue": 1
+            }
+          ],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "",
+          "maxLabel": "",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "light_at_crossing",
+          "label": "De quelle couleur était le feu quand vous êtes passé ?",
+          "type": "SingleChoice",
+          "options": [
+            {
+              "value": "red",
+              "label": "Rouge",
+              "hasNumericValue": false,
+              "numericValue": 0
+            },
+            {
+              "value": "orange",
+              "label": "Orange",
+              "hasNumericValue": false,
+              "numericValue": 0
+            },
+            {
+              "value": "green",
+              "label": "Vert",
+              "hasNumericValue": false,
+              "numericValue": 0
+            },
+            {
+              "value": "unknown",
+              "label": "Je ne sais plus",
+              "hasNumericValue": false,
+              "numericValue": 0
+            }
+          ],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "",
+          "maxLabel": "",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "felt_safe",
+          "label": "À quel point vous sentez-vous en sécurité dans cette situation ?",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout en sécurité",
+          "maxLabel": "Tout à fait en sécurité",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "red_crossing_risk",
+          "label": "À quel point traverser au rouge est-il risqué dans cette situation ?",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout risqué",
+          "maxLabel": "Extrêmement risqué",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "injury_likelihood",
+          "label": "Dans cette situation, il y a de fortes chances que vous vous blessiez.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "severity_social",
+          "label": "Si j’avais un accident dans cette situation, cela aurait de graves conséquences sur ma vie sociale et mes relations avec mes proches.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "severity_career",
+          "label": "Si j’avais un accident dans cette situation, cela pourrait sérieusement perturber mes études ou ma carrière professionnelle.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "severity_health",
+          "label": "Si j’avais un accident dans cette situation, cela pourrait avoir de graves conséquences sur mon état de santé à long terme.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "collision_responsibility",
+          "label": "En cas de collision entre vous et une voiture, qui serait le plus responsable ?",
+          "type": "SingleChoice",
+          "options": [
+            {
+              "value": "participant",
+              "label": "Moi",
+              "hasNumericValue": false,
+              "numericValue": 0
+            },
+            {
+              "value": "driver",
+              "label": "Le conducteur de la voiture",
+              "hasNumericValue": false,
+              "numericValue": 0
+            }
+          ],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "",
+          "maxLabel": "",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        }
+      ],
+      "qualificationRules": [],
+      "failureMessage": ""
+    },
+    "final": {
+      "questionnaireId": "final",
+      "enabled": true,
+      "version": "1.0",
+      "title": "Questionnaire final",
+      "description": "Dernières questions avant la fin de l’expérience.",
+      "questions": [
+        {
+          "questionId": "identified_goal",
+          "label": "Pensez-vous avoir identifié l’objectif précis de l’étude ?",
+          "type": "SingleChoice",
+          "options": [
+            {
+              "value": "no",
+              "label": "Non",
+              "hasNumericValue": true,
+              "numericValue": 0
+            },
+            {
+              "value": "yes",
+              "label": "Oui",
+              "hasNumericValue": true,
+              "numericValue": 1
+            }
+          ],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "",
+          "maxLabel": "",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "goal_text",
+          "label": "Si oui, lequel ?",
+          "type": "FreeText",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 500,
+          "minLabel": "",
+          "maxLabel": "",
+          "required": true,
+          "visibleWhen": [
+            {
+              "questionId": "identified_goal",
+              "operator": "Equals",
+              "expectedValue": "yes"
+            }
+          ],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "norm_descriptive_important_people",
+          "label": "Les personnes importantes pour moi et qui font du vélo s’arrêtent toujours au feu rouge.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "norm_descriptive_peer_percentage",
+          "label": "Quel pourcentage de cyclistes avec qui vous voyagez traversent au feu lorsque celui-ci est rouge ?",
+          "type": "Percentage",
+          "options": [],
+          "minValue": 0,
+          "maxValue": 100,
+          "maxLength": 3,
+          "minLabel": "0 %",
+          "maxLabel": "100 %",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "norm_prescriptive_important_people",
+          "label": "Les personnes importantes pour moi voudraient que je m’arrête au feu rouge.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "rule_legitimate",
+          "label": "La règle du feu rouge est légitime pour les cyclistes.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "exception_legitimate",
+          "label": "L’exception autorisant les cyclistes à franchir les feux rouges est légitime.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "same_rule_bikes_cars",
+          "label": "Il est normal que la règle du feu rouge soit la même pour les cyclistes et les voitures.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "fear_irresponsible",
+          "label": "J’ai peur que de potentiels témoins me trouvent irresponsable.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "fear_negative_judgment",
+          "label": "J’ai peur d’être jugé·e négativement.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "feel_observed",
+          "label": "Je me sens observé·e.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "urban_bike_frequency",
+          "label": "Sur une semaine typique, je me déplace à vélo en contexte urbain :",
+          "type": "SingleChoice",
+          "options": [
+            {
+              "value": "several_daily",
+              "label": "Plusieurs fois par jour",
+              "hasNumericValue": false,
+              "numericValue": 0
+            },
+            {
+              "value": "daily",
+              "label": "Une fois par jour",
+              "hasNumericValue": false,
+              "numericValue": 0
+            },
+            {
+              "value": "more_than_twice_not_daily",
+              "label": "Plus de deux fois, mais pas tous les jours",
+              "hasNumericValue": false,
+              "numericValue": 0
+            },
+            {
+              "value": "once_or_twice_weekly",
+              "label": "Une à deux fois",
+              "hasNumericValue": false,
+              "numericValue": 0
+            },
+            {
+              "value": "less_than_weekly",
+              "label": "Moins d’une fois par semaine",
+              "hasNumericValue": false,
+              "numericValue": 0
+            }
+          ],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "",
+          "maxLabel": "",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "helmet_habit_frequently",
+          "label": "Porter un casque à vélo est un comportement que je fais fréquemment.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "helmet_habit_automatically",
+          "label": "Porter un casque à vélo est un comportement que je fais automatiquement.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "helmet_habit_without_awareness",
+          "label": "Porter un casque à vélo est un comportement que je fais sans avoir besoin d’en prendre conscience.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "helmet_habit_feel_strange_without",
+          "label": "Ne pas porter de casque à vélo me ferait me sentir bizarre ou étrange.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "helmet_habit_without_thinking",
+          "label": "Porter un casque à vélo est un comportement que je fais sans réfléchir.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "helmet_habit_effort_not_to",
+          "label": "Ne pas porter de casque à vélo me demanderait des efforts.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "helmet_habit_routine",
+          "label": "Porter un casque à vélo fait partie de ma routine.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "helmet_habit_start_before_awareness",
+          "label": "Je commence à porter un casque avant même de me rendre compte que je le fais.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "helmet_habit_difficult_not_to",
+          "label": "Je trouverais difficile de ne pas porter de casque à vélo.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "helmet_habit_no_need_to_think",
+          "label": "Porter un casque à vélo est un comportement auquel je n’ai pas besoin de penser.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "helmet_habit_identity",
+          "label": "Porter un casque à vélo caractérise bien qui je suis.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "helmet_habit_long_time",
+          "label": "Porter un casque à vélo est un comportement que je fais depuis longtemps.",
+          "type": "Likert",
+          "options": [],
+          "minValue": 1,
+          "maxValue": 7,
+          "maxLength": 1000,
+          "minLabel": "Pas du tout d’accord",
+          "maxLabel": "Tout à fait d’accord",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        },
+        {
+          "questionId": "helmet_trip_percentage",
+          "label": "De manière générale, sur quel pourcentage de vos trajets à vélo portez-vous un casque ?",
+          "type": "Percentage",
+          "options": [],
+          "minValue": 0,
+          "maxValue": 100,
+          "maxLength": 3,
+          "minLabel": "Jamais (0 %)",
+          "maxLabel": "Toujours (100 %)",
+          "required": true,
+          "visibleWhen": [],
+          "exclusiveOptionValues": []
+        }
+      ],
+      "qualificationRules": [],
+      "failureMessage": ""
+    }
+  },
+  "telemetry": {
+    "sampleRateHz": 10,
+    "trialTimeoutSeconds": 120,
+    "includeCyclistGroupCentroid": true,
+    "includeMovingVehiclePositions": true,
+    "potentialVehicleCollisionDistanceMeters": 2
+  },
+  "export": {
+    "enableCsv": true,
+    "automaticUploadEnabled": false,
+    "uploadEndpoint": "",
+    "backupUploadEndpoint": "",
+    "uploadTimeoutSeconds": 20,
+    "fallbackDownloadEnabled": true
+  },
+  "crossTrafficSignals": {
+    "heightMeters": 3.2,
+    "lateralOffsetMeters": 3.5,
+    "distanceAheadOfWaitingCarMeters": 2.5,
+    "scale": 1
+  },
+  "ui": {
+    "defaultLightMode": false,
+    "questionFontSize": 24,
+    "answerFontSize": 20
+  }
+}
