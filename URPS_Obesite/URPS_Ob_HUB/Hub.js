@@ -489,12 +489,12 @@ function renderResultsRadar(scores) {
       datasets: [{
         data: scores.map((item) => item.score),
         backgroundColor: "rgba(59, 130, 246, 0.14)",
-        borderColor: "#60a5fa",
+        borderColor: "#202730",
         borderWidth: preset.borderWidth,
         pointRadius: preset.pointRadius,
         pointHoverRadius: preset.pointRadius + 1,
         pointBackgroundColor: scores.map((item) => item.palette.color),
-        pointBorderColor: scores.map((item) => item.palette.soft),
+        pointBorderColor: "#202730",
         pointBorderWidth: preset.borderWidth,
       }],
     },
@@ -511,8 +511,8 @@ function renderResultsRadar(scores) {
           min: 0,
           max: 100,
           ticks: { display: false },
-          grid: { color: "rgba(147, 197, 253, 0.5)", lineWidth: 2 },
-          angleLines: { color: "rgba(96, 165, 250, 0.3)", lineWidth: 2 },
+          grid: { color: "#202730", lineWidth: 1 },
+          angleLines: { color: "#202730", lineWidth: 1 },
           pointLabels: {
             // Labels stay invisible; the postit buttons render the visible category titles.
             color: "rgba(0, 0, 0, 0)",
