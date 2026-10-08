@@ -9,23 +9,29 @@ const HUB_WELCOME_SEEN_KEY = "urps_ob_hub_welcome_seen";
 const HUB_BLOC_A_TRANSITION_SEEN_KEY = "urps_ob_hub_bloc_a_transition_seen";
 
 const SPECIALTIES = [
-  "Médecin généraliste",
-  "Pédiatre",
-  "Gynécologue",
-  "Dermatologue",
-  "Ophtalmologue",
-  "ORL (oto-rhino-laryngologiste)",
-  "Cardiologue",
-  "Rhumatologue",
-  "Neurologue",
-  "Psychiatre",
-  "Endocrinologue",
-  "Gastro-entérologue",
-  "Pneumologue",
-  "Néphrologue",
-  "Urologue",
-  "Allergologue",
-  "Angiologue"
+  "Médecine générale", 
+  "Allergologie", 
+  "Anesthésie-réanimation",
+  "Dermatologie",
+  "Endocrinologie",
+  "Gériatrie",
+  "Gynécologie",
+  "Hématologie",
+  "Hépato-gastro-entérologie",
+  "Médecine cardiovasculaire (cardiologie)",
+  "Médecine vasculaire",
+  "Néphrologie",
+  "Neurologie",
+  "Oncologie",
+  "Ophtalmologie",
+  "ORL",
+  "Pédiatrie",
+  "Pneumologie",
+  "Psychiatrie",
+  "Radiologie et imagerie médicale",
+  "Rhumatologie",
+  "Urologie",
+  "Autre spécialité"
 ];
 
 const DEPARTMENTS = [

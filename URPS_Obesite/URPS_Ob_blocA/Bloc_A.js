@@ -283,7 +283,7 @@ const STEPS = [
       {
         placement: { left: "67%", top: "70%", size: "4%" },
         id: "marchePied-xl",
-        label: "Marche-pied Adapte",
+        label: "Marche-pied adapté",
         desc: "Surface large et stable, barre de maintien",
         optimal: true,
         sprite: "Marche-pied_Adapte.png",
