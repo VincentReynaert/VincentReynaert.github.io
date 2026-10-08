@@ -2,7 +2,7 @@
 <html lang="fr" data-scene="hub">
 <head>
   <meta charset="UTF-8"/>
-  <script src="../shared/scene-runtime.js?v=20261006-r2"></script>
+  <script src="../shared/scene-runtime.js?v=20261008-r1"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
   <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -17,9 +17,9 @@
       document.documentElement.classList.add("is-ios");
     }
   </script>
-  <link rel="stylesheet" href="Hub.css?v=20261006-r2"/>
+  <link rel="stylesheet" href="Hub.css?v=20261008-r1"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="../shared/scene-layout.css?v=20261006-r2" />
+  <link rel="stylesheet" href="../shared/scene-layout.css?v=20261008-r1" />
 </head>
 <body>
   <main class="hub urps-stage" aria-label="Accueil du centre medical">
@@ -145,8 +145,14 @@
         <div class="hub-results-actions">
         <p class="hub-results-click-hint">Cliquez sur les noms des catégories.</p>
         <button class="hub-results-download" id="hub-results-download" type="button">
-          Télécharger mes résultats
+          Télécharger mon bilan PDF
         </button>
+        <button class="hub-results-download" id="hub-results-email" type="button">Envoyer par mail (Excel)</button>
+        <dialog id="hub-email-help" aria-label="Envoyer les résultats par mail">
+          Le fichier Excel a été téléchargé. Joignez-le au message destiné à vincent.reynaert@univ-catholille.fr.
+          <a id="hub-email-open">Ouvrir ma messagerie</a>
+          <form method="dialog"><button type="submit">Fermer</button></form>
+        </dialog>
         </div>
       </section>
 
@@ -167,7 +173,10 @@
     </div>
   </main>
 
-  <script src="Hub.js?v=20261006-r2"></script>
-  <script src="../shared/scene-layout.js?v=20261006-r2"></script>
+  <script src="../shared/vendor/jspdf.umd.min.js"></script>
+  <script src="../shared/vendor/xlsx.full.min.js"></script>
+  <script src="../shared/results-export.js?v=20261008-r1"></script>
+  <script src="Hub.js?v=20261008-r1"></script>
+  <script src="../shared/scene-layout.js?v=20261008-r1"></script>
 </body>
 </html>

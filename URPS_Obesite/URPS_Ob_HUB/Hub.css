@@ -1161,6 +1161,23 @@ body {
   margin: 0;
 }
 .hub-results-click-hint { font-size: 1.05cqw; }
+#hub-email-help {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(440px, 85vw);
+  max-height: 80vh;
+  padding: 20px;
+  box-sizing: border-box;
+  background: #fff;
+  color: #243447;
+  border: 0;
+  border-radius: 8px;
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
+#hub-email-help::backdrop { background: #0008; }
+#hub-email-open { display: block; color: #174e86; margin: 16px 0; }
 .hub-radar-category-btn {
   display: block;
   width: 10.5cqw;

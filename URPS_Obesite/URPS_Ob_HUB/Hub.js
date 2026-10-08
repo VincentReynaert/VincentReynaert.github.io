@@ -734,13 +734,6 @@ function renderResultsCategories() {
   // Details are opened only via radar category label clicks.
 }
 
-function escapeCsvValue(value) {
-  const normalized = String(value ?? "");
-  return /[;"\r\n]/.test(normalized)
-    ? `"${normalized.replace(/"/g, '""')}"`
-    : normalized;
-}
-
 function getSessionProfileValue(key) {
   return sessionStorage.getItem(key) || "";
 }
@@ -757,11 +750,11 @@ function getSessionGenderLabel() {
   return selectedButton?.querySelector("span")?.textContent || gender;
 }
 
-function csvNumber(value) {
-  return Number.isFinite(value) ? String(Number(value.toFixed(3))).replace(".", ",") : "";
+function exportNumber(value) {
+  return Number.isFinite(value) ? Number(value.toFixed(3)) : "";
 }
 
-function buildResultsCsv() {
+function buildResultsRows() {
   const rows = [["Question", "Réponse", "Valeur numérique associée", "Temps de réponse (secondes)"]];
   rows.push(["Données démographiques", "", "", ""]);
   const profile = [
@@ -784,11 +777,11 @@ function buildResultsCsv() {
     // Never represent an unrecorded duration as zero or a partial total as complete.
     const totalTime = times.length && times.length === questions.length
       ? times.reduce((sum, value) => sum + value, 0) : null;
-    rows.push([label, "Moyenne (scores corrigés)", csvNumber(mean), csvNumber(totalTime)]);
-    rows.push([label, "SD (écart-type, n-1)", csvNumber(sd), ""]);
+    rows.push([label, "Moyenne (scores corrigés)", exportNumber(mean), exportNumber(totalTime)]);
+    rows.push([label, "SD (écart-type, n-1)", exportNumber(sd), ""]);
     questions.forEach((item) => rows.push([
       item.question || `Question non conservée — ${item.feedbackTitle || "ancien résultat"}`,
-      item.answer, csvNumber(item.numericValue), csvNumber(item.responseSeconds),
+      item.answer, exportNumber(item.numericValue), exportNumber(item.responseSeconds),
     ]));
   }
 
@@ -800,27 +793,42 @@ function buildResultsCsv() {
   (hubResultsPayload?.scores || []).forEach((category) => {
     appendCategory(category.label, hubResultsPayload?.details?.[category.key] || []);
   });
-  return rows.map((row) => row.map(escapeCsvValue).join(";")).join("\r\n");
+  return rows;
 }
 
-function downloadResultsCsv() {
+function downloadResultsPdf() {
   if (!hubResultsPayload?.scores?.length) {
     showStatus("Aucun résultat à télécharger.");
     return;
   }
+  try {
+    URPSResultsExport.pdf(hubResultsPayload, getCategoryPalette);
+    markResultUsed("download");
+  } catch (error) {
+    console.error("Export PDF", error);
+    showStatus("Le PDF n’a pas pu être créé. Veuillez réessayer.");
+  }
+}
 
-  const csvWithBom = `\uFEFF${buildResultsCsv()}`;
-  const blob = new Blob([csvWithBom], { type: "text/csv;charset=utf-8" });
-  const downloadUrl = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = downloadUrl;
-  link.download = "resultats_urps_obesite.csv";
-  document.body.appendChild(link);
-  link.click();
-  markResultUsed("download");
-  link.remove();
-  // Give mobile browsers time to take ownership of the download.
-  window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 60000);
+async function prepareResultsEmail() {
+  if (!hubResultsPayload?.scores?.length) {
+    showStatus("Aucun résultat à envoyer.");
+    return;
+  }
+  const button = document.getElementById("hub-results-email");
+  button.disabled = true;
+  try {
+    const outcome = await URPSResultsExport.shareExcel(buildResultsRows());
+    if (outcome !== "downloaded") return;
+    document.getElementById("hub-email-help").showModal();
+    document.getElementById("hub-email-open").href = URPSResultsExport.mailUrl();
+    document.getElementById("hub-email-open").focus();
+  } catch (error) {
+    console.error("Export Excel", error);
+    showStatus("Le fichier Excel n’a pas pu être créé. Veuillez réessayer.");
+  } finally {
+    button.disabled = false;
+  }
 }
 
 function closeCategoryOverlay() {
@@ -937,7 +945,7 @@ function openDoor(button) {
 
 mainDoor.addEventListener("click", () => openDoor(mainDoor));
 hubWelcomeOverlay?.addEventListener("click", dismissWelcomeDialog);
-resultsDownloadButton?.addEventListener("click", downloadResultsCsv);
+resultsDownloadButton?.addEventListener("click", downloadResultsPdf);
 resultsDownloadButton.dataset.resultControl = "download";
 [...posterHotspots, logoObesiteLink].forEach((link) => {
   link.dataset.resultControl = `resource:${new URL(link.href).hostname}`;
@@ -1019,3 +1027,5 @@ window.addEventListener("urps:scene-deactivated", () => {
   closeCategoryOverlay();
 });
 window.URPS_SCENE.ready();
+
+document.getElementById("hub-results-email")?.addEventListener("click", prepareResultsEmail);

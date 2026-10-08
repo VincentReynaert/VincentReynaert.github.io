@@ -1,21 +1,24 @@
 const CACHE_PREFIX = "urps-obesite-onepage-";
-const CACHE_NAME = `${CACHE_PREFIX}20261006-r2`;
+const CACHE_NAME = `${CACHE_PREFIX}20261008-r1`;
 const APP_SHELL = [
+  "../shared/vendor/jspdf.umd.min.js",
+  "../shared/vendor/xlsx.full.min.js",
+  "../shared/results-export.js?v=20261008-r1",
   "./",
   "./index.html",
   "./manifest.webmanifest",
-  "../URPS_Ob_HUB/index.html?v=20261006-r2",
-  "../URPS_Ob_HUB/Hub.css?v=20261006-r2",
-  "../URPS_Ob_HUB/Hub.js?v=20261006-r2",
-  "../URPS_Ob_blocA/index.html?v=20261006-r2",
-  "../URPS_Ob_blocA/Bloc_A.css?v=20261006-r2",
-  "../URPS_Ob_blocA/Bloc_A.js?v=20261006-r2",
-  "../URPS_Ob_blocB/index.html?v=20261006-r2",
-  "../URPS_Ob_blocB/Bloc_B.css?v=20261006-r2",
-  "../URPS_Ob_blocB/Bloc_B.js?v=20261006-r2",
-  "../shared/scene-layout.css?v=20261006-r2",
-  "../shared/scene-layout.js?v=20261006-r2",
-  "../shared/scene-runtime.js?v=20261006-r2"
+  "../URPS_Ob_HUB/index.html?v=20261008-r1",
+  "../URPS_Ob_HUB/Hub.css?v=20261008-r1",
+  "../URPS_Ob_HUB/Hub.js?v=20261008-r1",
+  "../URPS_Ob_blocA/index.html?v=20261008-r1",
+  "../URPS_Ob_blocA/Bloc_A.css?v=20261008-r1",
+  "../URPS_Ob_blocA/Bloc_A.js?v=20261008-r1",
+  "../URPS_Ob_blocB/index.html?v=20261008-r1",
+  "../URPS_Ob_blocB/Bloc_B.css?v=20261008-r1",
+  "../URPS_Ob_blocB/Bloc_B.js?v=20261008-r1",
+  "../shared/scene-layout.css?v=20261008-r1",
+  "../shared/scene-layout.js?v=20261008-r1",
+  "../shared/scene-runtime.js?v=20261008-r1"
 ];
 const shellPaths = new Set(APP_SHELL.map((path) => new URL(path, self.registration.scope).pathname));
 

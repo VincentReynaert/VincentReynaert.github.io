@@ -1,6 +1,7 @@
 import os
 import json
-import csv as csv_parser
+from pypdf import PdfReader
+from openpyxl import load_workbook
 import io
 from browser_support import ARTIFACTS, ENGINES, environment
 with environment() as (p, origin):
@@ -73,16 +74,26 @@ with environment() as (p, origin):
         with page.expect_download() as d:
             hub.locator('#hub-results-download').click()
         download = d.value
-        assert download.suggested_filename == 'resultats_urps_obesite.csv'
-        csv = open(download.path(), encoding='utf-8-sig').read()
-        rows = list(csv_parser.reader(io.StringIO(csv), delimiter=';'))
+        assert download.suggested_filename == 'resultats_urps_obesite.pdf'
+        document = PdfReader(download.path())
+        assert len(document.pages) >= 7
+        assert 'URPS' in document.pages[0].extract_text()
+        hub.evaluate("Object.defineProperty(navigator, 'canShare', {configurable:true, value: () => false})")
+        with page.expect_download() as excel:
+            hub.locator('#hub-results-email').click()
+        assert excel.value.suggested_filename == 'resultats_urps_obesite.xlsx'
+        assert hub.locator('#hub-email-help').is_visible()
+        assert hub.locator('#hub-email-open').get_attribute('href').startswith('mailto:vincent.reynaert@univ-catholille.fr?')
+        hub.locator('#hub-email-help button').click()
+        with open(excel.value.path(), 'rb') as file:
+            rows = [[v if v is not None else "" for v in row] for row in load_workbook(file).active.values]
         assert all(len(row) == 4 for row in rows)
         assert ['Âge', '40', '', ''] in rows
         assert len([row for row in rows if row[1] == 'Moyenne (scores corrigés)']) == 8
         # Eight choices, eight equipment answers and 22 consultation questions.
         timed = [row for row in rows[1:] if row[3] and row[1] != 'Moyenne (scores corrigés)']
         assert len(timed) == 38, timed
-        assert all(float(row[3].replace(',', '.')) >= 0 for row in timed)
+        assert all(float(row[3]) >= 0 for row in timed)
         assert hub.locator('.is-results-highlight').count() == 8
         page.evaluate('window.dispatchEvent(new Event("pageshow"))')
         page.locator('.scene-loading').wait_for(state='hidden')
@@ -109,6 +120,6 @@ with environment() as (p, origin):
         page.locator('.scene-loading').wait_for(state='hidden')
         assert hub.locator('.is-results-highlight').count() == 10
         assert not errors, errors
-        print(engine, 'FULL JOURNEY + 10 halos + visited persistence + CSV + reduced motion PASS', flush=True)
+        print(engine, 'FULL JOURNEY + 10 halos + visited persistence + PDF/XLSX + reduced motion PASS', flush=True)
         c.close()
         b.close()

@@ -1,6 +1,5 @@
-"""Verify corrected scores, response latency and the four-column CSV contract."""
-import csv
-import io
+"""Verify corrected scores, response latency and the four-column XLSX contract."""
+from openpyxl import load_workbook
 from browser_support import ENGINES, environment
 
 with environment() as (p, origin):
@@ -49,16 +48,21 @@ with environment() as (p, origin):
                 ], missing:[{feedbackTitle:'Ancienne question',answer:'Oui'}]
             }};
         }""", question)
-        rows = list(csv.reader(io.StringIO(page.evaluate("buildResultsCsv()")), delimiter=";"))
+        with page.expect_download() as download:
+            page.evaluate("URPSResultsExport.excel(buildResultsRows())")
+        assert download.value.suggested_filename.endswith('.xlsx')
+        with open(download.value.path(), 'rb') as file:
+            sheet = load_workbook(file).active
+            rows = [[v if v is not None else "" for v in row] for row in sheet.values]
         assert all(len(row) == 4 for row in rows)
         assert rows[0] == ["Question", "Réponse", "Valeur numérique associée", "Temps de réponse (secondes)"]
         assert ["Âge", "42", "", ""] in rows
         assert len(rows[2:8]) == 6
-        assert [question, 'Réponse ; "oui"', "1", "1,25"] in rows
-        assert ["Catégorie test", "Moyenne (scores corrigés)", "3", "7,75"] in rows
-        assert ["Catégorie test", "SD (écart-type, n-1)", "2", ""] in rows
-        assert ["Aménagement", "Moyenne (scores corrigés)", "", "2"] in rows
+        assert [question, 'Réponse ; "oui"', 1, 1.25] in rows
+        assert ["Catégorie test", "Moyenne (scores corrigés)", 3, 7.75] in rows
+        assert ["Catégorie test", "SD (écart-type, n-1)", 2, ""] in rows
+        assert ["Aménagement", "Moyenne (scores corrigés)", "", 2] in rows
         assert ["Ancien résultat", "Moyenne (scores corrigés)", "", ""] in rows
         assert not errors, errors
         browser.close()
-        print(engine, "CSV columns, demographics, corrected scores, SD, times and escaping PASS", flush=True)
+        print(engine, "XLSX columns, demographics, corrected scores, SD, times and escaping PASS", flush=True)

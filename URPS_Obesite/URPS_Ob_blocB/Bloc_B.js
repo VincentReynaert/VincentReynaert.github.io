@@ -603,6 +603,7 @@ function buildCategoryDetailsData(categoryKey) {
         rawValue: typeof val === "number" && Number.isFinite(val) ? val : null,
         numericValue: meta && Number.isFinite(meta.score)
           ? (step.reverseScore ? (meta.max || 5) + 1 - meta.score : meta.score) : null,
+        scoreMax: meta && Number.isFinite(meta.score) ? (meta.max || 5) : null,
         responseSeconds: responseTimes[step.id] ?? null,
         answer: meta ? meta.label : String(val),
         feedbackTitle: step.feedbackTitle,

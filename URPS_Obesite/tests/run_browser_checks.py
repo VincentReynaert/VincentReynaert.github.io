@@ -3,7 +3,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-SUITES = ("layout", "lifecycle", "journey", "bilan", "questions", "cache", "csv")
+SUITES = ("layout", "lifecycle", "journey", "bilan", "questions", "cache", "csv", "exports")
 selected = sys.argv[1:] or SUITES
 for suite in selected:
     if suite not in SUITES:
