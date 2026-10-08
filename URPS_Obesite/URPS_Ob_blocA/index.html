@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr" data-scene="blocA">
+<head>
+  <meta charset="UTF-8"/>
+  <script src="../shared/scene-runtime.js?v=20261006-r2"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <link rel="manifest" href="../manifest.json"/>
+  <title>Bloc A — Aménagement du cabinet</title>
+  <link rel="stylesheet" href="Bloc_A.css?v=20261006-r2"/>
+  <link rel="stylesheet" href="../shared/scene-layout.css?v=20261006-r2" />
+</head>
+<body>
+  <div id="app" class="content urps-stage">
+
+    <!-- ===== TOPBAR ===== -->
+    <header class="topbar">
+      <span class="topbar-title">Aménagement du cabinet</span>
+      <div class="topbar-progress">
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <span class="progress-label" id="progress-label">0 / 4</span>
+      </div>
+    </header>
+
+    <!-- ===== MAIN: scene only ===== -->
+    <main class="main-area">
+
+      <!-- Cabinet scene (full height) -->
+      <div class="scene-section">
+        <div class="scene-inner" id="scene-inner">
+          <img class="scene-bg"
+               src="./MedicalSprites/Illu/Cabinet_Player_Empty_V2.png"
+               alt="Cabinet médical"/>
+          <div class="scene-dim hidden" id="scene-dim"></div>
+          <div class="placed-objects" id="placed-objects"></div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ===== WELCOME OVERLAY ===== -->
+    <div class="center-overlay" id="welcome-overlay" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+      <div class="center-overlay-card">
+        <h2 class="center-overlay-title" id="welcome-title">Bienvenue</h2>
+        <p class="center-overlay-text">Bienvenue dans votre cabinet virtuel, aménagez le comme le votre.</p>
+        <p class="center-overlay-text">Cette partie dure environ 1 à 3 minutes.</p>
+        <button class="center-overlay-btn" id="btn-welcome-close" type="button">Commencer</button>
+      </div>
+    </div>
+
+    <!-- ===== SURVEY OVERLAY ===== -->
+    <div class="center-overlay hidden" id="survey-overlay" role="dialog" aria-modal="true" aria-labelledby="survey-title">
+      <div class="center-overlay-card">
+        <h2 class="center-overlay-title" id="survey-title">Sondage</h2>
+        <p class="center-overlay-text">On va récupérer quelques informations.</p>
+        <button class="center-overlay-btn" id="btn-survey-close" type="button">Continuer</button>
+      </div>
+    </div>
+
+    <!-- ===== SELECTION MODAL ===== -->
+    <div class="modal-backdrop" id="modal-backdrop">
+      <!-- sparkle canvas -->
+      <canvas class="sparkle-canvas" id="sparkle-canvas"></canvas>
+
+      <div class="selection-panel" id="selection-panel">
+        <div class="step-header">
+          <span class="step-chip" id="step-chip">Étape 1</span>
+          <p class="step-question" id="step-question"></p>
+        </div>
+        <div class="options-row" id="options-row"></div>
+        <div class="panel-footer">
+          <button class="btn-choose" id="btn-choose" disabled>Je choisis</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== RECAP OVERLAY ===== -->
+    <div class="recap-overlay hidden" id="recap-overlay">
+      <div class="recap-panel" id="recap-panel">
+        <div class="recap-header">
+          <span class="recap-chip" id="recap-chip">Analyse 1 / 4</span>
+          <span class="recap-status-badge" id="recap-status-badge"></span>
+        </div>
+        <div class="recap-body" id="recap-body"></div>
+        <div class="recap-question-row">
+          <p class="recap-q-text">Disposez-vous de cet équipement dans votre cabinet ?</p>
+          <div class="recap-answer-btns">
+            <button class="btn-equip btn-equip-oui" id="btn-equip-oui">✓ Oui</button>
+            <button class="btn-equip btn-equip-non" id="btn-equip-non">✗ Non</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script src="Bloc_A.js?v=20261006-r2"></script>
+  <script src="../shared/scene-layout.js?v=20261006-r2"></script>
+</body>
+</html>

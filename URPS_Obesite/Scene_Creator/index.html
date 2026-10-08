@@ -1,0 +1,202 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scene Creator</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div id="topbar">
+
+        <div class="topbar-group">
+            <div class="dropdown" id="fileMenu">
+                <button class="dropdown-btn" type="button">File &#9662;</button>
+                <div class="dropdown-content">
+                    <label class="dropdown-item">
+                        Importer image
+                        <input type="file" id="imageInput" accept="image/*,.svg" hidden>
+                    </label>
+                    <label class="dropdown-item">
+                        Import Scene
+                        <input type="file" id="sceneImportInput" accept=".svg" hidden>
+                    </label>
+                    <button id="exportSceneBtn" class="dropdown-item" type="button">Exporter scÃ¨ne</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="topbar-group settings-group">
+            <span class="settings-label">Settings</span>
+            <button id="spaceToggle" class="toggle-btn" type="button">
+                Space: LOCAL
+            </button>
+        </div>
+
+    </div>
+
+    <div id="editor">
+
+        <div id="hierarchy-panel">
+
+            <div class="panel-title">
+                Hierarchy
+            </div>
+
+            <div id="hierarchy"></div>
+
+            <div id="contextMenu" class="context-menu hidden">
+                <div id="renameBtn">Renommer</div>
+                <div id="deleteBtn">Supprimer</div>
+            </div>
+        </div>
+
+        <div class="panel-resizer" id="hierarchyResizer"></div>
+
+        <div id="viewport">
+
+            <div id="scene">
+                <div id="grid"></div>
+                <div id="objectLayer"></div>
+                <div id="selectionBox" class="selection-box" hidden></div>
+                <div id="gizmo" hidden>
+
+                    <div class="axis axis-x"></div>
+                    <div class="axis axis-y"></div>
+
+                    <div id="rotationCircle"></div>
+                    <div class="rotate-handle"></div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="panel-resizer" id="inspectorResizer"></div>
+
+        <div id="inspector-panel">
+
+            <div class="panel-title">
+                Inspector
+            </div>
+
+            <div class="field-row">
+                <div class="field compact-field">
+                    <label for="posX">X</label>
+                    <input type="number" id="posX">
+                </div>
+
+                <div class="field compact-field">
+                    <label for="posY">Y</label>
+                    <input type="number" id="posY">
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="rotation">Rotation</label>
+                <input type="number" id="rotation">
+            </div>
+
+            <div class="inspector-action">
+                <button id="resetRotationBtn" type="button">Reset rotation</button>
+            </div>
+
+            <div class="field-row">
+                <div class="field compact-field">
+                    <label for="scaleX">Scale X</label>
+                    <input type="number" id="scaleX" step="0.01">
+                </div>
+
+                <div class="field compact-field">
+                    <label for="scaleY">Scale Y</label>
+                    <input type="number" id="scaleY" step="0.01">
+                </div>
+            </div>
+
+            <div class="inspector-action">
+                <button id="resetScaleBtn" type="button">Reset scale</button>
+            </div>
+
+            <label class="checkbox-field">
+                <span>Hidden</span>
+                <input type="checkbox" id="hiddenInput">
+            </label>
+
+            <div id="inspectorTabs" class="inspector-tabs" hidden>
+                <button class="inspector-tab active" data-tab="svg" type="button">Couleurs</button>
+                <button class="inspector-tab" data-tab="rig" type="button">Rig</button>
+            </div>
+
+            <div id="svgExportAction" class="inspector-action svg-export-action" hidden></div>
+
+            <div id="svgInspector" class="svg-inspector" hidden></div>
+            <div id="rigInspector" class="rig-inspector" hidden></div>
+
+        </div>
+
+    </div>
+
+    <div id="exportModal" class="modal-overlay" hidden>
+        <div class="modal">
+            <div class="modal-title">Exporter la scÃ¨ne</div>
+            <div class="modal-body">
+
+                <div class="export-name-field">
+                    <label for="exportName">Nom du fichier</label>
+                    <input type="text" id="exportName" value="scene" placeholder="scene" spellcheck="false">
+                </div>
+
+                <div class="export-format-row">
+                    <label class="export-mode-option">
+                        <input type="radio" name="exportFormat" value="png" checked>
+                        PNG
+                    </label>
+                    <label class="export-mode-option">
+                        <input type="radio" name="exportFormat" value="svg">
+                        SVG
+                    </label>
+                </div>
+
+                <div id="exportModeRow" class="export-mode-row">
+                    <label class="export-mode-option">
+                        <input type="radio" name="exportMode" value="auto" checked>
+                        Taille automatique
+                    </label>
+                    <label class="export-mode-option">
+                        <input type="radio" name="exportMode" value="fixed">
+                        Taille fixe
+                    </label>
+                </div>
+
+                <div id="exportFixedFields" class="export-fixed-fields" hidden>
+                    <div class="field-row">
+                        <div class="field compact-field">
+                            <label for="exportWidth">Largeur (px)</label>
+                            <input type="number" id="exportWidth" value="1920" min="1">
+                        </div>
+                        <div class="field compact-field">
+                            <label for="exportHeight">Hauteur (px)</label>
+                            <input type="number" id="exportHeight" value="1080" min="1">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-actions">
+                <button id="exportCancelBtn" type="button">Annuler</button>
+                <button id="exportConfirmBtn" type="button" class="btn-primary">Exporter</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
+

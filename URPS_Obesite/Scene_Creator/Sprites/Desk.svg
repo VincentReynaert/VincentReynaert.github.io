@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 23.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Desk" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 81.6 90.5" style="enable-background:new 0 0 81.6 90.5;" xml:space="preserve">
+<style type="text/css">
+	.st0{opacity:0.25;fill-rule:evenodd;clip-rule:evenodd;fill:#351400;enable-background:new    ;}
+	.st1{fill:#A1694A;}
+	.st2{fill:#C4825A;}
+	.st3{fill:#8F5D42;}
+	.st4{fill:#A46D4B;}
+	.st5{fill:#D98E6A;}
+	.st6{fill:#B37752;}
+	.st7{fill:#E19B74;}
+	.st8{fill:#F6A97F;}
+</style>
+<polygon id="DeskShadow" class="st0" points="0.8,61.7 17.4,89.2 18.2,90.5 81.5,90.5 79.7,88.3 2.9,61.7 "/>
+<g id="Desk_1_">
+	<g id="DeskSide_01">
+		<rect x="19.5" y="21.4" class="st1" width="60.2" height="67"/>
+	</g>
+	<g id="DeskSide_02">
+		<polygon class="st2" points="2.9,3.6 2.9,61.7 19.4,88.3 19.7,21.6 		"/>
+	</g>
+	<g id="DeskShadow_01">
+		<polygon class="st3" points="19.4,21.6 19.4,27.6 79.7,27.5 79.7,21.6 		"/>
+	</g>
+	<g id="DeskShadow_02">
+		<polygon class="st4" points="2.9,4.6 2.9,9.6 19.4,27.6 19.4,21.6 		"/>
+	</g>
+	<g id="DeskPlatter_01">
+		<rect x="16.3" y="17.8" class="st2" width="65.3" height="3.8"/>
+	</g>
+	<g id="DeskPlatter_02">
+		<polygon class="st5" points="0,0 0,3.6 16.1,21.6 16.1,17.8 		"/>
+	</g>
+	<g id="DeskBevel_01">
+		<rect x="19.4" y="27.6" class="st6" width="1.9" height="60.7"/>
+	</g>
+	<g id="DeskBevel_02">
+		<polygon class="st7" points="16.1,17.8 16.1,21.6 17,21.6 17,17.8 		"/>
+	</g>
+	<g id="Desk_Top">
+		<polygon class="st7" points="55.2,0.5 1.2,0.7 17,17.8 81.6,17.8 		"/>
+	</g>
+	<g id="Desk_Highligh_01">
+		<polygon class="st8" points="53.5,0 0,0 0.7,0.7 54.5,0.5 		"/>
+	</g>
+	<g id="Desk_Highligh_02">
+		<polygon class="st8" points="0.5,0 0,0 16.1,17.8 17,17.8 		"/>
+	</g>
+</g>
+</svg>

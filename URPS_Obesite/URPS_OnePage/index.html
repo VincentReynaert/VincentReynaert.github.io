@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="fr" data-scene="host">
+<head>
+  <meta charset="utf-8" />
+  <script src="../shared/scene-runtime.js?v=20261006-r2"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="URPS Obésité" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="../URPS_Ob_HUB/Logo_obesite.png" />
+  <title>URPS Obésité</title>
+  <style>
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #fff; }
+    #onepage { position: relative; width: 100%; height: 100%; }
+    .scene-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: none; background: #fff; }
+    .scene-frame.is-active { display: block; }
+    .install-gate { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left)); background: rgba(15, 23, 42, .78); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+    .install-gate[hidden] { display: none; }
+    .install-gate-card { width: min(460px, 100%); border-radius: 18px; padding: 1.5rem; background: #fff; color: #1f2933; box-shadow: 0 28px 72px rgba(0, 0, 0, .35); }
+    .install-gate-kicker { margin: 0 0 .45rem; color: #5c9157; font-size: .78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .install-gate h1 { margin: 0; font-size: 1.45rem; line-height: 1.2; }
+    .install-gate p, .install-gate li { line-height: 1.5; }
+    .install-gate ol { margin: 1rem 0; padding-left: 1.35rem; }
+    .install-gate li + li { margin-top: .45rem; }
+    .install-gate-button { width: 100%; min-height: 46px; border: 0; border-radius: 9px; background: #5c9157; color: #fff; font: inherit; font-weight: 800; cursor: pointer; }
+    .install-gate-button:hover, .install-gate-button:focus-visible { background: #457a41; outline: 3px solid rgba(92, 145, 87, .28); }
+    .install-gate-note { margin: 1rem 0 0; color: #52616b; font-size: .84rem; }
+  </style>
+  <link rel="stylesheet" href="../shared/scene-layout.css?v=20261006-r2" />
+</head>
+<body>
+  <script>sessionStorage.setItem("urps_ob_single_page", "true");</script>
+  <main id="onepage" class="urps-stage" aria-label="Parcours URPS Obésité">
+    <iframe class="scene-frame" data-scene="hub" title="Accueil URPS Obésité" src="../URPS_Ob_HUB/index.html?v=20261006-r2" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="scene-frame" data-scene="blocA" title="Bloc A — Aménagement du cabinet" src="../URPS_Ob_blocA/index.html?v=20261006-r2" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="scene-frame" data-scene="blocB" title="Bloc B — Consultation contextualisée" src="../URPS_Ob_blocB/index.html?v=20261006-r2" allow="fullscreen" allowfullscreen></iframe>
+  </main>
+  <section class="install-gate" id="install-gate" role="dialog" aria-modal="true" aria-labelledby="install-gate-title">
+    <div class="install-gate-card">
+      <p class="install-gate-kicker">Application requise</p>
+      <h1 id="install-gate-title">Installez URPS Obésité pour continuer</h1>
+      <div id="install-gate-ios" hidden>
+        <p>Cette application est réservée à une utilisation depuis l’écran d’accueil de votre iPhone ou iPad.</p>
+        <ol>
+          <li>Dans Safari, touchez <strong>Partager</strong> (le carré avec une flèche vers le haut).</li>
+          <li>Choisissez <strong>Sur l’écran d’accueil</strong>.</li>
+          <li>Touchez <strong>Ajouter</strong>, puis ouvrez <strong>URPS Obésité</strong> depuis l’icône créée.</li>
+        </ol>
+      </div>
+      <div id="install-gate-browser" hidden>
+        <p>Installez l’application pour accéder au parcours.</p>
+        <button class="install-gate-button" id="install-gate-button" type="button">Installer l’application</button>
+        <p class="install-gate-note" id="install-gate-note" hidden>Utilisez le menu de votre navigateur, puis choisissez « Installer l’application ».</p>
+      </div>
+      <p class="install-gate-note">L’accès dans le navigateur est volontairement désactivé.</p>
+    </div>
+  </section>
+
+  <script>
+    (() => {
+      const installGate = document.getElementById("install-gate");
+      const installGateIos = document.getElementById("install-gate-ios");
+      const installGateBrowser = document.getElementById("install-gate-browser");
+      const installGateButton = document.getElementById("install-gate-button");
+      const installGateNote = document.getElementById("install-gate-note");
+      let deferredInstallPrompt = null;
+
+      const isStandalone = () => window.matchMedia("(display-mode: standalone), (display-mode: fullscreen)").matches || window.navigator.standalone === true;
+      const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+      function updateInstallGate() {
+        const requiresIOSInstall = isIOS() && !isStandalone();
+        installGate.hidden = !requiresIOSInstall;
+        if (!requiresIOSInstall) return;
+        installGateIos.hidden = false;
+        installGateBrowser.hidden = true;
+        installGateButton.hidden = !deferredInstallPrompt;
+        installGateNote.hidden = Boolean(deferredInstallPrompt);
+      }
+
+      window.addEventListener("beforeinstallprompt", (event) => {
+        event.preventDefault();
+        deferredInstallPrompt = event;
+        updateInstallGate();
+      });
+      window.addEventListener("appinstalled", () => {
+        deferredInstallPrompt = null;
+        updateInstallGate();
+      });
+      installGateButton.addEventListener("click", async () => {
+        if (!deferredInstallPrompt) return;
+        deferredInstallPrompt.prompt();
+        await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+        updateInstallGate();
+      });
+      updateInstallGate();
+
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js"));
+      }
+    })();
+  </script>
+  <script src="../shared/scene-layout.js?v=20261006-r2"></script>
+</body>
+</html>

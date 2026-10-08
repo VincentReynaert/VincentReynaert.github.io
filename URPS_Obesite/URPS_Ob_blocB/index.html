@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr" data-scene="blocB">
+<head>
+  <meta charset="UTF-8" />
+  <script src="../shared/scene-runtime.js?v=20261006-r2"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="../manifest.json" />
+  <title>Bloc B — Consultation contextualisée</title>
+  <link rel="stylesheet" href="Bloc_B.css?v=20261006-r2" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="../shared/scene-layout.css?v=20261006-r2" />
+</head>
+<body class="vn-body">
+  <div class="content urps-stage" id="content">
+
+  <!-- ===== GAME SCREEN ===== -->
+  <div id="screen-game" class="screen screen-game">
+    <div class="start-info-overlay hidden" id="start-info-overlay" role="dialog" aria-modal="true" aria-labelledby="start-info-title">
+      <div class="start-info-card">
+        <p class="start-info-title" id="start-info-title">Avant de commencer</p>
+        <p class="start-info-text">Ce questionnaire dure environ 5 à 10 minutes.</p>
+        <p class="start-info-text">Pour chaque question, déplacez le curseur ou sélectionnez une réponse avant de pouvoir la confirmer.</p>
+        <button id="start-info-continue" class="vn-btn vn-btn-primary" type="button">Commencer</button>
+      </div>
+    </div>
+
+    <!-- Top HUD -->
+    <div class="hud-top">
+      <div class="hud-left">
+        <span class="hud-scene-label" id="hud-scene-label">Consultation</span>
+      </div>
+      <div class="hud-center">
+        <div class="hud-progress-track">
+          <div class="hud-progress-fill" id="hud-progress-fill"></div>
+        </div>
+      </div>
+      <div class="hud-right">
+      </div>
+    </div>
+
+    <!-- Scene viewport -->
+    <div class="vn-viewport" id="vn-viewport">
+
+      <!-- Background layer -->
+      <div class="vn-bg" id="vn-bg">
+        <!-- SVG background injected by JS -->
+      </div>
+
+      <!-- Characters layer -->
+      <div class="vn-characters" id="vn-characters">
+        <div class="vn-char vn-char-left hidden" id="char-patient">
+          <!-- patient SVG -->
+        </div>
+        <div class="vn-char vn-char-right hidden" id="char-doctor">
+          <!-- doctor SVG -->
+        </div>
+      </div>
+
+      <!-- Thought bubble (internal reflection) -->
+      <div class="vn-thought hidden" id="vn-thought">
+        <div class="thought-bubble">
+          <span class="thought-icon">💭</span>
+          <p class="thought-label">Réflexion interne</p>
+        </div>
+      </div>
+
+      <!-- Dialogue box -->
+      <div class="vn-dialog-wrapper" id="vn-dialog-wrapper">
+        <div class="vn-dialog hidden" id="vn-dialog">
+          <div class="dialog-speaker" id="dialog-speaker"></div>
+          <p class="dialog-text" id="dialog-text"></p>
+          <button class="dialog-next" id="dialog-next">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+
+        <!-- Narration box -->
+        <div class="vn-narration hidden" id="vn-narration">
+          <p class="narration-text" id="narration-text"></p>
+          <button class="dialog-next" id="narration-next">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Question overlay -->
+      <div class="vn-question-overlay hidden" id="vn-question-overlay">
+        <div class="vn-question-panel">
+          <div class="vq-header">
+            <span class="vq-badge" id="vq-badge">Question</span>
+            <span class="vq-internal hidden" id="vq-internal">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Réflexion interne
+            </span>
+          </div>
+          <div class="question-scroll">
+          <h3 class="vq-question" id="vq-question"></h3>
+          <div class="vq-options" id="vq-options"></div>
+          <div class="vq-scale-labels hidden" id="vq-scale-labels">
+            <span>Pas du tout d'accord</span><span>Tout à fait d'accord</span>
+          </div>
+          </div>
+          <button class="vn-btn vn-btn-primary vq-confirm hidden" id="vq-confirm">
+            Confirmer
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /vn-viewport -->
+  </div><!-- /screen-game -->
+
+  <!-- ===== RESULTS SCREEN ===== -->
+  <div id="screen-results" class="screen screen-results hidden">
+    <div class="results-container">
+      <div class="results-header">
+        <p class="results-eyebrow">Fin de consultation</p>
+        <h2 class="results-title">Votre synthèse</h2>
+        <p class="results-sub">La toile d'araignée ci-dessous reflète vos réponses dans chaque axe de pratique.</p>
+      </div>
+
+      <div class="results-body">
+        <!-- Radar -->
+        <div class="results-radar-card">
+          <div class="radar-wrap">
+            <canvas id="radar-chart"></canvas>
+          </div>
+          <div id="lowest-cat-box" class="lowest-cat-box hidden">
+            <span class="lowest-icon">⚠</span>
+            <div>
+              <p class="lowest-label">Axe à explorer en priorité</p>
+              <p class="lowest-value" id="lowest-cat-text"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Category details -->
+        <div class="results-cats">
+          <h3 class="results-cats-title">Détail par catégorie</h3>
+          <div class="results-cat-grid" id="results-cat-grid"></div>
+        </div>
+      </div>
+
+      <!-- Feedback panel -->
+      <div class="results-feedback" id="results-feedback">
+        <div class="feedback-panel-header">
+          <h3 class="feedback-panel-title" id="fb-panel-title"></h3>
+          <p class="feedback-panel-desc" id="fb-panel-desc"></p>
+        </div>
+        <div class="feedback-score-row">
+          <div class="feedback-score-box">
+            <p class="fb-score-label">Score</p>
+            <p class="fb-score-value" id="fb-score-value"></p>
+          </div>
+          <p class="fb-score-comment" id="fb-score-comment"></p>
+        </div>
+        <div class="feedback-items" id="feedback-items"></div>
+      </div>
+
+      <div class="results-actions">
+        <button id="btn-restart" class="vn-btn vn-btn-outline">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          Recommencer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  </div>
+  <script src="Bloc_B.js?v=20261006-r2"></script>
+  <script src="../shared/scene-layout.js?v=20261006-r2"></script>
+</body>
+</html>

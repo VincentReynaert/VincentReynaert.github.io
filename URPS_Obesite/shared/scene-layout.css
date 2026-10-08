@@ -1,0 +1,99 @@
+/* Shared viewport contract: scenes fit the available area, never crop it. */
+:root {
+  --safe-x: calc(env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px));
+  --safe-y: calc(env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px));
+  --view-height: 100vh;
+  --stage-width: min(calc(100vw - var(--safe-x)), calc((var(--view-height) - var(--safe-y)) * 16 / 9));
+}
+@supports (height: 100dvh) { :root { --view-height: 100dvh; } }
+html.urps-embedded { --safe-x: 0px; --safe-y: 0px; }
+html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
+body {
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+  background: #f9faec;
+}
+.urps-embedded body { padding: 0; }
+:is(#onepage, #app, .hub, .content).urps-stage {
+  position: relative;
+  width: var(--stage-width);
+  height: calc(var(--stage-width) * 9 / 16);
+  aspect-ratio: 16 / 9;
+  container-type: inline-size;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
+}
+.hub.urps-stage > .hub-stage { width: 100%; height: 100%; }
+.urps-stage .intro-panel { position: absolute; inset: 0; padding: 1.5cqw; overflow: hidden; align-items: center; }
+.urps-stage .intro-card { max-height: 100%; padding: 1rem; gap: .6rem; }
+.urps-stage .intro-card > * { flex-shrink: 0; }
+.urps-stage .intro-submit { position: sticky; bottom: 0; }
+.urps-stage :is(.hub-welcome-card, .install-help-card, .center-overlay-card, .start-info-card) {
+  max-width: 100%; max-height: 100%; overflow-y: auto; overscroll-behavior: contain;
+}
+.urps-stage :is(.hub-welcome-overlay, .center-overlay, .start-info-overlay, .install-help, .hub-category-overlay) { padding: 1.5cqw; }
+.urps-stage .hub-welcome-card { width: min(90%, 760px); margin: 0; }
+.urps-stage .hub-category-card { max-height: 100%; }
+.urps-stage .hub-category-header { position: sticky; top: 0; background: #182638; z-index: 2; }
+
+/* A: reserve space for the header/action; scroll choices only when necessary. */
+.urps-stage :is(.modal-backdrop, .recap-overlay) { padding: 1.5cqw; }
+.urps-stage :is(.selection-panel, .recap-panel) {
+  width: min(94%, 860px); min-width: 0; max-width: 100%; max-height: 100%;
+  padding: 1.5cqw; gap: 1cqw; overflow: hidden;
+}
+.urps-stage .step-header { flex-wrap: wrap; gap: .4rem; }
+.urps-stage .step-question { font-size: clamp(14px, 1.7cqw, 20px); }
+.urps-stage .options-row {
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
+  flex: 1 1 auto; min-height: 0; gap: 1.5cqw; padding: 1cqw;
+  overflow: auto; overscroll-behavior: contain; align-items: start;
+}
+.urps-stage .option-card {
+  width: 100%; min-width: 0; padding: 1cqw; gap: .5rem;
+  align-self: stretch;
+}
+.urps-stage .option-card > * { flex-shrink: 0; }
+.urps-stage .option-svg { width: clamp(64px, 12cqw, 150px); height: clamp(64px, 12cqw, 150px); max-width: 100%; }
+.urps-stage :is(.option-desc, .option-cost, .option-label) { font-size: clamp(14px, 1.4cqw, 18px); overflow-wrap: anywhere; }
+.urps-stage .option-cost { margin-top: auto; }
+.urps-stage :is(.btn-choose, .btn-equip, .center-overlay-btn) { min-height: 40px; font-size: max(14px, .875rem); padding: .4rem 1rem; }
+.urps-stage .recap-body { min-height: 0; overflow-y: auto; }
+.urps-stage :is(.recap-header, .recap-question-row) { flex-shrink: 0; }
+
+/* B: the question and answers scroll together, confirmation stays accessible. */
+.urps-stage .vn-question-overlay { padding: 1.5cqw; }
+.urps-stage .vn-question-panel { max-height: 100%; max-width: 820px; padding: 1.5cqw; gap: .6rem; overflow: hidden; }
+.urps-stage .question-scroll {
+  flex: 0 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-anchor: none;
+  overscroll-behavior: contain;
+  display: block;
+}
+.urps-stage .question-scroll > * + * { margin-top: .6rem; }
+.urps-stage :is(.vq-question, .vq-opt, .dialog-text, .narration-text) { font-size: max(14px, .875rem); }
+.urps-stage :is(.vq-header, .vq-confirm) { flex-shrink: 0; }
+.urps-stage .vq-confirm { min-height: 40px; }
+.urps-stage .vn-dialog-wrapper { max-height: 85%; overflow-y: auto; }
+.urps-stage .vn-narration, .urps-stage .vn-dialog { flex-shrink: 0; }
+
+.orientation-gate {
+  position: fixed; inset: 0; z-index: 900; display: grid; place-content: center;
+  padding: 2rem; text-align: center; background: #f9faec; color: #1f2933;
+  font: 600 18px/1.5 system-ui, sans-serif;
+}
+.orientation-gate[hidden] { display: none; }
+.orientation-gate button { min-height: 44px; margin-top: 1rem; font: inherit; }
+.viewport-install-help { position: fixed; z-index: 1001; overflow-y: auto; }
+.scene-loading { position: absolute; inset: 0; z-index: 100; display: grid; place-content: center; text-align: center; background: #f9faec; color: #1f2933; font: 16px system-ui; }
+.scene-loading[hidden] { display: none; }
+.scene-loading button { min-height: 44px; }
+/* Installation instructions take precedence over the landscape reminder. */
+#install-gate { z-index: 1000; box-sizing: border-box; overflow-y: auto; }
+#install-gate .install-gate-card { box-sizing: border-box; max-height: 100%; overflow-y: auto; }

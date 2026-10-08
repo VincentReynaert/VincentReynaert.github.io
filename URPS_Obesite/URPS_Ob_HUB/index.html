@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr" data-scene="hub">
+<head>
+  <meta charset="UTF-8"/>
+  <script src="../shared/scene-runtime.js?v=20261006-r2"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="apple-mobile-web-app-title" content="URPS Obésité"/>
+  <meta name="theme-color" content="#ffffff"/>
+  <link rel="manifest" href="manifest.webmanifest"/>
+  <link rel="apple-touch-icon" href="Logo_obesite.png"/>
+  <title>URPS Obesite - Hub</title>
+  <script>
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) {
+      document.documentElement.classList.add("is-ios");
+    }
+  </script>
+  <link rel="stylesheet" href="Hub.css?v=20261006-r2"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="../shared/scene-layout.css?v=20261006-r2" />
+</head>
+<body>
+  <main class="hub urps-stage" aria-label="Accueil du centre medical">
+      <section class="intro-panel" id="intro-panel" aria-labelledby="intro-title">
+        <form class="intro-card" id="intro-form">
+          <p class="intro-kicker">Avant de commencer</p>
+          <h1 class="intro-title" id="intro-title">Quelle est votre spécialité ?</h1>
+
+          <button class="install-app-button is-hidden" id="fullscreen-button" type="button">Passer en plein écran</button>
+          <p class="install-app-note is-hidden" id="fullscreen-note" role="status"></p>
+
+          <label class="intro-label" for="specialty-select">Spécialité médicale</label>
+          <select class="intro-select" id="specialty-select" name="specialty" required>
+            <option value="">Choisissez une spécialité</option>
+          </select>
+
+          <label class="intro-label" for="age-input">Âge</label>
+          <input class="intro-input" id="age-input" name="age" type="number" min="18" max="120" step="1" placeholder="Votre âge" required/>
+
+          <label class="intro-label" for="department-select">Département</label>
+          <select class="intro-select" id="department-select" name="department" required>
+            <option value="">Choisissez un département</option>
+          </select>
+
+          <label class="intro-label" for="environment-select">Environnement rural</label>
+          <select class="intro-select" id="environment-select" name="environment" required>
+            <option value="">Choisissez un environnement</option>
+            <option value="campagne">Campagne</option>
+            <option value="ville">Ville</option>
+          </select>
+
+          <label class="intro-label" for="practice-type-select">Type d'exercice</label>
+          <select class="intro-select" id="practice-type-select" name="practiceType" required>
+            <option value="">Choisissez un type d'exercice</option>
+            <option value="cabinet_individuel">Cabinet individuel</option>
+            <option value="cabinet_groupe_monodisciplinaire">Cabinet de groupe monodisciplinaire</option>
+            <option value="cabinet_groupe_pluridisciplinaire">Cabinet de groupe pluridisciplinaire</option>
+            <option value="etablissement_sante">Établissement de santé</option>
+          </select>
+
+          <fieldset class="gender-field">
+            <legend class="intro-label">Choississez votre personnage :</legend>
+            <div class="gender-options" id="gender-options">
+              <button class="gender-option" type="button" data-gender="homme" aria-pressed="false">
+                <img src="Doctor_Male.svg" alt="" aria-hidden="true"/>
+                <span>Homme</span>
+              </button>
+              <button class="gender-option" type="button" data-gender="femme" aria-pressed="false">
+                <img src="Doctor_Female.svg" alt="" aria-hidden="true"/>
+                <span>Femme</span>
+              </button>
+              <button class="gender-option" type="button" data-gender="ne_se_prononce_pas" aria-pressed="false">
+                <img src="Doctor_Male.svg" alt="" aria-hidden="true"/>
+                <span>Ne se prononce pas</span>
+              </button>
+            </div>
+          </fieldset>
+
+          <button class="intro-submit" type="submit">Entrer dans le centre</button>
+          <button class="install-app-button is-hidden" id="install-app-button" type="button">Installer l'outil sur cet appareil</button>
+          <p class="install-app-note is-hidden" id="install-app-note">Facultatif — ouvrez ensuite l'outil depuis votre écran d'accueil.</p>
+        </form>
+      </section>
+
+      <section class="install-help is-hidden" id="install-help" role="dialog" aria-modal="true" aria-labelledby="install-help-title">
+        <div class="install-help-card">
+          <button class="install-help-close" id="install-help-close" type="button" aria-label="Fermer l'aide d'installation">×</button>
+          <p class="intro-kicker">Installation sur iPhone ou iPad</p>
+          <h2 class="install-help-title" id="install-help-title">Ajouter URPS Obésité à l’écran d’accueil</h2>
+          <ol class="install-help-steps"><li>Dans Safari, touchez <strong>Partager</strong> (carré avec une flèche vers le haut).</li><li>Choisissez <strong>Sur l’écran d’accueil</strong>.</li><li>Validez avec <strong>Ajouter</strong>, puis ouvrez l’outil depuis son icône.</li></ol>
+          <p class="install-help-note">L’installation est facultative : le site reste utilisable directement dans Safari.</p>
+        </div>
+      </section>
+
+    <div class="content hub-stage" id="hub-stage">
+      <img class="hub-bg" src="Accueil_Background_V4.png" alt="Accueil du centre medical"/>
+
+      <section class="hub-welcome-overlay is-hidden" id="hub-welcome-overlay" aria-live="polite">
+        <div class="hub-welcome-card">
+          <p class="hub-welcome-message" id="hub-welcome-message">Bienvenue dans votre centre médical virtuel. Votre cabinet est en travaux, entrez-y.</p>
+          <p class="hub-welcome-hint" id="hub-welcome-hint">Cliquez n'importe où sur l'écran pour continuer.</p>
+        </div>
+      </section>
+      <div class="hub-welcome-pointer is-hidden" id="hub-welcome-pointer" aria-hidden="true"></div>
+
+      <a
+        class="poster-hotspot poster-ordre-medecins"
+        href="https://www.conseil-national.medecin.fr/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Ouvrir le site du Conseil national de l'Ordre des medecins"
+      ></a>
+
+      <a
+        class="poster-hotspot poster-urps"
+        href="https://www.urpsml-hdf.fr/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Ouvrir le site URPS ML Hauts-de-France"
+      ></a>
+
+      <a
+        class="scene-logo-link logo-obesite-link is-hidden"
+        id="logo-obesite-link"
+        href="https://www.obesitefrance.fr/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Ouvrir l'annuaire CNAO"
+      >
+        <img src="Logo_obesite.png" alt="Logo obesite"/>
+      </a>
+
+      <button class="door-hotspot door-main" type="button" data-door="main" aria-label="Entrer dans la salle">
+        <span class="door-label" id="door-label">En travaux</span>
+      </button>
+
+      <section class="hub-wall-results is-hidden" id="hub-wall-results" aria-label="Bilan consultation">
+        <!-- <p class="hub-results-title">Voici vos résultats</p> -->
+        <div class="hub-wall-radar-wrap">
+          <canvas id="hub-wall-radar"></canvas>
+          <div class="hub-radar-labels" id="hub-radar-labels"></div>
+        </div>
+        <div class="hub-results-actions">
+        <p class="hub-results-click-hint">Cliquez sur les noms des catégories.</p>
+        <button class="hub-results-download" id="hub-results-download" type="button">
+          Télécharger mes résultats
+        </button>
+        </div>
+      </section>
+
+      <p class="hub-status" id="hub-status" aria-live="polite"></p>
+
+      <section class="hub-category-overlay is-hidden" id="hub-category-overlay" aria-labelledby="hub-category-title">
+        <div class="hub-category-card" id="hub-category-card">
+          <header class="hub-category-header">
+            <h2 class="hub-category-title" id="hub-category-title">Détail catégorie</h2>
+            <button class="hub-category-close" id="hub-category-close" type="button" aria-label="Fermer le detail">Fermer</button>
+          </header>
+          <div class="hub-category-content" id="hub-category-content"></div>
+          <div class="hub-category-scrollbar is-hidden" id="hub-category-scrollbar">
+            <div class="hub-category-scrollbar-thumb" id="hub-category-scrollbar-thumb"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="Hub.js?v=20261006-r2"></script>
+  <script src="../shared/scene-layout.js?v=20261006-r2"></script>
+</body>
+</html>

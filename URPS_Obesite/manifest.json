@@ -1,0 +1,16 @@
+{
+  "short_name": "URPS Obésité",
+  "name": "URPS Obésité - Cabinet Virtuel",
+  "start_url": "./index.html",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "./URPS_Ob_HUB/Logo_obesite.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
+    }
+  ]
+}

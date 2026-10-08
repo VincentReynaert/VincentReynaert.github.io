@@ -1,0 +1,14 @@
+{
+  "id": "./",
+  "name": "URPS Obésité",
+  "short_name": "URPS Obésité",
+  "description": "Outil interactif URPS pour la prise en soins de l’obésité.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    { "src": "Logo_obesite.png", "sizes": "323x203", "type": "image/png", "purpose": "any" }
+  ]
+}

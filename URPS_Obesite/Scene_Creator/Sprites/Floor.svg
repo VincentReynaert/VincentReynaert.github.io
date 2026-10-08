@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 23.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Floor_1_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 460.8 51.8" style="enable-background:new 0 0 460.8 51.8;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#DFC9BA;}
+	.st1{fill-rule:evenodd;clip-rule:evenodd;fill:#D8BEAD;}
+	.st2{fill:#D8BEAD;}
+	.st3{fill:#9E8F84;}
+</style>
+<g id="Floor">
+	<rect id="Floor-2" y="0" class="st0" width="460.8" height="51.8"/>
+	<g id="Grid">
+		<polygon class="st1" points="460.8,48.5 433.4,0 435.7,0 460.8,44.5 		"/>
+		<polygon class="st1" points="425.1,51.8 422.8,51.8 393.5,0 395.8,0 		"/>
+		<polygon class="st1" points="380.2,51.8 378,51.8 348.7,0 351,0 		"/>
+		<polygon class="st1" points="342.3,51.8 340.1,51.8 310.8,0 313.1,0 		"/>
+		<polygon class="st1" points="302.5,51.8 300.2,51.8 271,0 273.2,0 		"/>
+		<polygon class="st1" points="257.6,51.8 255.4,51.8 226.1,0 228.4,0 		"/>
+		<polygon class="st1" points="218.8,51.8 216.5,51.8 187.3,0 189.5,0 		"/>
+		<polygon class="st1" points="178.9,51.8 176.6,51.8 147.4,0 149.6,0 		"/>
+		<polygon class="st1" points="134.1,51.8 131.8,51.8 102.5,0 104.8,0 		"/>
+		<polygon class="st1" points="96.2,51.8 93.9,51.8 64.7,0 66.9,0 		"/>
+		<polygon class="st1" points="56.3,51.8 54.1,51.8 24.8,0 27,0 		"/>
+		<polygon class="st1" points="11.5,51.8 9.2,51.8 0.1,35.5 0,31.8 		"/>
+		<rect x="0" y="11.7" class="st2" width="460.8" height="1.7"/>
+		<rect x="0" y="20.7" class="st2" width="460.8" height="1.7"/>
+		<rect x="0" y="39.7" class="st2" width="460.8" height="1.7"/>
+		<rect x="0" y="4.7" class="st2" width="460.8" height="1.7"/>
+		<rect x="0" y="29.7" class="st2" width="460.8" height="1.7"/>
+	</g>
+	<g id="Trim">
+		<rect y="0" class="st3" width="460.8" height="2.2"/>
+	</g>
+</g>
+</svg>

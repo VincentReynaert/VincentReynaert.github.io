@@ -1,0 +1,288 @@
+{
+  "title": "Bloc B — Consultation contextualisée",
+  "subtitle": "Une simulation de consultation médicale",
+  "scenes": [
+    {
+      "id": "intro",
+      "background": "cabinet",
+      "music": null,
+      "steps": [
+        {
+          "type": "narration",
+          "text": "Vous êtes médecin généraliste. Mme Martin, 48 ans, vient vous consulter pour une douleur à la cheville suite à une entorse récente.",
+          "status": "Default"
+        },
+        {
+          "type": "dialogue",
+          "speaker": "patient",
+          "name": "Mme Martin",
+          "text": "Bonjour. J'ai très mal à la cheville depuis quelques jours.",
+          "status": "Default"
+        },
+        {
+          "type": "question",
+          "id": "plainte-fonctionnelle",
+          "category": "plainte",
+          "internal": true,
+          "text": "Face à une plainte fonctionnelle, j'évalue si la perte de poids est réellement pertinente pour améliorer la situation du patient.",
+          "responseKind": "slider5",
+          "feedbackTitle": "Évaluer la pertinence médicale",
+          "feedback": "L'objectif est de déterminer si le poids est réellement pertinent dans la situation clinique, sans présumer qu'il explique automatiquement la plainte exprimée.",
+          "options": [
+            {
+              "value": 1,
+              "label": "Pas du tout d'accord",
+              "score": 1,
+              "max": 5
+            },
+            {
+              "value": 2,
+              "label": "Plutôt pas d'accord",
+              "score": 2,
+              "max": 5
+            },
+            {
+              "value": 3,
+              "label": "Ni d'accord ni pas d'accord",
+              "score": 3,
+              "max": 5
+            },
+            {
+              "value": 4,
+              "label": "Plutôt d'accord",
+              "score": 4,
+              "max": 5
+            },
+            {
+              "value": 5,
+              "label": "Tout à fait d'accord",
+              "score": 5,
+              "max": 5
+            }
+          ],
+          "status": "Default"
+        },
+        {
+          "type": "question",
+          "id": "aborder-poids-plainte",
+          "category": "plainte",
+          "internal": true,
+          "reverseScore": true,
+          "text": "Face à une plainte fonctionnelle, j'en profite pour aborder la problématique pondérale.",
+          "responseKind": "slider5",
+          "feedbackTitle": "Choisir le bon moment",
+          "feedback": "Le poids ne devrait pas être abordé automatiquement dès qu'une plainte fonctionnelle est exprimée. Un accord fort peut signaler un point d'attention.",
+          "options": [
+            {
+              "value": 1,
+              "label": "Pas du tout d'accord",
+              "score": 1,
+              "max": 5
+            },
+            {
+              "value": 2,
+              "label": "Plutôt pas d'accord",
+              "score": 2,
+              "max": 5
+            },
+            {
+              "value": 3,
+              "label": "Ni d'accord ni pas d'accord",
+              "score": 3,
+              "max": 5
+            },
+            {
+              "value": 4,
+              "label": "Plutôt d'accord",
+              "score": 4,
+              "max": 5
+            },
+            {
+              "value": 5,
+              "label": "Tout à fait d'accord",
+              "score": 5,
+              "max": 5
+            }
+          ],
+          "status": "Default"
+        },
+        {
+          "type": "dialogue",
+          "speaker": "doctor",
+          "name": "Vous",
+          "text": "J'ai besoin de connaître votre poids afin d'évaluer certains facteurs pouvant influencer votre prise en charge.",
+          "status": "Default"
+        },
+        {
+          "type": "question",
+          "id": "mesure-poids-consentement",
+          "category": "mesure",
+          "internal": false,
+          "text": "Lorsque la mesure du poids est nécessaire médicalement, je demande systématiquement le consentement du patient avant de procéder.",
+          "responseKind": "urpsFrequency",
+          "feedbackTitle": "Consentement à la mesure du poids",
+          "feedback": "Demander le consentement avant de mesurer le poids respecte l'autonomie du patient et peut limiter le vécu négatif associé à cette mesure.",
+          "options": [
+            {
+              "value": "oui_toujours",
+              "label": "Oui, toujours",
+              "score": 5,
+              "max": 5
+            },
+            {
+              "value": "oui_parfois",
+              "label": "Oui, parfois",
+              "score": 3,
+              "max": 5
+            },
+            {
+              "value": "non_envisage",
+              "label": "Non mais je pourrais l'envisager",
+              "score": 1,
+              "max": 5
+            }
+          ],
+          "status": "Default"
+        }
+      ]
+    },
+    {
+      "id": "discussion-poids",
+      "background": "cabinet",
+      "steps": [
+        {
+          "type": "narration",
+          "text": "La consultation se poursuit. Vous décidez d'aborder le sujet du poids avec Mme Martin.",
+          "status": "Default"
+        },
+        {
+          "type": "dialogue",
+          "speaker": "doctor",
+          "name": "Vous",
+          "text": "J'aimerais que nous parlions un peu de votre poids, car celui-ci peut avoir un impact sur la guérison de votre entorse.",
+          "status": "Default"
+        },
+        {
+          "type": "question",
+          "id": "origines-obesite",
+          "category": "accompagnement",
+          "internal": false,
+          "text": "J'interroge mon patient sur les origines qu'il associe à son obésité. (échelle de 1 à 5)",
+          "responseKind": "horizontalButton5",
+          "feedbackTitle": "Comprendre les explications du patient",
+          "feedback": "Explorer les origines perçues par le patient peut aider à comprendre son histoire, ses représentations et les leviers d'accompagnement possibles.",
+          "options": [
+            {
+              "value": 1,
+              "label": "1",
+              "score": 1,
+              "max": 5
+            },
+            {
+              "value": 2,
+              "label": "2",
+              "score": 2,
+              "max": 5
+            },
+            {
+              "value": 3,
+              "label": "3",
+              "score": 3,
+              "max": 5
+            },
+            {
+              "value": 4,
+              "label": "4",
+              "score": 4,
+              "max": 5
+            },
+            {
+              "value": 5,
+              "label": "5",
+              "score": 5,
+              "max": 5
+            }
+          ],
+          "status": "Default"
+        }
+      ]
+    },
+    {
+      "id": "stigmatisation-parcours",
+      "background": "cabinet",
+      "steps": [
+        {
+          "type": "dialogue",
+          "speaker": "doctor",
+          "name": "Vous",
+          "text": "Je peux vous aider à mieux comprendre les signaux de votre corps. Nous disposons également d'une équipe compétente et d'un réseau de professionnels spécialisés pouvant vous accompagner.",
+          "status": "Default"
+        },
+        {
+          "type": "question",
+          "id": "genre-equite",
+          "category": "stigmatisation",
+          "internal": true,
+          "text": "J'accompagne mes patient·es, hommes et femmes, de manière équitable en matière de perte de poids.",
+          "responseKind": "genderEquity",
+          "feedbackTitle": "Veiller à l'équité",
+          "feedback": "L'équité suppose d'être attentif aux besoins individuels sans appliquer automatiquement les mêmes attentes selon le genre.",
+          "options": [
+            {
+              "value": "non",
+              "label": "Non, je ne crois pas",
+              "score": 1,
+              "max": 5
+            },
+            {
+              "value": "peut_etre",
+              "label": "Peut-être",
+              "score": 3,
+              "max": 5
+            },
+            {
+              "value": "tout_a_fait",
+              "label": "Tout à fait",
+              "score": 5,
+              "max": 5
+            }
+          ],
+          "status": "Default"
+        },
+        {
+          "type": "dialogue",
+          "speaker": "patient",
+          "name": "Mme Martin",
+          "text": "J'apprécie votre bienveillance concernant mon poids. J'ai déjà vécu des échanges beaucoup plus difficiles à ce sujet.",
+          "status": "Default"
+        }
+      ]
+    }
+  ],
+  "categories": {
+    "plainte": {
+      "label": "Plainte et poids",
+      "description": "Pertinence et moment choisi pour aborder le poids face à une plainte fonctionnelle."
+    },
+    "mesure": {
+      "label": "Mesure du poids",
+      "description": "Consentement, explication et modalités de la mesure du poids."
+    },
+    "communication": {
+      "label": "Communication",
+      "description": "Clarification médicale, vocabulaire et adaptation au vécu du patient."
+    },
+    "accompagnement": {
+      "label": "Accompagnement",
+      "description": "Rapport au poids, motivations, entourage, régimes, sensations alimentaires et approche globale."
+    },
+    "stigmatisation": {
+      "label": "Stigmatisation",
+      "description": "Équité, vécu de stigmatisation et posture de l'équipe."
+    },
+    "parcours": {
+      "label": "Parcours de soins",
+      "description": "Orientation, transport adapté et connaissance des ressources spécialisées."
+    }
+  }
+}
