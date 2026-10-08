@@ -334,6 +334,7 @@ function renderDialogue(step) {
   });
 
   dialogSpeaker.textContent = step.name || step.speaker;
+  vnDialog.dataset.speaker = step.speaker;
   dialogSpeaker.className   = `dialog-speaker speaker-${step.speaker}`;
   dialogText.textContent    = step.text;
   vnDialog.classList.remove("hidden");

@@ -303,9 +303,48 @@ html, body { height: 100%; font-family: var(--font); background: #ffffff; color:
 
 /* Dialog wrapper */
 .vn-dialog-wrapper {
-  position: absolute; bottom: 0; left: 0; right: 0;
+  position: absolute;
+  top: 50%; bottom: auto; left: 50%; right: auto;
+  transform: translate(-50%, -50%);
+  width: min(68%, 760px);
   z-index: 4;
   padding: 0 2% 2%;
+}
+
+/* Keep the bubble tail inside the scrollable wrapper on small screens. */
+.urps-stage .vn-dialog-wrapper { padding: 12px 12px 28px; }
+.urps-stage .vn-dialog {
+  background: rgba(255, 255, 255, .94);
+  border: 2px solid #202730;
+  border-radius: 24px;
+  padding: clamp(14px, 2cqw, 28px);
+  box-shadow: 0 8px 28px #0003;
+}
+.vn-dialog::after {
+  content: "";
+  position: absolute;
+  bottom: -12px;
+  left: 18%;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-right: 2px solid #202730;
+  border-bottom: 2px solid #202730;
+  transform: rotate(45deg);
+}
+.vn-dialog[data-speaker="doctor"]::after { left: auto; right: 18%; }
+.urps-stage .vn-dialog .dialog-text {
+  color: #202730;
+  font-size: clamp(16px, 1.8cqw, 22px);
+  line-height: 1.5;
+}
+.urps-stage .vn-dialog .dialog-speaker {
+  color: #202730;
+  font-size: clamp(13px, 1.3cqw, 16px);
+  margin-bottom: 8px;
+}
+@media (max-width: 900px) {
+  .vn-dialog-wrapper { width: 78%; }
 }
 
 /* Dialog box */
