@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "urps-obesite-onepage-";
-const CACHE_NAME = `${CACHE_PREFIX}20261008-r3`;
+const CACHE_NAME = `${CACHE_PREFIX}20261008-r4`;
 const APP_SHELL = [
   "../shared/vendor/jspdf.umd.min.js",
   "../shared/vendor/xlsx.full.min.js",
@@ -14,7 +14,7 @@ const APP_SHELL = [
   "../URPS_Ob_blocA/Bloc_A.css?v=20261008-r1",
   "../URPS_Ob_blocA/Bloc_A.js?v=20261008-r1",
   "../URPS_Ob_blocB/index.html?v=20261008-r1",
-  "../URPS_Ob_blocB/Bloc_B.css?v=20261008-r3",
+  "../URPS_Ob_blocB/Bloc_B.css?v=20261008-r4",
   "../URPS_Ob_blocB/Bloc_B.js?v=20261008-r3",
   "../shared/scene-layout.css?v=20261008-r1",
   "../shared/scene-layout.js?v=20261008-r1",

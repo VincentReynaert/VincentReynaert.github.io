@@ -22,7 +22,7 @@ with environment() as (p, origin):
     page.wait_for_function("""async () => {
       const keys = await caches.keys();
       return keys.includes('urps-obesite-hub-20261008-r2') &&
-        keys.includes('urps-obesite-onepage-20261008-r3') &&
+        keys.includes('urps-obesite-onepage-20261008-r4') &&
         !keys.includes('urps-obesite-hub-v4') && !keys.includes('urps-obesite-onepage-v2');
     }""")
     assert "unrelated-app" in page.evaluate("caches.keys()")
@@ -33,7 +33,7 @@ with environment() as (p, origin):
         assert "../shared/scene-layout.css?v=20261008-r1" in html
     shared = "/shared/scene-layout.css?v=20261008-r1"
     page.evaluate("""async path => {
-      const cache = await caches.open('urps-obesite-onepage-20261008-r3');
+      const cache = await caches.open('urps-obesite-onepage-20261008-r4');
       await cache.put(path, new Response('STALE'));
     }""", shared)
     fresh = page.evaluate("path => fetch(path).then(r => r.text())", shared)
